@@ -29,17 +29,17 @@ public class DirectorManager : MonoBehaviour
         DirectorInstance = this;
     }
 
-    public void Update()
+    /// <summary>
+    /// This is the test setup that the director should be called when a level should be started.
+    /// </summary>
+    void Test()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
+        Parameters p = new Parameters();
+        p.firstLevel = true;
 
-            Parameters p = new Parameters();
-            p.firstLevel = true;
+        int v = StatisticsManager.StatisticsInstance.Retrieve();
 
-            int v = StatisticsManager.StatisticsInstance.Retrieve();
-
-            LevelManager.LevelInstance.Level(p);
-        }
+        LevelManager.LevelInstance.Level(p);
+        
     }
 }

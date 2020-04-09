@@ -1,15 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.RemoteConfig;
+
 
 public class LevelManager : MonoBehaviour
 {
-    private struct userAttributes { }
-
-    private struct appAttributes { }
-
-    public string assignmentId;
     private LevelConfig config;
 
     /// <summary>
@@ -35,36 +30,11 @@ public class LevelManager : MonoBehaviour
     void Awake()
     {
         LevelInstance = this;
-        config = new LevelConfig();
-
-        // Add a listener to apply settings when successfully retrieved: 
-        ConfigManager.FetchCompleted += ApplyRemoteSettings;
-
-        // Set the user’s unique ID:
-        ConfigManager.SetCustomUserID("some-user-id");
-
-        // Fetch configuration setting from the remote service: 
-        ConfigManager.FetchConfigs<userAttributes, appAttributes>(new userAttributes(), new appAttributes());
     }
-
-    // Create a function to set your variables to their keyed values:
-    void ApplyRemoteSettings(ConfigResponse configResponse)
-    {
-        switch (configResponse.requestOrigin)
-        {
-            case ConfigOrigin.Default:
-                Debug.Log("No settings loaded this session; using default values.");
-                break;
-            case ConfigOrigin.Cached:
-                Debug.Log("No settings loaded this session; using cached values from a previous session.");
-                break;
-            case ConfigOrigin.Remote:
-                Debug.Log("New settings loaded this session; update values accordingly.");
-                config.Width = ConfigManager.appConfig.GetInt("Width");
-                config.Height = ConfigManager.appConfig.GetInt("Height");
-                assignmentId = ConfigManager.appConfig.assignmentID;
-                break;
-        }
+    void Start() { 
+        config = new LevelConfig();
+        config.Width = ConfigurationManager.ConfigInstance.getConfig<int>("Width");
+        config.Height = ConfigurationManager.ConfigInstance.getConfig<int>("Height");
     }
 
     public void Level(Parameters p )

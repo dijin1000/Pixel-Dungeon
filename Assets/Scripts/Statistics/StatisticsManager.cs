@@ -31,24 +31,36 @@ public class StatisticsManager : MonoBehaviour
         StatisticsInstance = this;
     }
 
+    //#TODO needs to return more information such that the DirectorAI can create and request new levels
     public int Retrieve()
     {
         return 0;
     }
 
+    /// <summary>
+    /// This sends and message to the analytics dashboard.
+    /// </summary>
+    /// <param name="encoding"></param>
+    /// <returns></returns>
     public bool SendEvent(messageType encoding)
     {
         AnalyticsResult result = AnalyticsResult.InvalidData;
         switch(encoding)
         {
             case messageType.death:
-                result = Analytics.CustomEvent("Death");
+                result = Analytics.CustomEvent("Death", new Dictionary<string, object>
+                {
+                    { "level_id", 0 },
+                    { "score", 0 },
+                    { "difficulty", 0}
+                });
                 break;
             case messageType.levelComplete:
-                result = Analytics.CustomEvent("secret_found", new Dictionary<string, object>
+                result = Analytics.CustomEvent("Level Completed", new Dictionary<string, object>
                 {
-                    { "secret_id", 0 },
-                    { "time_elapsed", Time.timeSinceLevelLoad }
+                    { "level_id", 0 },
+                    { "time_elapsed", Time.timeSinceLevelLoad },
+                    { "difficulty", 0}
                 });
                 break;
             default:
