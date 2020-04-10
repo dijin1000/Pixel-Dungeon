@@ -26,9 +26,35 @@ public class StatisticsManager : MonoBehaviour
         }
     }
 
+    private float score;
+    private Action<float> OnScoreChange;
+    public float Score
+    {
+        get
+        {
+            return score;
+        }
+        private set
+        {
+            score = value;
+            OnScoreChange(score);
+        }
+    }
+
+    public void SubscribeScoreChange(Action<float> registerAction)
+    {
+        OnScoreChange += registerAction;
+    }
+
     private void Awake()
     {
         StatisticsInstance = this;
+    }
+
+    private void Update()
+    {
+        //Score increase over time
+        Score += Time.deltaTime;
     }
 
     //#TODO needs to return more information such that the DirectorAI can create and request new levels
