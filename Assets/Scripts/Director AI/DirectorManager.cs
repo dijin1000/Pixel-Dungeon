@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class DirectorManager : MonoBehaviour
 {
@@ -29,17 +31,23 @@ public class DirectorManager : MonoBehaviour
         DirectorInstance = this;
     }
 
-    /// <summary>
-    /// This is the test setup that the director should be called when a level should be started.
-    /// </summary>
-    void Test()
+    int results;
+    public bool RetrieveInformation()
     {
+        var v = StatisticsManager.StatisticsInstance.Retrieve();
+        if(v.Item1)
+            results = v.Item2;
+        return v.Item1;
+    }
+
+    internal void CreateNewLevel(Vector2Int t)
+    {
+        // do something with results
+
         Parameters p = new Parameters();
         p.firstLevel = true;
+        p.startTile = t;
 
-        int v = StatisticsManager.StatisticsInstance.Retrieve();
-
-        LevelManager.LevelInstance.Level(p);
-        
+        LevelManager.LevelInstance.CreateNewLevel(p);
     }
 }

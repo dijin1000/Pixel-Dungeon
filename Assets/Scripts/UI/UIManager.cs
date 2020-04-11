@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class UIManager : MonoBehaviour
 {
@@ -26,33 +25,75 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public GameObject Canvas;
-
     private Slider healthBar;
     private TextMeshProUGUI scoreboard;
+    private Image playerGFX;
+
+    private GameObject[] panels;
 
     void Awake()
     {
         UiInstance = this;
-        healthBar = Canvas.GetComponentInChildren<Slider>();
-        scoreboard = Canvas.GetComponentInChildren<TextMeshProUGUI>();
 
+
+        panels = (transform.GetChild(0)).GetComponentsInChildren<Transform>(true)
+            .Where(predicate => predicate.parent == transform.GetChild(0))
+            .Select(predicate => predicate.gameObject).ToArray();
+
+        healthBar = panels[1].GetComponentInChildren<Slider>();
+        scoreboard = panels[1].GetComponentInChildren<TextMeshProUGUI>();
+        playerGFX = transform.GetComponentsInChildren<Image>(true).FirstOrDefault(predicate => predicate.name == "Player_GFX");
     }
-    private void Start()
-    {
+
+    //Can be upgrade to enum
+    public bool CurrentState = true;
+    public void SwithToInGame() {
+        //DISABLE OTHE PANES
+        panels[1].SetActive(true);
+        panels[0].SetActive(false);
         PlayerController.PlayerInstance.SubscribeHealthChange(
             (float newHealth) => 
             {
-                healthBar.value = newHealth/100f*0.95f;
+                healthBar.value = newHealth*0.95f;
             }
         );
+
+        PlayerController.PlayerInstance.SubscribeGraphicxsChange(
+            (Sprite newSprite) =>
+            {
+                playerGFX.sprite = newSprite;
+            }
+        );
+
         StatisticsManager.StatisticsInstance.SubscribeScoreChange(
             (float newScore) =>
             {
                 scoreboard.text = ((int)newScore).ToString();
             }
         );
+
+        healthBar.value = PlayerController.PlayerInstance.GetHealth() * 0.95f;
+        scoreboard.text = ((int)StatisticsManager.StatisticsInstance.Score).ToString();
+        playerGFX.sprite = PlayerController.PlayerInstance.Sprite_Player;
     }
 
+    public void SwithToMainMenu()
+    {
+        panels[0].SetActive(true);
+        panels[1].SetActive(false);
+    }
 
+    internal void Switch(bool goingTo)
+    {
+        if (!CurrentState && goingTo)
+        {
+            SwithToMainMenu();
+            CurrentState = true;
+        }
+        else if(CurrentState && !goingTo)
+        {
+            SwithToInGame();
+            CurrentState = false;
+        }
+    }
 }

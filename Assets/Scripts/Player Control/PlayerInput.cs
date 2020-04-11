@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -15,6 +17,17 @@ public class PlayerInput : MonoBehaviour
         //controls.Player.PickUp.performed +=;
         //controls.Player.Attack.performed +=;
     }
+
+    public void Subscribe(Action<InputAction.CallbackContext> a)
+    {
+        controls.Player.Enter.performed += a;
+    }
+
+    public void UnSubscribe(Action<InputAction.CallbackContext> a)
+    {
+        controls.Player.Enter.performed -= a;
+    }
+
 
     void FixedUpdate()
     {

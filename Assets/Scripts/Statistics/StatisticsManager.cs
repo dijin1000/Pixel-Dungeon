@@ -37,7 +37,7 @@ public class StatisticsManager : MonoBehaviour
         private set
         {
             score = value;
-            OnScoreChange(score);
+            OnScoreChange?.Invoke(score);
         }
     }
 
@@ -51,16 +51,11 @@ public class StatisticsManager : MonoBehaviour
         StatisticsInstance = this;
     }
 
-    private void Update()
-    {
-        //Score increase over time
-        Score += Time.deltaTime;
-    }
-
     //#TODO needs to return more information such that the DirectorAI can create and request new levels
-    public int Retrieve()
+    //INT Can be any class
+    public Tuple<bool,int> Retrieve()
     {
-        return 0;
+        return new Tuple<bool, int>(true,0);
     }
 
     /// <summary>

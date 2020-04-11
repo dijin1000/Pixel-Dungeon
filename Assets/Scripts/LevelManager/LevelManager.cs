@@ -1,12 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
+using UnityEngine.Tilemaps;
 
 public class LevelManager : MonoBehaviour
 {
     private LevelConfig config;
-
+    private GameObject player;
+    public List<GameObject> prefab = new List<GameObject>();
     /// <summary>
     /// Signleton Pattern
     /// </summary>
@@ -29,31 +32,57 @@ public class LevelManager : MonoBehaviour
 
     void Awake()
     {
-        LevelInstance = this;
-    }
-    void Start() { 
+        LevelInstance = this; 
         config = new LevelConfig();
         config.Width = ConfigurationManager.ConfigInstance.getConfig<int>("Width");
         config.Height = ConfigurationManager.ConfigInstance.getConfig<int>("Height");
     }
 
-    public void Level(Parameters p )
+    Dictionary<Vector2Int, List<Vector2Int>> mapping = new Dictionary<Vector2Int, List<Vector2Int>>();
+    private void BuildExit(Vector2 start, Vector2 size, int index, int exit)
     {
-        if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.death))
-            Debug.LogError("Message didnt send");
-        //If there is a need for a new level with the intensity of some sort captured in p
-        if (true)
+        Vector2Int key = new Vector2Int(index, exit);
+
+        //Index is room index the general room what we want to spawn
+        //Exit is exit is the exit number.
+
+        List<Vector2Int> exitTiles = new List<Vector2Int>();
+        for (int i = 0; i < size.x; i++)
         {
-            CreateLevel(p);
+            for (int j = 0; j < size.y; j++)
+            {
+                Vector2Int pos = new Vector2Int((int)start.x + i, (int)start.y + j);
+                exitTiles.Add(pos);
+            }
+        }
+        mapping.Add(key, exitTiles);
+    }
+
+    public void CreateNewLevel(Parameters param)
+    {
+        Vector2Int startTile = param.startTile;
+        int seed;
+        int exitNumber;
+        if (startTile != null)
+        {
+            Vector2Int key = mapping.Where(predicate => predicate.Value.Any(p => p == startTile)).FirstOrDefault().Key;
+
+            seed = key.x;
+            exitNumber = key.y;
         }
         else
         {
-            //Need some sort of back and forth method linked list of levels
+            seed = 1;
+            exitNumber = 0;
         }
-    }
 
-    private void CreateLevel(Parameters param)
-    {
+        //Needs magic bee done to convert from tile to new starting point
+
+        //Build room if instantiate new exit enter into list 
+        //Build Exit (vector start, vector2 size, int index)
+
+
+
         // Creating the first entry level
         if(param.firstLevel)
         {
@@ -63,9 +92,21 @@ public class LevelManager : MonoBehaviour
         {
             Debug.Log("Create new Level with H X W: " + config.Height + " X " + config.Width);
         }
+        SpawnPlayer(new Vector2(2,1));
+    }
+
+    private void SpawnPlayer(Vector2 pos)
+    {
+        if (player == null)
+            player = Instantiate(prefab[UnityEngine.Random.Range(0,prefab.Count)],pos, Quaternion.identity);
+        else
+        {
+            player = Instantiate(player, pos, Quaternion.identity);
+        }
     }
 }
 public struct Parameters
 {
     public bool firstLevel;
+    public Vector2Int startTile;
 }

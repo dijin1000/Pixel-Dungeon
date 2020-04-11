@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -29,41 +29,70 @@ public class PlayerController : MonoBehaviour
 
 
     private PlayerData data;
-
-    private Action<float> OnHealthChange;
-
-    PlayerInput pInput;
-    private void Awake()
+    private PlayerInput p_Input;
+    private Sprite sprite_Player;
+    private Action<Sprite> OnSpriteChange;
+    private SpriteRenderer renderer_sprite;
+    public Sprite Sprite_Player
     {
-        data = new PlayerData();
-        data.Health = 100;
-        pInput = GetComponent<PlayerInput>();
-        PlayerInstance = this;
+        get
+        {
+            return sprite_Player;
+        }
+        set
+        {
+            sprite_Player = value;
+            OnSpriteChange?.Invoke(sprite_Player);
+        }
     }
 
-    public void SubscribeHealthChange(Action<float> actionToRegister )
+    public void Subscribe(Action<InputAction.CallbackContext> actionToRegister)
     {
-        OnHealthChange += actionToRegister;
+        p_Input.Subscribe(actionToRegister);
+    }
+
+    public void UnSubscribe(Action<InputAction.CallbackContext> actionToRegister)
+    {
+        p_Input.UnSubscribe(actionToRegister);
+    }
+    public void SubscribeHealthChange(Action<float> actionToRegister)
+    {
+        data.SubscribeHealthChange(actionToRegister);
+    }
+    public void SubscribeGraphicxsChange(Action<Sprite> actionToRegister)
+    {
+        OnSpriteChange += actionToRegister;
     }
 
     public float GetHealth()
     {
         return data.Health;
     }
-
     public void GetDamage(float dmg)
     {
         if (!data.Death)
-        { 
+        {
             data.Health -= dmg;
-            OnHealthChange(data.Health);
             if (data.Health < 0)
             {
                 data.Death = true;
-                pInput.enabled = false;
+                p_Input.enabled = false;
             }
         }
     }
+
+    private void Awake()
+    {
+        p_Input = GetComponent<PlayerInput>();
+        PlayerInstance = this;
+        data = new PlayerData(null,100f,false,null,null);
+        renderer_sprite = transform.GetComponentsInChildren<SpriteRenderer>(true).FirstOrDefault(predicate => predicate.name == "Player_Body"); ;
+        Sprite_Player = renderer_sprite.sprite;
+        SubscribeGraphicxsChange((Sprite sprite) => { renderer_sprite.sprite = sprite; });
+        //DontDestroyOnLoad(gameObject);
+    }
+
+
 
     public void PickUpItem(InventoryItem item)
     {
@@ -94,18 +123,39 @@ public class PlayerController : MonoBehaviour
 [Serializable]
 public struct PlayerData
 {
-    public PlayerData(float health = 100f, bool death = false, List<InventoryItem> inventory = null, InventoryItem weapon = null)
+    public PlayerData(Action<float> onHealthChange = null, float _health = 100f, bool death = false, List<InventoryItem> inventory = null, InventoryItem weapon = null)
     {
-        Health = health;
         Death = death;
+        maxHealth = 100;
         Inventory = inventory ?? new List<InventoryItem>();
         Weapon = weapon ?? new InventoryItem();
+        health = _health;
+        OnHealthChange = onHealthChange ?? ((float newhealth) => { });
     }
 
-    public float Health;
+    private Action<float> OnHealthChange;
+    private float health;
+    private float maxHealth;
+    public float Health
+    {
+        get
+        {
+            return health/maxHealth;
+        }
+        set
+        {
+            health = value;
+            OnHealthChange?.Invoke(Health);
+        }
+    }
     public bool Death;
 
     public InventoryItem Weapon;
 
     public List<InventoryItem> Inventory;
+
+    internal void SubscribeHealthChange(Action<float> actionToRegister)
+    {
+        OnHealthChange += actionToRegister;
+    }
 }
