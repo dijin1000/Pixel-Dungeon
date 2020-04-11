@@ -1519,6 +1519,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 258d61a9433494a8699aaef6c97c2f11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  accelerationTime: 2
   moveSpeed: 5
 --- !u!61 &749975778
 BoxCollider2D:
@@ -1565,7 +1566,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!4 &749975780
 Transform:
