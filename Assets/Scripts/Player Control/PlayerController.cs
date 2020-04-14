@@ -87,6 +87,18 @@ public class PlayerController : IUnit
         data.Death = dead;
     }
 
+
+    public override void Death()
+    {
+        //Send Statistics
+
+        //SceneTransitionManager.Transit();
+
+        base.Death();
+    }
+
+
+
     private void Awake()
     {
         p_Input = GetComponent<PlayerInput>();
@@ -102,11 +114,9 @@ public class PlayerController : IUnit
             (InputAction.CallbackContext action) => 
             { 
                 float testing = Mathf.Ceil(action.ReadValue<Vector2>().x);
-                Debug.Log(testing);
                 anim.SetInteger("Movement",(int)testing);
 
                 int equal = Mathf.Sign(graphics.rotation.y) == Mathf.Sign(testing) ? 0 : 1;
-                Debug.Log(equal);
                 graphics.Rotate(new Vector3(0,equal *180,0)); 
 
             }

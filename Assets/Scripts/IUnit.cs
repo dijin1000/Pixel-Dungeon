@@ -15,10 +15,16 @@ public abstract class IUnit : MonoBehaviour
         {
             Set_Health(Get_Health() - dmg);
             if (Get_Health() < 0)
-            {
-                Set_Death(true);
+            {              
+                Death();
             }
         }
+    }
+
+    public virtual void Death()
+    {
+        Set_Death(true);
+        Destroy(gameObject);
     }
 
     void OnTriggerEnter2D(Collider2D col)

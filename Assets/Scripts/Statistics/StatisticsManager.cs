@@ -51,6 +51,11 @@ public class StatisticsManager : MonoBehaviour
         StatisticsInstance = this;
     }
 
+    internal void SendScore(IUnit monsterController)
+    {
+        Score += 10;
+    }
+
     //#TODO needs to return more information such that the DirectorAI can create and request new levels
     //INT Can be any class
     public Tuple<bool,int> Retrieve()

@@ -9,6 +9,9 @@ public class MonsterController : IUnit
     private bool death = false;
     private float health = 100f;
 
+    [SerializeField]
+    private float maxHealth = 100f;
+
     private Action<float> onHealthChange;
     private GameObject UICanvas;
     private Slider healthBar;
@@ -23,7 +26,7 @@ public class MonsterController : IUnit
                 healthBar.value = newHealth;
             }
             );
-        Set_Health(100);
+        Set_Health(100f);
     }
 
     public override bool Get_Death()
@@ -43,13 +46,23 @@ public class MonsterController : IUnit
 
     protected override void Set_Health(float newHealth)
     {
-        Debug.Log("Setting Health");
         health = newHealth;
-        onHealthChange?.Invoke(health);
+        onHealthChange?.Invoke(health/maxHealth);
     }
+
+    public override void Death()
+    {
+        //Send Statistics
+        StatisticsManager.StatisticsInstance.SendScore(this);
+
+        base.Death();
+    }
+
 
     public void Subscribe(Action<float> registerAction)
     {
         onHealthChange += registerAction;
     }
+
+
 }
