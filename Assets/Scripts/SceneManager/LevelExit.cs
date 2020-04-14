@@ -17,8 +17,7 @@ public class LevelExit : MonoBehaviour
         if (col.tag == "Player")
         {
             storedAction = (InputAction.CallbackContext parameter) => { Exit(col); };
-            PlayerController.PlayerInstance.Subscribe(storedAction);
-            Debug.Log("add");
+            PlayerController.PlayerInstance.Subscribe(storedAction, ControlType.Enter);
         }
     }
 
@@ -28,7 +27,7 @@ public class LevelExit : MonoBehaviour
     {
         if (col.tag == "Player")
         {
-            PlayerController.PlayerInstance.UnSubscribe(storedAction);
+            PlayerController.PlayerInstance.UnSubscribe(storedAction, ControlType.Enter);
         }
     }
 

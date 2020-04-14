@@ -2,6 +2,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum ControlType
+{
+    Enter,
+    Attack,
+    Movement,
+}
+
 public class PlayerInput : MonoBehaviour
 {
     public float moveSpeed = 5f;
@@ -18,14 +25,33 @@ public class PlayerInput : MonoBehaviour
         //controls.Player.Attack.performed +=;
     }
 
-    public void Subscribe(Action<InputAction.CallbackContext> a)
+    public void Subscribe(Action<InputAction.CallbackContext> action, ControlType type)
     {
-        controls.Player.Enter.performed += a;
+        switch (type)
+        {
+            case ControlType.Enter:
+                controls.Player.Enter.performed += action;
+                break;
+            case ControlType.Attack:
+                controls.Player.Attack.performed += action;
+                break;
+            case ControlType.Movement:
+                controls.Player.Movement.performed += action;
+                break;
+        }
     }
 
-    public void UnSubscribe(Action<InputAction.CallbackContext> a)
+    public void UnSubscribe(Action<InputAction.CallbackContext> action, ControlType type)
     {
-        controls.Player.Enter.performed -= a;
+        switch (type)
+        {
+            case ControlType.Enter:
+                controls.Player.Enter.performed -= action;
+                break;
+            case ControlType.Attack:
+                controls.Player.Attack.performed -= action;
+                break;
+        }
     }
 
 

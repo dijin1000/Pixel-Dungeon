@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Dagger_Override
+  m_Controller: {fileID: 9100000, guid: 2bc67692eef2d0445b80cfbcd0e98a29, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 4c63b97d719db05488bddf6d8e250ef1, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: e3afeea106818e64c9aaa6be58292fdc, type: 2}

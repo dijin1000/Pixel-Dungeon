@@ -76,12 +76,6 @@ public class LevelManager : MonoBehaviour
             exitNumber = 0;
         }
 
-        //Needs magic bee done to convert from tile to new starting point
-
-        //Build room if instantiate new exit enter into list 
-        //Build Exit (vector start, vector2 size, int index)
-
-
 
         // Creating the first entry level
         if(param.firstLevel)

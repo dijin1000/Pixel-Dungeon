@@ -72,7 +72,7 @@ public class UIManager : MonoBehaviour
             }
         );
 
-        healthBar.value = PlayerController.PlayerInstance.GetHealth() * 0.95f;
+        healthBar.value = PlayerController.PlayerInstance.Get_Health();
         scoreboard.text = ((int)StatisticsManager.StatisticsInstance.Score).ToString();
         playerGFX.sprite = PlayerController.PlayerInstance.Sprite_Player;
     }
