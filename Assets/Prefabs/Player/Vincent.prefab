@@ -65,7 +65,7 @@ PrefabInstance:
     - target: {fileID: 812945091139470413, guid: 68beacb76affad240ad89801ac46ab5e,
         type: 3}
       propertyPath: m_Name
-      value: Base_Player
+      value: Vincent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68beacb76affad240ad89801ac46ab5e, type: 3}

@@ -51,7 +51,7 @@ public class StatisticsManager : MonoBehaviour
         StatisticsInstance = this;
     }
 
-    internal void SendScore(IUnit monsterController)
+    public void SendScore(IUnit monsterController)
     {
         Score += 10;
     }
@@ -77,7 +77,7 @@ public class StatisticsManager : MonoBehaviour
                 result = Analytics.CustomEvent("Death", new Dictionary<string, object>
                 {
                     { "level_id", 0 },
-                    { "score", 0 },
+                    { "score", Score },
                     { "difficulty", 0}
                 });
                 break;
