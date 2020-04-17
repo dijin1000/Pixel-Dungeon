@@ -53,6 +53,7 @@ public class LevelManager : MonoBehaviour
         int[,] thing = new int[n,m];
 
         List<Vector2Int> walls = new List<Vector2Int>();
+        List<Vector2Int> grounds = new List<Vector2Int>();
 
         for (int i = 0; i < n; i++)
         {
@@ -63,27 +64,37 @@ public class LevelManager : MonoBehaviour
                 if ((i != 0 && j!= 0 && i != n-1 && j != m-1) && (i == 1 || j == 1 || j == m - 2 || i == n - 2))
                     walls.Add(new Vector2Int(i, j));
                 if ((i != 0 && j != 0 && i != n - 1 && j != m - 1))
-                    PlaceGround(new Vector2Int(i,j));
+                    grounds.Add(new Vector2Int(i,j));
             }
         }
 
-        foreach(Vector2Int pos in walls)
+        Vector2Int player = new Vector2Int(UnityEngine.Random.Range(3, n - 4), UnityEngine.Random.Range(3, m - 4));
+        BuildLevel(walls,grounds,player,thing);
+    }
+
+    private void BuildLevel(List<Vector2Int> walls, List<Vector2Int> grounds, Vector2Int player, int[,] array)
+    {
+
+        foreach (Vector2Int pos in walls)
         {
             bool[] neigbours = new bool[8];
-            neigbours[0] = thing[pos.x - 1, pos.y + 1] == 1;
-            neigbours[1] = thing[pos.x, pos.y + 1] == 1;
-            neigbours[2] = thing[pos.x + 1, pos.y + 1] == 1;
-            neigbours[3] = thing[pos.x + 1, pos.y ] == 1;
-            neigbours[4] = thing[pos.x + 1, pos.y - 1] == 1;
-            neigbours[5] = thing[pos.x, pos.y - 1] == 1;
-            neigbours[6] = thing[pos.x - 1, pos.y - 1] == 1;
-            neigbours[7] = thing[pos.x - 1, pos.y] == 1;
+            neigbours[0] = array[pos.x - 1, pos.y + 1] == 1;
+            neigbours[1] = array[pos.x, pos.y + 1] == 1;
+            neigbours[2] = array[pos.x + 1, pos.y + 1] == 1;
+            neigbours[3] = array[pos.x + 1, pos.y] == 1;
+            neigbours[4] = array[pos.x + 1, pos.y - 1] == 1;
+            neigbours[5] = array[pos.x, pos.y - 1] == 1;
+            neigbours[6] = array[pos.x - 1, pos.y - 1] == 1;
+            neigbours[7] = array[pos.x - 1, pos.y] == 1;
 
             PlaceWallPrime(pos, neigbours);
         }
-        SpawnPlayer(new Vector2(UnityEngine.Random.Range(3, n - 4), UnityEngine.Random.Range(3, m - 4)));
+        foreach (Vector2Int ground in grounds)
+        {
+            PlaceGround(ground);
+        }
+        SpawnPlayer(player);
     }
-
 
 
     private void PlaceWallPrime(Vector2Int pos,bool [] neigbours)
@@ -143,7 +154,7 @@ public class LevelManager : MonoBehaviour
         Wallsmap.SetTile(new Vector3Int(pos.x, pos.y, 0), Wall);
     }
 
-    private void PlaceGround(Vector2Int pos, T type = T.Default)
+    private void PlaceGround(Vector2Int pos)
     {
         GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), ground);
     }
