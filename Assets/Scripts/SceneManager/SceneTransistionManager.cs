@@ -4,6 +4,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
+public enum typeOfScene
+{
+    MainMenu,
+    Game,
+    ExitGame,
+    SlotLoad
+}
+
 public class SceneTransistionManager : MonoBehaviour
 {
     /// <summary>
@@ -25,59 +33,127 @@ public class SceneTransistionManager : MonoBehaviour
             sceneInstance = value;
         }
     }
+
+    private bool isTransitioning = false;
+
     void Awake()
     {
         SceneInstance = this;
         DontDestroyOnLoad(gameObject.transform.parent.gameObject);
+        
     }
 
     public void ExitGame()
     {
-        Application.Quit();
+        TransitionToScene(typeOfScene.ExitGame);
     }
 
-    public void LoadGame()
+    public void StartOrLoadGame()
     {
-
-        //Some Basic initialization
-        Transit(new Vector2Int(2, 1));
+        TransitionToScene(typeOfScene.Game);
     }
 
-    public void Transit(Vector2Int t)
+    public void BackToMainMenu()
     {
-        StartCoroutine(transistion(t));
+        TransitionToScene(typeOfScene.MainMenu);
     }
 
-    IEnumerator transistion(Vector2Int t)
+    public void TransitionToScene(typeOfScene param)
     {
-        if(DirectorManager.DirectorInstance.RetrieveInformation())
+        if (isTransitioning)
         {
-            //ANIMATOR SLIDE
-
-
-            ////////////////
-
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("SampleScene");
-
-            //possibility to store previous scene.
-
-            // Wait until the asynchronous scene fully loads
-            while (!asyncLoad.isDone)
+            switch (param)
             {
-                yield return null;
+                case typeOfScene.ExitGame:
+                    UIManager.UiInstance.AreYouSure("", OnExit);
+                    isTransitioning = true;
+                    break;
+                case typeOfScene.MainMenu:
+                    //IS Saved?
+                    isTransitioning = true;
+                    if (true)
+                        UIManager.UiInstance.AreYouSure("", OnBackToMainMenu);
+                    else
+                        UIManager.UiInstance.AreYouSure("", OnBackToMainMenu);
+                    break;
+                case typeOfScene.SlotLoad:
+                    isTransitioning = true;
+                    UIManager.UiInstance.LaunchGame(OnGameStart);
+                    break;
+                case typeOfScene.Game:
+                    isTransitioning = true;
+                    StartCoroutine(NextLevel);
+                    break;
             }
-
-            DirectorManager.DirectorInstance.CreateNewLevel(t);
-            UIManager.UiInstance.Switch(false);
-            //ANIMATOR SLIDE
-
-
-            ////////////////
         }
-        else
+    }
+
+    private IEnumerator OnExit()
+    {
+        yield return new WaitUntil(UIManager.UiInstance.SlideClosed());
+        Application.Quit();
+        
+    }
+
+    private IEnumerator OnBackToMainMenu()
+    {
+        yield return new WaitUntil(UIManager.UiInstance.SlideClosed);
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("StartScene");
+
+        while (!asyncLoad.isDone)
         {
-            Debug.LogError("Something terrible went wrong.");
+            yield return null;
         }
+
+        yield return new WaitUntil(UIManager.UiInstance.SlideOpened);
+
+        isTransitioning = false;
+    }
+
+    private IEnumerator OnGameStart(int slotloading = -1)
+    {
+        yield return new WaitUntil(UIManager.UiInstance.SlideClosed);
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("StartScene");
+
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        if (slotloading != -1)  //SAVED GAME
+        {
+            DirectorManager.DirectorInstance.Load(slotloading);
+            yield return new WaitUntil(DirectorManager.DirectorInstance.NextLevel());
+        }
+        else //NEWGAME
+        {
+            DirectorManager.DirectorInstance.NewSlot();
+            yield return new WaitUntil(DirectorManager.DirectorInstance.NextLevel());
+        }
+
+        yield return new WaitUntil(UIManager.UiInstance.SlideOpened);
+
+        isTransitioning = false;
+    }
+
+    private IEnumerator NextLevel()
+    {
+        yield return new WaitUntil(UIManager.UiInstance.SlideClosed);
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("StartScene");
+
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        yield return new WaitUntil(DirectorManager.DirectorInstance.NextLevel());
+
+        yield return new WaitUntil(UIManager.UiInstance.SlideOpened);
+
+        isTransitioning = false;
     }
 
 }

@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using System;
+using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
@@ -75,6 +77,17 @@ public class UIManager : MonoBehaviour
         healthBar.value = PlayerController.PlayerInstance.Get_Health();
         scoreboard.text = ((int)StatisticsManager.StatisticsInstance.Score).ToString();
         playerGFX.sprite = PlayerController.PlayerInstance.Sprite_Player;
+    }
+
+    public void AreYouSure(string displayText, Func<IEnumerator> actionOnRelease)
+    {
+        Action Accord =
+            () =>
+            {
+                StartCoroutine(actionOnRelease());
+            };
+
+
     }
 
     public void SwithToMainMenu()
