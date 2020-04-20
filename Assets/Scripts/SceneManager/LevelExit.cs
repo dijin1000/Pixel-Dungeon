@@ -47,7 +47,11 @@ public class LevelExit : MonoBehaviour
             var x = map.WorldToCell(points[0].point);
             if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.levelComplete))
                 Debug.LogError("Message didnt send");
-            SceneTransistionManager.SceneInstance.Transit(new Vector2Int(2, 1));
+
+
+            DirectorManager.DirectorInstance.UpdateState(LevelManager.LevelInstance.Convert(new Vector2Ints(x.x,x.y)));
+
+            SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.Game);
             this.x = true;
         }
     }

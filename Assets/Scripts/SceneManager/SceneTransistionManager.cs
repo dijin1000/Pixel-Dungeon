@@ -125,12 +125,14 @@ public class SceneTransistionManager : MonoBehaviour
         if (slotloading != -1)  //SAVED GAME
         {
             DirectorManager.DirectorInstance.Load(slotloading);
-            yield return new WaitUntil(DirectorManager.DirectorInstance.NextLevel());
+            DirectorManager.DirectorInstance.NextLevel();
+            yield return new WaitUntil(() => { return DirectorManager.DirectorInstance.finished == true; });
         }
         else //NEWGAME
         {
             DirectorManager.DirectorInstance.NewSlot();
-            yield return new WaitUntil(DirectorManager.DirectorInstance.NextLevel());
+            DirectorManager.DirectorInstance.NextLevel();
+            yield return new WaitUntil(() => { return DirectorManager.DirectorInstance.finished == true; });
         }
 
         yield return new WaitUntil(UIManager.UiInstance.SlideOpened);
@@ -149,7 +151,8 @@ public class SceneTransistionManager : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitUntil(DirectorManager.DirectorInstance.NextLevel());
+        DirectorManager.DirectorInstance.NextLevel();
+        yield return new WaitUntil(() => { return DirectorManager.DirectorInstance.finished == true; });
 
         yield return new WaitUntil(UIManager.UiInstance.SlideOpened);
 

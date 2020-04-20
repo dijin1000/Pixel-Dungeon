@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 public struct Parameters
 {
-    public bool firstLevel;
-    public Vector2Int startTile;
+    public State State;
 }
 
 public class LevelManager : MonoBehaviour
@@ -16,7 +16,7 @@ public class LevelManager : MonoBehaviour
     private GameObject player;
     public List<GameObject> prefab = new List<GameObject>();
 
-    Dictionary<Vector2Int, List<Vector2Int>> mapping = new Dictionary<Vector2Int, List<Vector2Int>>();
+    Dictionary<Tuple<int,int>, List<Vector2Int>> mapping = new Dictionary<Tuple<int,int>, List<Vector2Int>>();
 
     public TileBase Wall;
     public TileBase ground;
@@ -53,7 +53,16 @@ public class LevelManager : MonoBehaviour
         //PlaceSimpleLevel();
     }
 
-    
+    internal int Convert(Vector2Int vector2)
+    {
+        Tuple<int,int> key = mapping.FirstOrDefault(predicate => predicate.Value.Any(item => item == vector2)).Key;
+        //Index is room index the general room what we want to spawn
+        //Exit is exit is the exit number.
+
+        int index = key.Item1;
+        int exit = key.Item2;
+    }
+
     private void PlaceWallPrime(Vector2Int pos, bool[] neigbours)
     {
         PlaceWall(pos);
@@ -91,20 +100,19 @@ public class LevelManager : MonoBehaviour
             }
         }
     }
-
     private void PlaceWall(Vector2Int pos)
     {
         Wallsmap.SetTile(new Vector3Int(pos.x, pos.y, 0), Wall);
     }
-
     private void PlaceGround(Vector2Int pos)
     {
         GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), ground);
     }
 
-    private void BuildExit(Vector2 start, Vector2 size, int index, int exit)
+
+    private async Task BuildExit(Vector2 start, Vector2 size, int index, int exit)
     {
-        Vector2Int key = new Vector2Int(index, exit);
+        Tuple<int,int> key = new Tuple<int, int>(index, exit);
 
         //Index is room index the general room what we want to spawn
         //Exit is exit is the exit number.
@@ -121,7 +129,7 @@ public class LevelManager : MonoBehaviour
         mapping.Add(key, exitTiles);
     }
 
-    private void BuildLevel(List<Vector2Int> walls, List<Vector2Int> grounds, Vector2Int player, int[,] array)
+    private async Task BuildWalls(List<Vector2Int> walls, int[,] array)
     {
         foreach (Vector2Int pos in walls)
         {
@@ -137,47 +145,27 @@ public class LevelManager : MonoBehaviour
 
             PlaceWallPrime(pos, neigbours);
         }
+    }
+    private async Task BuildGround(List<Vector2Int> grounds)
+    {
         foreach (Vector2Int ground in grounds)
         {
             PlaceGround(ground);
         }
-        SpawnPlayer(player);
     }
 
-
-    public void CreateNewLevel(Parameters param)
+    private async Task SpawnPlayer(Vector2 pos)
     {
-        PlaceSimpleLevel();
-        return;
-        Vector2Int startTile = param.startTile;
-        int seed;
-        int exitNumber;
-        if (startTile != null)
-        {
-            Vector2Int key = mapping.Where(predicate => predicate.Value.Any(p => p == startTile)).FirstOrDefault().Key;
-
-            seed = key.x;
-            exitNumber = key.y;
-        }
+        if (player == null)
+            player = Instantiate(prefab[UnityEngine.Random.Range(0, prefab.Count)], pos, Quaternion.identity);
         else
         {
-            seed = 1;
-            exitNumber = 0;
+            player = Instantiate(player, pos, Quaternion.identity);
         }
-
-
-        // Creating the first entry level
-        if(param.firstLevel)
-        {
-            Debug.Log("Create new Level with H X W: 10 X 10");
-        }
-        else
-        {
-            Debug.Log("Create new Level with H X W: " + config.Height + " X " + config.Width);
-        }
-        SpawnPlayer(new Vector2(2,1));
     }
-    private void PlaceSimpleLevel()
+
+
+    private async Task PlaceSimpleLevel()
     {
         int n = 10;
         int m = 10;
@@ -200,17 +188,16 @@ public class LevelManager : MonoBehaviour
         }
 
         Vector2Int player = new Vector2Int(UnityEngine.Random.Range(3, n - 4), UnityEngine.Random.Range(3, m - 4));
-        BuildLevel(walls, grounds, player, thing);
+
+        var groundTask = BuildGround(grounds);
+        var wallsTask = BuildWalls(walls, thing);
+        var playerTask = SpawnPlayer(player);
+        await Task.WhenAll(new Task[] { groundTask, wallsTask, playerTask });
     }
-
-
-    private void SpawnPlayer(Vector2 pos)
+    public async Task CreateNewLevel(Parameters param)
     {
-        if (player == null)
-            player = Instantiate(prefab[UnityEngine.Random.Range(0,prefab.Count)],pos, Quaternion.identity);
-        else
-        {
-            player = Instantiate(player, pos, Quaternion.identity);
-        }
+        await PlaceSimpleLevel();
+        return;
     }
+    
 }

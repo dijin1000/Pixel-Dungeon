@@ -1,11 +1,33 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Tilemaps;
+
+public struct Node
+{
+    List<Node> connected;
+    readonly int seed;
+
+    public Node(int _seed)
+    {
+        connected = new List<Node>();
+        seed = _seed;
+    }
+    public Node Get(int seedNext)
+    {
+        return connected.FirstOrDefault(predicate => predicate.seed == seedNext);
+    }
+}
+public struct State
+{
+    public Node previousNode;
+    public Node currentNode;
+}
 
 public class DirectorManager : MonoBehaviour
 {
+
     /// <summary>
     /// Signleton Pattern
     /// </summary>
@@ -25,13 +47,23 @@ public class DirectorManager : MonoBehaviour
             directorInstance = value;
         }
     }
+    int results;
+
+    State currentState;
+    private bool finished;
+    public bool Finished
+    {
+        get
+        { 
+            return finished; 
+        }
+    }
 
     void Awake()
     {
         DirectorInstance = this;
     }
-
-    int results;
+    
     public bool RetrieveInformation()
     {
         var v = StatisticsManager.StatisticsInstance.Retrieve();
@@ -40,14 +72,39 @@ public class DirectorManager : MonoBehaviour
         return v.Item1;
     }
 
-    internal void CreateNewLevel(Vector2Int t)
+
+    public void Load(int slotloading)
     {
-        // do something with results
+        throw new NotImplementedException();
+    }
+    internal void NewSlot()
+    {
+        currentState = new State();
+        currentState.currentNode = new Node(UnityEngine.Random.seed);
+    }
+    public void SaveSlot()
+    {
+        throw new NotImplementedException();
+    }
 
+
+    public void UpdateState(int seedNext)
+    {
+        Node newCurrent = currentState.currentNode.Get(seedNext);
+        State newState = new State();
+        newState.currentNode = newCurrent;
+        newState.previousNode = currentState.currentNode;
+        currentState = newState;
+    }
+
+    public async Task NextLevel()
+    {
+        finished = false;
         Parameters p = new Parameters();
-        p.firstLevel = true;
-        p.startTile = t;
-
-        LevelManager.LevelInstance.CreateNewLevel(p);
+        p.State = currentState;
+        //p.difficulty = Evaluate();
+        
+        await LevelManager.LevelInstance.CreateNewLevel(p);
+        finished = true;
     }
 }

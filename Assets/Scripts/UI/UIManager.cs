@@ -86,8 +86,6 @@ public class UIManager : MonoBehaviour
             {
                 StartCoroutine(actionOnRelease());
             };
-
-
     }
 
     public void SwithToMainMenu()
