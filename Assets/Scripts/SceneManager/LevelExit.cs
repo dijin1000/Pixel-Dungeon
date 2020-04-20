@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,6 +6,9 @@ using UnityEngine.Tilemaps;
 
 public class LevelExit : MonoBehaviour
 {
+    public int room;
+    public int door;
+
     private Tilemap map;
     public void Awake()
     {
@@ -49,7 +51,7 @@ public class LevelExit : MonoBehaviour
                 Debug.LogError("Message didnt send");
 
 
-            DirectorManager.DirectorInstance.UpdateState(LevelManager.LevelInstance.Convert(new Vector2Ints(x.x,x.y)));
+            DirectorManager.DirectorInstance.UpdateState(room,door);
 
             SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.Game);
             this.x = true;

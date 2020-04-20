@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Linq;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 
 public class UIManager : MonoBehaviour
 {
@@ -50,6 +51,7 @@ public class UIManager : MonoBehaviour
     //Can be upgrade to enum
     public bool CurrentState = true;
     public void SwithToInGame() {
+        Debug.Log("Test");
         //DISABLE OTHE PANES
         panels[1].SetActive(true);
         panels[0].SetActive(false);
@@ -79,6 +81,22 @@ public class UIManager : MonoBehaviour
         playerGFX.sprite = PlayerController.PlayerInstance.Sprite_Player;
     }
 
+    public void LaunchGame(Func<int, IEnumerator> onGameStart)
+    {
+        StartCoroutine(onGameStart(-1));
+    }
+
+    public void SlideClose()
+    {
+        return;
+    }
+    public void SlideOpen()
+    {
+        return;
+    }
+
+
+
     public void AreYouSure(string displayText, Func<IEnumerator> actionOnRelease)
     {
         Action Accord =
@@ -93,7 +111,6 @@ public class UIManager : MonoBehaviour
         panels[0].SetActive(true);
         panels[1].SetActive(false);
     }
-
     internal void Switch(bool goingTo)
     {
         if (!CurrentState && goingTo)

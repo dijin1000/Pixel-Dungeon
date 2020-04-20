@@ -4,25 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public struct Node
-{
-    List<Node> connected;
-    readonly int seed;
-
-    public Node(int _seed)
-    {
-        connected = new List<Node>();
-        seed = _seed;
-    }
-    public Node Get(int seedNext)
-    {
-        return connected.FirstOrDefault(predicate => predicate.seed == seedNext);
-    }
-}
 public struct State
 {
-    public Node previousNode;
-    public Node currentNode;
+    public int door;
+    public int room;
 }
 
 public class DirectorManager : MonoBehaviour
@@ -48,8 +33,9 @@ public class DirectorManager : MonoBehaviour
         }
     }
     int results;
+    private State currentState;
 
-    State currentState;
+
     private bool finished;
     public bool Finished
     {
@@ -80,28 +66,23 @@ public class DirectorManager : MonoBehaviour
     internal void NewSlot()
     {
         currentState = new State();
-        currentState.currentNode = new Node(UnityEngine.Random.seed);
+        currentState.room = 0;
+        currentState.door = -1;
     }
     public void SaveSlot()
     {
         throw new NotImplementedException();
     }
 
-
-    public void UpdateState(int seedNext)
+    public void UpdateState(int room,int door)
     {
-        Node newCurrent = currentState.currentNode.Get(seedNext);
-        State newState = new State();
-        newState.currentNode = newCurrent;
-        newState.previousNode = currentState.currentNode;
-        currentState = newState;
+        currentState.door = door;
     }
 
     public async Task NextLevel()
     {
         finished = false;
-        Parameters p = new Parameters();
-        p.State = currentState;
+        Parameters p = new Parameters(currentState);
         //p.difficulty = Evaluate();
         
         await LevelManager.LevelInstance.CreateNewLevel(p);

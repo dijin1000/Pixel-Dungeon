@@ -7,7 +7,14 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 public struct Parameters
 {
-    public State State;
+    public int room;
+    public int door;
+
+    public Parameters(State currentState) : this()
+    {
+        door = currentState.door;
+        room = currentState.room;
+    }
 }
 
 public class LevelManager : MonoBehaviour
@@ -16,13 +23,19 @@ public class LevelManager : MonoBehaviour
     private GameObject player;
     public List<GameObject> prefab = new List<GameObject>();
 
-    Dictionary<Tuple<int,int>, List<Vector2Int>> mapping = new Dictionary<Tuple<int,int>, List<Vector2Int>>();
-
     public TileBase Wall;
     public TileBase ground;
+    public TileBase exit;
 
     public Tilemap Wallsmap;
     public Tilemap GroundsMap;
+
+
+    int width;
+    int height;
+    int[,] map;
+    Dictionary<int, Vector2Int> room_location;
+    Dictionary<int, Tuple<int, int>> door_to_room;
 
     /// <summary>
     /// Signleton Pattern
@@ -50,18 +63,11 @@ public class LevelManager : MonoBehaviour
         config = new LevelConfig();
         config.Width = ConfigurationManager.ConfigInstance.getConfig<int>("Width");
         config.Height = ConfigurationManager.ConfigInstance.getConfig<int>("Height");
+        room_location = new Dictionary<int, Vector2Int>();
+        door_to_room = new Dictionary<int, Tuple<int, int>>();
         //PlaceSimpleLevel();
     }
 
-    internal int Convert(Vector2Int vector2)
-    {
-        Tuple<int,int> key = mapping.FirstOrDefault(predicate => predicate.Value.Any(item => item == vector2)).Key;
-        //Index is room index the general room what we want to spawn
-        //Exit is exit is the exit number.
-
-        int index = key.Item1;
-        int exit = key.Item2;
-    }
 
     private void PlaceWallPrime(Vector2Int pos, bool[] neigbours)
     {
@@ -110,43 +116,35 @@ public class LevelManager : MonoBehaviour
     }
 
 
-    private async Task BuildExit(Vector2 start, Vector2 size, int index, int exit)
+
+    private void BuildExit(int doorNumber, int roomNumber,Vector2Int pos)
     {
-        Tuple<int,int> key = new Tuple<int, int>(index, exit);
 
-        //Index is room index the general room what we want to spawn
-        //Exit is exit is the exit number.
+        //Needed To Visualize if()
+        GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), exit);
 
-        List<Vector2Int> exitTiles = new List<Vector2Int>();
-        for (int i = 0; i < size.x; i++)
-        {
-            for (int j = 0; j < size.y; j++)
-            {
-                Vector2Int pos = new Vector2Int((int)start.x + i, (int)start.y + j);
-                exitTiles.Add(pos);
-            }
-        }
-        mapping.Add(key, exitTiles);
     }
 
-    private async Task BuildWalls(List<Vector2Int> walls, int[,] array)
+    private void BuildWalls(List<Vector2Int> walls)
     {
         foreach (Vector2Int pos in walls)
         {
             bool[] neigbours = new bool[8];
-            neigbours[0] = array[pos.x - 1, pos.y + 1] == 1;
-            neigbours[1] = array[pos.x, pos.y + 1] == 1;
-            neigbours[2] = array[pos.x + 1, pos.y + 1] == 1;
-            neigbours[3] = array[pos.x + 1, pos.y] == 1;
-            neigbours[4] = array[pos.x + 1, pos.y - 1] == 1;
-            neigbours[5] = array[pos.x, pos.y - 1] == 1;
-            neigbours[6] = array[pos.x - 1, pos.y - 1] == 1;
-            neigbours[7] = array[pos.x - 1, pos.y] == 1;
+
+
+            neigbours[0] = map[pos.x - 1, pos.y + 1] == 1;
+            neigbours[1] = map[pos.x, pos.y + 1] == 1;
+            neigbours[2] = map[pos.x + 1, pos.y + 1] == 1;
+            neigbours[3] = map[pos.x + 1, pos.y] == 1;
+            neigbours[4] = map[pos.x + 1, pos.y - 1] == 1;
+            neigbours[5] = map[pos.x, pos.y - 1] == 1;
+            neigbours[6] = map[pos.x - 1, pos.y - 1] == 1;
+            neigbours[7] = map[pos.x - 1, pos.y] == 1;
 
             PlaceWallPrime(pos, neigbours);
         }
     }
-    private async Task BuildGround(List<Vector2Int> grounds)
+    private void BuildGround(List<Vector2Int> grounds)
     {
         foreach (Vector2Int ground in grounds)
         {
@@ -154,7 +152,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private async Task SpawnPlayer(Vector2 pos)
+    private void SpawnPlayer(Vector2 pos)
     {
         if (player == null)
             player = Instantiate(prefab[UnityEngine.Random.Range(0, prefab.Count)], pos, Quaternion.identity);
@@ -165,39 +163,109 @@ public class LevelManager : MonoBehaviour
     }
 
 
-    private async Task PlaceSimpleLevel()
+    private async Task<int> PlaceLevel(Parameters param)
     {
-        int n = 10;
-        int m = 10;
-        int[,] thing = new int[n, m];
+        //Mathe's Code
+        int doorNumber = param.door;
+        int roomNumber = param.room;
+
+        room_location.Add(0, new Vector2Int(0, 0));
+
+        if (roomNumber == 0) // Basic example single room creations
+        {
+            width = 10;
+            height = 10;
+            map = new int[width, height];
+
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    if (i < 2 || j < 2 || j > height - 3 || i > width - 3)
+                        map[i, j] = 1;
+                    else
+                        map[i, j] = 2;
+                }
+            }
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+
+
+    public async Task CreateNewLevel(Parameters param)
+    {
+        int x = await PlaceLevel(param);
+        t = new State();
+        t.door = param.door;
+        t.room = x;
+        updated = false;
+        return;
+    }
+
+    State t;
+    public bool updated = false;
+    public void Update()
+    {
+        if(updated == false)
+            StartCoroutine(RendererLevel(t.door, t.room));
+    }
+
+
+    private IEnumerator RendererLevel(int door, int currentRoom)
+    {
+        updated = true;
+        Wallsmap.ClearAllTiles();
+        GroundsMap.ClearAllTiles();
 
         List<Vector2Int> walls = new List<Vector2Int>();
         List<Vector2Int> grounds = new List<Vector2Int>();
-
-        for (int i = 0; i < n; i++)
+        Dictionary<int, List<Vector2Int>> doors = new Dictionary<int, List<Vector2Int>>();
+        Vector2Int player = new Vector2Int(2,2);
+        bool playerSet = false;
+        int x = room_location[currentRoom].x;
+        int y = room_location[currentRoom].y;
+        List<Task> tasks = new List<Task>();
+        while (y < 10)
         {
-            for (int j = 0; j < m; j++)
+            if(map[x, y] < 0)
             {
-                if (i < 2 || j < 2 || j > m - 3 || i > n - 3)
-                    thing[i, j] = 1;
-                if ((i != 0 && j != 0 && i != n - 1 && j != m - 1) && (i == 1 || j == 1 || j == m - 2 || i == n - 2))
-                    walls.Add(new Vector2Int(i, j));
-                if ((i != 0 && j != 0 && i != n - 1 && j != m - 1))
-                    grounds.Add(new Vector2Int(i, j));
+                BuildExit(map[x,y],currentRoom,new Vector2Int(x,y));
             }
+
+
+            if (map[x, y] == 1 && x != 0 && y != 0 && y != height - 1 && x != width - 1)
+            {
+                walls.Add(new Vector2Int(x, y));
+            }
+
+            if (map[x,y] > 0)
+            {
+                grounds.Add(new Vector2Int(x, y));
+            }
+
+            if(map[x,y] == door && !playerSet)
+            {
+                player = new Vector2Int(x, y);
+                playerSet = true;
+ 
+            }
+            
+            if (x == 9)
+            {
+                y++;
+                x = 0;
+            }
+            x++;
         }
 
-        Vector2Int player = new Vector2Int(UnityEngine.Random.Range(3, n - 4), UnityEngine.Random.Range(3, m - 4));
-
-        var groundTask = BuildGround(grounds);
-        var wallsTask = BuildWalls(walls, thing);
-        var playerTask = SpawnPlayer(player);
-        await Task.WhenAll(new Task[] { groundTask, wallsTask, playerTask });
+        BuildGround(grounds);
+        BuildWalls(walls);
+        SpawnPlayer(player);
+        yield return null;
     }
-    public async Task CreateNewLevel(Parameters param)
-    {
-        await PlaceSimpleLevel();
-        return;
-    }
-    
 }
