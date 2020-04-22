@@ -65,7 +65,6 @@ public class LevelManager : MonoBehaviour
         config.Height = ConfigurationManager.ConfigInstance.getConfig<int>("Height");
         room_location = new Dictionary<int, Vector2Int>();
         door_to_room = new Dictionary<int, Tuple<int, int>>();
-        //PlaceSimpleLevel();
     }
 
 
@@ -208,11 +207,13 @@ public class LevelManager : MonoBehaviour
     }
 
     State t;
-    public bool updated = false;
+    public bool updated = true;
     public void Update()
     {
-        if(updated == false)
+        if (updated == false)
+        {
             StartCoroutine(RendererLevel(t.door, t.room));
+        }
     }
 
 
@@ -227,6 +228,7 @@ public class LevelManager : MonoBehaviour
         Dictionary<int, List<Vector2Int>> doors = new Dictionary<int, List<Vector2Int>>();
         Vector2Int player = new Vector2Int(2,2);
         bool playerSet = false;
+        Debug.Log(currentRoom);
         int x = room_location[currentRoom].x;
         int y = room_location[currentRoom].y;
         List<Task> tasks = new List<Task>();

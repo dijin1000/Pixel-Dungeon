@@ -57,7 +57,14 @@ public class PlayerInput : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        if (movement != Vector2.zero)
+        {
+            rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+            if(!StatisticsManager.StatisticsInstance.Run)
+                StatisticsManager.StatisticsInstance.Run = true;
+        }
+        else if (StatisticsManager.StatisticsInstance.Run)
+            StatisticsManager.StatisticsInstance.Run = false;
     }
 
     private void OnEnable()

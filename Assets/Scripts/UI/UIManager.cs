@@ -51,7 +51,6 @@ public class UIManager : MonoBehaviour
     //Can be upgrade to enum
     public bool CurrentState = true;
     public void SwithToInGame() {
-        Debug.Log("Test");
         //DISABLE OTHE PANES
         panels[1].SetActive(true);
         panels[0].SetActive(false);

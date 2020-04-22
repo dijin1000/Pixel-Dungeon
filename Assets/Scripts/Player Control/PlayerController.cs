@@ -16,13 +16,13 @@ public class PlayerController : IUnit
         get
         {
             if (playerInstance == null)
-                Debug.LogError("There is no " + PlayerInstance.GetType() + " set.");
+                Debug.LogError("There is no " + playerInstance.GetType() + " set.");
             return playerInstance;
         }
         private set
         {
             if (playerInstance != null)
-                Debug.LogError("Two instances of the " + PlayerInstance.GetType() + " are sethere is no DirectorAI set.");
+                Debug.LogError("Two instances of the " + playerInstance.GetType() + " are sethere is no DirectorAI set.");
             playerInstance = value;
         }
     }
@@ -99,8 +99,9 @@ public class PlayerController : IUnit
 
 
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         p_Input = GetComponent<PlayerInput>();
         anim = GetComponent<Animator>();
         graphics = transform.Find("GFX");

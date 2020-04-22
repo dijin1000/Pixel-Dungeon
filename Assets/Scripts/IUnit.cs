@@ -13,6 +13,7 @@ public abstract class IUnit : MonoBehaviour
     {
         if (!Get_Death())
         {
+            StatisticsManager.StatisticsInstance.SetDamage(unit,dmg);
             Set_Health(Get_Health() - dmg);
             if (Get_Health() < 0)
             {              
@@ -21,9 +22,24 @@ public abstract class IUnit : MonoBehaviour
         }
     }
 
+    public enum Unit
+    {
+        Player,
+        Monster,
+        Default
+    }
+    private Unit unit;
+    protected virtual void Awake()
+    {
+        unit = (tag == "Player") ? Unit.Player : ((tag == "Monster") ? Unit.Monster : Unit.Default);
+    }
+
     public virtual void Death()
     {
         Set_Death(true);
+
+        StatisticsManager.StatisticsInstance.SetDeath(unit);
+
         Destroy(gameObject);
     }
 

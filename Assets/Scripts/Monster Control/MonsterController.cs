@@ -50,15 +50,6 @@ public class MonsterController : IUnit
         onHealthChange?.Invoke(health/maxHealth);
     }
 
-    public override void Death()
-    {
-        //Send Statistics
-        StatisticsManager.StatisticsInstance.SendScore(this);
-
-        base.Death();
-    }
-
-
     public void Subscribe(Action<float> registerAction)
     {
         onHealthChange += registerAction;

@@ -50,15 +50,6 @@ public class DirectorManager : MonoBehaviour
         DirectorInstance = this;
     }
     
-    public bool RetrieveInformation()
-    {
-        var v = StatisticsManager.StatisticsInstance.Retrieve();
-        if(v.Item1)
-            results = v.Item2;
-        return v.Item1;
-    }
-
-
     public void Load(int slotloading)
     {
         throw new NotImplementedException();
@@ -82,8 +73,14 @@ public class DirectorManager : MonoBehaviour
     public async Task NextLevel()
     {
         finished = false;
+        Measurements m = StatisticsManager.StatisticsInstance.Measurements;
         Parameters p = new Parameters(currentState);
-        //p.difficulty = Evaluate();
+        
+        //LOGIC for JACCO en MAURITS
+
+
+
+
         
         await LevelManager.LevelInstance.CreateNewLevel(p);
         finished = true;

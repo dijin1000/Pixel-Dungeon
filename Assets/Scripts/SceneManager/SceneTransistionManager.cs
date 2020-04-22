@@ -155,7 +155,7 @@ public class SceneTransistionManager : MonoBehaviour
             yield return null;
         }
 
-        UIManager.UiInstance.SwithToInGame();
+        UIManager.UiInstance.Switch(false);
 
         Task slideOpen = Task.Run(() => UIManager.UiInstance.SlideOpen());
         while (slideOpen.Status == TaskStatus.Running)

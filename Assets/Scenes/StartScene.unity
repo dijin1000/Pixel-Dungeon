@@ -2897,6 +2897,7 @@ MonoBehaviour:
   exit: {fileID: 0}
   Wallsmap: {fileID: 1831275423}
   GroundsMap: {fileID: 853517797}
+  updated: 1
 --- !u!1 &1287856695
 GameObject:
   m_ObjectHideFlags: 0
