@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class IUnit : MonoBehaviour
 {
+    public bool test = true;
     public abstract float Get_Health();
     public abstract bool Get_Death();
     protected abstract void Set_Health(float newHealth);
@@ -13,7 +14,8 @@ public abstract class IUnit : MonoBehaviour
     {
         if (!Get_Death())
         {
-            StatisticsManager.StatisticsInstance.SetDamage(unit,dmg);
+            if(!test)
+                StatisticsManager.StatisticsInstance.SetDamage(unit,dmg);
             Set_Health(Get_Health() - dmg);
             if (Get_Health() < 0)
             {              
@@ -37,8 +39,8 @@ public abstract class IUnit : MonoBehaviour
     public virtual void Death()
     {
         Set_Death(true);
-
-        StatisticsManager.StatisticsInstance.SetDeath(unit);
+        if (!test)
+            StatisticsManager.StatisticsInstance.SetDeath(unit);
 
         Destroy(gameObject);
     }

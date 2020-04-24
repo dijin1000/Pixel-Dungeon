@@ -11,6 +11,7 @@ public enum ControlType
 
 public class PlayerInput : MonoBehaviour
 {
+    public bool test = true;
     public float moveSpeed = 5f;
     private InputMaster controls;
     private Rigidbody2D rb;
@@ -60,10 +61,11 @@ public class PlayerInput : MonoBehaviour
         if (movement != Vector2.zero)
         {
             rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-            if(!StatisticsManager.StatisticsInstance.Run)
-                StatisticsManager.StatisticsInstance.Run = true;
+            if(!test)
+                if(!StatisticsManager.StatisticsInstance.Run)
+                    StatisticsManager.StatisticsInstance.Run = true;
         }
-        else if (StatisticsManager.StatisticsInstance.Run)
+        else if (!test && StatisticsManager.StatisticsInstance.Run)
             StatisticsManager.StatisticsInstance.Run = false;
     }
 

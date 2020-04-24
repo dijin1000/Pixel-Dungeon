@@ -53,7 +53,6 @@ public class PlayerController : IUnit
     {
         p_Input.Subscribe(actionToRegister, type);
     }
-
     public void UnSubscribe(Action<InputAction.CallbackContext> actionToRegister, ControlType type)
     {
         p_Input.UnSubscribe(actionToRegister,type);
@@ -71,7 +70,6 @@ public class PlayerController : IUnit
     {
         return data.Health;
     }
-
     public override bool Get_Death()
     {
         return data.Death;
@@ -81,7 +79,6 @@ public class PlayerController : IUnit
     {
         data.Health = newHealth;
     }
-
     protected override void Set_Death(bool dead)
     {
         data.Death = dead;
