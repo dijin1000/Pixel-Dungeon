@@ -1,24 +1,49 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Item : MonoBehaviour
+public enum TypeItem
 {
-    InventoryItem i;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    Weapon,
+    Potion,
+    Money
 }
 
-public class InventoryItem
+public class Item : MonoBehaviour
 {
+    [SerializeField]
+    private float DmgIncrease = 0;
+    [SerializeField]
+    private float SpeedIncrease =0;
+    [SerializeField]
+    private float Heal = 0;
+    [SerializeField]
+    private float Value = 0;
+
+    [SerializeField]
+    private TypeItem type;
+    public TypeItem TypeItem
+    {
+        get
+        {
+            return type;
+        }
+    }
+
+
+    public virtual void Consume(ref PlayerData data) 
+    {
+        data.Health += Heal;
+        data.Dmg += DmgIncrease;
+        data.Speed += SpeedIncrease;
+
+        Consume();
+    }
+
+    public void Consume()
+    {
+        StatisticsManager.StatisticsInstance.GetItem(Value);
+    }
 
 }

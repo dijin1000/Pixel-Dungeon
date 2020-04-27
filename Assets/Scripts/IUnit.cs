@@ -31,9 +31,11 @@ public abstract class IUnit : MonoBehaviour
         Default
     }
     private Unit unit;
+    protected Weapon w;
     protected virtual void Awake()
     {
         unit = (tag == "Player") ? Unit.Player : ((tag == "Monster") ? Unit.Monster : Unit.Default);
+        w = GetComponentInChildren<Weapon>();
     }
 
     public virtual void Death()
