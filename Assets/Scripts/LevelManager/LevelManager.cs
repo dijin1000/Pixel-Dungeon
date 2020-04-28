@@ -33,9 +33,6 @@ public class LevelManager : MonoBehaviour
 
     int width;
     int height;
-    int[,] map;
-    Dictionary<int, Vector2Int> room_location;
-    Dictionary<int, Tuple<int, int>> door_to_room;
 
     /// <summary>
     /// Signleton Pattern
@@ -57,14 +54,15 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    MapGenerator map;
+
     void Awake()
     {
         LevelInstance = this; 
         config = new LevelConfig();
         config.Width = ConfigurationManager.ConfigInstance.getConfig<int>("Width");
         config.Height = ConfigurationManager.ConfigInstance.getConfig<int>("Height");
-        room_location = new Dictionary<int, Vector2Int>();
-        door_to_room = new Dictionary<int, Tuple<int, int>>();
+        map = new MapGenerator();
     }
 
 
@@ -131,14 +129,14 @@ public class LevelManager : MonoBehaviour
             bool[] neigbours = new bool[8];
 
 
-            neigbours[0] = map[pos.x - 1, pos.y + 1] == 1;
-            neigbours[1] = map[pos.x, pos.y + 1] == 1;
-            neigbours[2] = map[pos.x + 1, pos.y + 1] == 1;
-            neigbours[3] = map[pos.x + 1, pos.y] == 1;
-            neigbours[4] = map[pos.x + 1, pos.y - 1] == 1;
-            neigbours[5] = map[pos.x, pos.y - 1] == 1;
-            neigbours[6] = map[pos.x - 1, pos.y - 1] == 1;
-            neigbours[7] = map[pos.x - 1, pos.y] == 1;
+            neigbours[0] = map.map[pos.x - 1, pos.y + 1] == 1;
+            neigbours[1] = map.map[pos.x, pos.y + 1] == 1;
+            neigbours[2] = map.map[pos.x + 1, pos.y + 1] == 1;
+            neigbours[3] = map.map[pos.x + 1, pos.y] == 1;
+            neigbours[4] = map.map[pos.x + 1, pos.y - 1] == 1;
+            neigbours[5] = map.map[pos.x, pos.y - 1] == 1;
+            neigbours[6] = map.map[pos.x - 1, pos.y - 1] == 1;
+            neigbours[7] = map.map[pos.x - 1, pos.y] == 1;
 
             PlaceWallPrime(pos, neigbours);
         }
@@ -167,31 +165,10 @@ public class LevelManager : MonoBehaviour
         //Mathe's Code
         int doorNumber = param.door;
         int roomNumber = param.room;
-
-        room_location.Add(0, new Vector2Int(0, 0));
-
-        if (roomNumber == 0) // Basic example single room creations
-        {
-            width = 10;
-            height = 10;
-            map = new int[width, height];
-
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    if (i < 2 || j < 2 || j > height - 3 || i > width - 3)
-                        map[i, j] = 1;
-                    else
-                        map[i, j] = 2;
-                }
-            }
-            return 0;
-        }
+        if(true)
+            return map.createFirstRoom();
         else
-        {
-            return 1;
-        }
+            return map.GenerateLevel(doorNumber, roomNumber);
     }
 
 
@@ -229,28 +206,28 @@ public class LevelManager : MonoBehaviour
         Vector2Int player = new Vector2Int(2,2);
         bool playerSet = false;
         Debug.Log(currentRoom);
-        int x = room_location[currentRoom].x;
-        int y = room_location[currentRoom].y;
+        int x = map.room_location[currentRoom].x;
+        int y = map.room_location[currentRoom].y;
         List<Task> tasks = new List<Task>();
         while (y < 10)
         {
-            if(map[x, y] < 0)
+            if(map.map[x, y] < 0)
             {
-                BuildExit(map[x,y],currentRoom,new Vector2Int(x,y));
+                BuildExit(map.map[x,y],currentRoom,new Vector2Int(x,y));
             }
 
 
-            if (map[x, y] == 1 && x != 0 && y != 0 && y != height - 1 && x != width - 1)
+            if (map.map[x, y] == 1 && x != 0 && y != 0 && y != height - 1 && x != width - 1)
             {
                 walls.Add(new Vector2Int(x, y));
             }
 
-            if (map[x,y] > 0)
+            if (map.map[x,y] > 0)
             {
                 grounds.Add(new Vector2Int(x, y));
             }
 
-            if(map[x,y] == door && !playerSet)
+            if(map.map[x,y] == door && !playerSet)
             {
                 player = new Vector2Int(x, y);
                 playerSet = true;
