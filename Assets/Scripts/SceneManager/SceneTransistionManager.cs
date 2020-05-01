@@ -41,21 +41,34 @@ public class SceneTransistionManager : MonoBehaviour
     {
         SceneInstance = this;
         DontDestroyOnLoad(gameObject.transform.parent.gameObject);
-        
-    }
-
-    public void ExitGame()
-    {
-        TransitionToScene(typeOfScene.ExitGame);
     }
 
     public void StartOrLoadGame()
     {
+        //We have a new game starting
+
+        //
+
         TransitionToScene(typeOfScene.SlotLoad);
     }
 
+
+    public void Settings()
+    {
+
+    }
+
+    public void ExitGame()
+    {
+        //Someone exit the game prematurly
+        TransitionToScene(typeOfScene.ExitGame);
+    }
+
+
+
     public void BackToMainMenu()
     {
+        //Some one stopped with our game
         TransitionToScene(typeOfScene.MainMenu);
     }
 
@@ -155,7 +168,7 @@ public class SceneTransistionManager : MonoBehaviour
             yield return null;
         }
 
-        UIManager.UiInstance.Switch(false);
+        //UIManager.UiInstance.Switch(false);
 
         Task slideOpen = Task.Run(() => UIManager.UiInstance.SlideOpen());
         while (slideOpen.Status == TaskStatus.Running)

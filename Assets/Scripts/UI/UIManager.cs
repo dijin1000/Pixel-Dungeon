@@ -6,6 +6,17 @@ using System;
 using System.Collections;
 using System.Threading.Tasks;
 
+public enum UIState
+{
+    InMainMenu,
+    InGame,
+    InGameMenu,
+    InScoreboard,
+    PopUp,
+    Unloaded
+}
+
+
 public class UIManager : MonoBehaviour
 {
     /// <summary>
@@ -32,33 +43,100 @@ public class UIManager : MonoBehaviour
     private TextMeshProUGUI scoreboard;
     private Image playerGFX;
 
-    private GameObject[] panels;
+    private GameObject[] panels;    // 0 = Main Menu
+                                    // 1 = GameOverlay
+                                    // 2 = Game Menu
+                                    // 3 = Scoreboard
+                                    // 4 = Popup
+
+    private UIState currentState = UIState.Unloaded;
 
     void Awake()
     {
         UiInstance = this;
 
+        GameObject UiElements = GetComponentInChildren<Canvas>().gameObject;
 
-        panels = (transform.GetChild(0)).GetComponentsInChildren<Transform>(true)
+
+        panels = UiElements.GetComponentsInChildren<Transform>(true)
             .Where(predicate => predicate.parent == transform.GetChild(0))
             .Select(predicate => predicate.gameObject).ToArray();
 
         healthBar = panels[1].GetComponentInChildren<Slider>();
         scoreboard = panels[1].GetComponentInChildren<TextMeshProUGUI>();
         playerGFX = transform.GetComponentsInChildren<Image>(true).FirstOrDefault(predicate => predicate.name == "Player_GFX");
+
+        ChangeStateTo(UIState.InMainMenu);
+
+    }
+    void Start()
+    { 
+
+    }
+    void Update()
+    {
+
     }
 
-    //Can be upgrade to enum
-    public bool CurrentState = true;
-    public void SwithToInGame() {
-        //DISABLE OTHE PANES
-        panels[1].SetActive(true);
-        panels[0].SetActive(false);
-        PlayerController.PlayerInstance.SubscribeHealthChange(
-            (float newHealth) => 
+    public void ChangeStateTo(UIState newState)
+    {
+        if (currentState != newState)
+        {
+
+            switch (newState)
             {
-                healthBar.value = newHealth*0.95f;
+                case UIState.InMainMenu:
+                    DeActivateAll();
+                    ActivateMainMenu();
+                    break;
+                case UIState.InGame:
+                    if(currentState == UIState.InMainMenu || currentState == UIState.Unloaded)
+                    {
+                        DeActivateAll();
+                    }
+                    else
+                    {
+                        DeActivate(currentState);
+                    }
+                    ActivateGameOverlay();
+                    break;
+                case UIState.InGameMenu:
+                    if (currentState != UIState.InGame)
+                        throw new Exception("Unexpected behavior.");
+                    ActivateGameMenu();
+                    break;
+                case UIState.InScoreboard:
+                    if (currentState != UIState.InGame)
+                        throw new Exception("Unexpected behavior.");
+                    ActivateScoreboard();
+                    break;
             }
+        }
+    }
+
+    #region Activate Panels
+    private void ActivateScoreboard()
+    {
+        //Disable all inputs
+        //Freeze Game
+        panels[3].SetActive(true);
+    }
+    private void ActivateGameMenu()
+    {
+        //Disable all inputs
+        //Freeze Game
+
+        panels[2].SetActive(true);
+    }
+    private void ActivateGameOverlay()
+    {
+        panels[1].SetActive(true);
+
+        PlayerController.PlayerInstance.SubscribeHealthChange(
+        (float newHealth) =>
+        {
+            healthBar.value = newHealth * 0.95f;
+        }
         );
 
         PlayerController.PlayerInstance.SubscribeGraphicxsChange(
@@ -79,6 +157,44 @@ public class UIManager : MonoBehaviour
         scoreboard.text = ((int)StatisticsManager.StatisticsInstance.Score).ToString();
         playerGFX.sprite = PlayerController.PlayerInstance.Sprite_Player;
     }
+    private void ActivateMainMenu()
+    {
+        panels[0].SetActive(true);
+    }
+    #endregion
+
+    #region Deactivate Panels
+    private void DeActivateAll()
+    {
+        foreach (UIState state in Enum.GetValues(typeof(UIState)))
+        {
+            DeActivate(state);
+        }
+    }
+    private void DeActivate(UIState state)
+    {
+        switch(state)
+        {
+            case UIState.InGame:
+                panels[1].SetActive(false);
+                break;
+            case UIState.InGameMenu:
+                panels[2].SetActive(false);
+                break;
+            case UIState.InMainMenu:
+                panels[0].SetActive(false);
+                break;
+            case UIState.InScoreboard:
+                panels[3].SetActive(false);
+                break;
+            case UIState.PopUp:
+                panels[4].SetActive(false);
+                break;
+            case UIState.Unloaded:
+                break;
+        }
+    }
+    #endregion
 
     public void LaunchGame(Func<int, IEnumerator> onGameStart)
     {
@@ -94,8 +210,6 @@ public class UIManager : MonoBehaviour
         return;
     }
 
-
-
     public void AreYouSure(string displayText, Func<IEnumerator> actionOnRelease)
     {
         Action Accord =
@@ -103,24 +217,5 @@ public class UIManager : MonoBehaviour
             {
                 StartCoroutine(actionOnRelease());
             };
-    }
-
-    public void SwithToMainMenu()
-    {
-        panels[0].SetActive(true);
-        panels[1].SetActive(false);
-    }
-    internal void Switch(bool goingTo)
-    {
-        if (!CurrentState && goingTo)
-        {
-            SwithToMainMenu();
-            CurrentState = true;
-        }
-        else if(CurrentState && !goingTo)
-        {
-            SwithToInGame();
-            CurrentState = false;
-        }
     }
 }

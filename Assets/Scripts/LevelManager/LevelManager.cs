@@ -121,7 +121,7 @@ public class LevelManager : MonoBehaviour
         GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), exit);
 
     }
-
+    /*
     private void BuildWalls(List<Vector2Int> walls)
     {
         foreach (Vector2Int pos in walls)
@@ -141,6 +141,7 @@ public class LevelManager : MonoBehaviour
             PlaceWallPrime(pos, neigbours);
         }
     }
+    */
     private void BuildGround(List<Vector2Int> grounds)
     {
         foreach (Vector2Int ground in grounds)
@@ -165,10 +166,10 @@ public class LevelManager : MonoBehaviour
         //Mathe's Code
         int doorNumber = param.door;
         int roomNumber = param.room;
-        if(true)
-            return map.createFirstRoom();
+        if (true)
+            return 0;// map.createFirstRoom();
         else
-            return map.GenerateLevel(doorNumber, roomNumber);
+            return 0;// map.GenerateLevel(doorNumber, roomNumber);
     }
 
 
@@ -195,7 +196,7 @@ public class LevelManager : MonoBehaviour
 
 
     private IEnumerator RendererLevel(int door, int currentRoom)
-    {
+    {/*
         updated = true;
         Wallsmap.ClearAllTiles();
         GroundsMap.ClearAllTiles();
@@ -245,6 +246,7 @@ public class LevelManager : MonoBehaviour
         BuildGround(grounds);
         BuildWalls(walls);
         SpawnPlayer(player);
+        */
         yield return null;
     }
 }

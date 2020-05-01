@@ -1,5 +1,10 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
 class MapGenerator
 {
+    /*
     
     struct Door
     {
@@ -88,12 +93,12 @@ class MapGenerator
                   // map[x,y] < 0     means tile at (x,y) is a door;
                   //                      the absolute value of map[x,y] denotes the door number this tile belongs to
 
-    Dictionary<int, Vector2Int> room_location; // keys are room numbers of already existing rooms
+    public Dictionary<int, Vector2Int> room_location; // keys are room numbers of already existing rooms
                                                // room_location[r] gives the coordinates of some tile belonging to room
                                                // number r
                                                // So if room_location[r] == (x,y), then we know that map[x,y]/2 == r
 
-    Dictionary<int, Tuple<int, int>> connected_doors; // keys are door numbers of doors that are connected to two rooms
+    public Dictionary<int, Tuple<int, int>> connected_doors; // keys are door numbers of doors that are connected to two rooms
                                                     // connected_doors[d] gives the two room numbers that this door connects
                                                     // warning: the order of the room numbers is undefined
                                                     
@@ -103,7 +108,7 @@ class MapGenerator
     private const int BLOCKED = 9999997;
     private const int SPIKES = 9999996;
 
-    private Random rand = new Random(12);
+    private System.Random rand = new System.Random(12);
 
     private const int maxRoomWidth = 30;
     private const int maxRoomHeight = 30;
@@ -132,8 +137,6 @@ class MapGenerator
     {
         //doorNumber: the number of the door the player just walked through
         //old_roomNumber: the number of the room the player was in before walking through the door
-        if (verbose)
-            Console.WriteLine("GenerateLevel({0}, {1})", doorNumber, old_roomNumber);
 
         if (roomCounter <= 0) // map is empty, no rooms exists yet
         {
@@ -201,66 +204,10 @@ class MapGenerator
         return points;
     }
 
-    public void printMap(int size, int x_topLeft, int y_topLeft)
-    {
-        var stringBuilder = new StringBuilder();
-        for (int y = y_topLeft; y < y_topLeft + size; y++)
-        {
-            for (int x = x_topLeft; x < x_topLeft + size; x++)
-            {
-                string str = "";
-                if (map[x, y] < 0)
-                    str = map[x, y].ToString();
-                else if (map[x, y] == 0)
-                    str = "##";
-                else if (map[x, y] % 2 == 1)
-                    str = "^^";
-                else
-                    str = "." + (map[x, y] / 2).ToString();
-
-                stringBuilder.Append(str);
-            }
-            stringBuilder.Append('\n');
-        }
-        System.Console.Write(stringBuilder.ToString());
-    }
-    
-    private void print_scratchpad(int[,] scratchpad)
-    {
-        var stringBuilder = new StringBuilder();
-        for (int y = 0; y < maxRoomHeight; y++)
-        {
-            for (int x = 0; x < maxRoomWidth; x++)
-            {
-                string str = "";
-                if (scratchpad[x, y] < 0)
-                    str = scratchpad[x, y].ToString();
-                else if (scratchpad[x, y] == FREE)
-                    str = "  ";
-                else if (scratchpad[x, y] == FULL)
-                    str = "##";
-                else if (scratchpad[x, y] == BLOCKED)
-                    str = "~~";
-                else if (scratchpad[x, y] == SPIKES)
-                    str = "^^";
-                else
-                    str = "." + scratchpad[x, y].ToString();
-
-                stringBuilder.Append(str);
-            }
-            stringBuilder.Append('\n');
-        }
-        System.Console.WriteLine(stringBuilder.ToString());
-    }
-
-
-
-
-
     /************************************
      *** GenerateLevel() subfunctions ***
      ************************************/
-    
+    /*
     private int createFirstRoom()
     {
         roomCounter++;
@@ -583,7 +530,7 @@ class MapGenerator
             spike_area += spike_stamp(scratchpad);
         }
     }
-    
+ 
     private void draw_scratchpad_on_map(Rect scratchpadRect, int[,] scratchpad)
     {
         for (int x = 0; x < maxRoomWidth; x++)
@@ -605,18 +552,11 @@ class MapGenerator
             }
         }
     }
-
-
-
-    
-    
-    
-    
-    
+     
     /*************************
      *** Utility functions ***
      *************************/
-    
+    /*
     private Door get_door(Vector2Int doorPos)
     {
         if (verbose)
@@ -677,17 +617,10 @@ class MapGenerator
         return count;
     }
     
-    
-    
-    
-    
-    
-    
-    
     /********************************
      *** draw_room() subfunctions ***
      ********************************/
-
+     /*
     private void keep_only_one_component(int [,] scratchpad, int colorToKeep)
     {
         for (int x = 0; x < maxRoomWidth; x++)
@@ -929,17 +862,10 @@ class MapGenerator
         return dig_out_room(scratchpad, targets);
     }
     
-    
-    
-    
-    
-    
-    
-    
     /*******************************
      *** door building functions ***
      *******************************/
-    
+    /*
     private Vector2Int clip(Rect scratchpadRect, Door door)
     {
         Vector2Int doorPos = door.left - scratchpadRect.topLeft;
@@ -1120,7 +1046,6 @@ class MapGenerator
         }
     }
 
-
     private void draw_new_door(int[,] scratchpad, Vector2Int inwards)
     {
         Vector2Int start = new Vector2Int(maxRoomWidth/2, maxRoomHeight/2);
@@ -1265,17 +1190,11 @@ class MapGenerator
         return true;
     }
     
-    
-    
-    
-    
-    
-    
-    
+
     /*********************************
      *** add_spikes() subfunctions ***
      *********************************/
-
+     /*
     private int spike_stamp(int[,] scratchpad)
         // Returns the number of spikes added to scratchpad
     {
@@ -1296,6 +1215,6 @@ class MapGenerator
 
         return count;
     }
-
+    */
     
 } // end of class MapGenerator
