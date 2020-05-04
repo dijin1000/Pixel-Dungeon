@@ -4,12 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public struct State
-{
-    public int door;
-    public int room;
-}
-
 public class DirectorManager : MonoBehaviour
 {
 
@@ -33,7 +27,7 @@ public class DirectorManager : MonoBehaviour
         }
     }
     int results;
-    private State currentState;
+    private Parameters currentState;
 
 
     private bool finished;
@@ -56,7 +50,7 @@ public class DirectorManager : MonoBehaviour
     }
     internal void NewSlot()
     {
-        currentState = new State();
+        currentState = new Parameters();
         currentState.room = 0;
         currentState.door = -1;
     }
@@ -68,21 +62,24 @@ public class DirectorManager : MonoBehaviour
     public void UpdateState(int room,int door)
     {
         currentState.door = door;
+        currentState.room = room;
     }
 
     public async Task NextLevel()
     {
         finished = false;
         Measurements m = StatisticsManager.StatisticsInstance.Measurements;
-        Parameters p = new Parameters(currentState);
-        
+
+
+        //currentState.roomSize = ? ;
+
         //LOGIC for JACCO en MAURITS
 
 
 
 
         
-        await LevelManager.LevelInstance.CreateNewLevel(p);
+        await LevelManager.LevelInstance.CreateNewLevel(currentState);
         finished = true;
     }
 }

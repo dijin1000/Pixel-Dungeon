@@ -6,8 +6,8 @@ using UnityEngine.Tilemaps;
 
 public class LevelExit : MonoBehaviour
 {
-    public int room;
-    public int door;
+    public Dictionary<int,int> room;
+    public Dictionary<Vector2Int,int> doors;
 
     private Tilemap map;
     public void Awake()
@@ -50,8 +50,8 @@ public class LevelExit : MonoBehaviour
             if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.levelComplete))
                 Debug.LogError("Message didnt send");
 
-
-            DirectorManager.DirectorInstance.UpdateState(room,door);
+            int door = doors[new Vector2Int(x.x, x.y)];
+            DirectorManager.DirectorInstance.UpdateState(room[door],door);
 
             SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.Game);
             this.x = true;

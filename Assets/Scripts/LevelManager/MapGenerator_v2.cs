@@ -1,18 +1,12 @@
+using UnityEngine;
+using System.Collections.Generic;
+using System.Collections;
+using System;
+using System.Linq;
 
-public struct Parameters
-{
-    public int room;
-    public int door;
-    public int roomSize;
-    public double spikeRate;
-    public bool narrowRoom;
-    public bool deadEnd;
-    public bool cycles;
-}
-    
 class MapGenerator
 {
-    
+    #region Structs
     struct Door
     {
         public int doorNumber;
@@ -53,7 +47,6 @@ class MapGenerator
             return "Door{" + doorNumber + ", " + left.ToString() + ", " + right.ToString() + "}";
         }
     }
-
     struct Rect
     {
         public Vector2Int topLeft;
@@ -64,25 +57,21 @@ class MapGenerator
         {
             return "Rect{tl: " + topLeft + ", w: " + width + ", h: " + height + "}";
         }
-    }
-    
+    }   
     struct Component
     {
         public int color;
         public Vector2Int point; // any point belonging to the component
         public int area;
     }
-
-    
-    
+    #endregion
+    #region Statics
     private static Vector2Int LEFT = Vector2Int.left;
     private static Vector2Int RIGHT = Vector2Int.right;
     private static Vector2Int UP = Vector2Int.down; // we use positive y direction is down
     private static Vector2Int DOWN = Vector2Int.up; // so these are not typos
     private static Vector2Int[] perpUnits = {LEFT, RIGHT, UP, DOWN};
-
-
-
+    #endregion
 
     int roomCounter; // total number of rooms currently in the game; every room has an associated room number,
                     // so during the game these room numbers are {1, 2, 3, ..., roomCounter}
@@ -100,15 +89,30 @@ class MapGenerator
                   // map[x,y] < 0     means tile at (x,y) is a door;
                   //                      the absolute value of map[x,y] denotes the door number this tile belongs to
 
+
     Dictionary<int, Vector2Int> room_location; // keys are room numbers of already existing rooms
                                                // room_location[r] gives the coordinates of some tile belonging to room
                                                // number r
                                                // So if room_location[r] == (x,y), then we know that map[x,y]/2 == r
 
     Dictionary<int, Tuple<int, int>> connected_doors; // keys are door numbers of doors that are connected to two rooms
-                                                    // connected_doors[d] gives the two room numbers that this door connects
-                                                    // warning: the order of the room numbers is undefined
-                                                    
+                                                      // connected_doors[d] gives the two room numbers that this door connects
+                                                      // warning: the order of the room numbers is undefined
+    public int[,] GetMap
+    {
+        get
+        {
+            return map;
+        }
+    }
+
+    public Dictionary<int, Tuple<int,int>> Connected_Doors
+    {
+        get
+        {
+            return connected_doors;
+        }
+    }
     // constants to denote types of room space. Should be bigger than roomCounter will ever be
     private const int FREE = 9999999;
     private const int FULL = 9999998;
@@ -131,7 +135,7 @@ class MapGenerator
     private const double CYCLES_CONNECT_DISTANCE_OVER_ROOM_SIZE_RATE = 0.6;
     
     
-    private Random rand = new Random(55575);
+    private System.Random rand = new System.Random(55575);
     
 
     private int maxRoomWidth = 30;
@@ -265,6 +269,7 @@ class MapGenerator
         return points;
     }
 
+    /*
     public void printMap(int x_size, int y_size, int x_topLeft, int y_topLeft)
     {
         var stringBuilder = new StringBuilder();
@@ -318,9 +323,7 @@ class MapGenerator
         }
         System.Console.WriteLine(stringBuilder.ToString());
     }
-
-
-
+    */
 
 
     /************************************
@@ -602,7 +605,7 @@ class MapGenerator
                  queued[start.x, start.y] = true;
                  while (!pq.IsEmpty)
                  {
-                     Vector2Int candidate = pq.Dequeue().Value;
+                     Vector2Int candidate = pq.Dequeue();
                      if (place_connected_door(scratchpad, door, candidate))
                      {
                          return;
@@ -638,7 +641,7 @@ class MapGenerator
         {
             draw_new_door(scratchpad, dirs[dir_idx]);
             doors_build++;
-            dir_idx = (dir_idx + 1) % dirs.Count();
+            dir_idx = (dir_idx + 1) % dirs.Count;
         }
     }
 
@@ -971,7 +974,7 @@ class MapGenerator
 
     private Vector2Int dig_out_room(int[,] scratchpad, List<Vector2Int> targets)
     {
-        Vector2Int build = targets.Last();
+        Vector2Int build = targets.LastOrDefault();
         foreach (Vector2Int target in targets)
         {
             while (build != target)
@@ -1319,7 +1322,7 @@ class MapGenerator
 
     private void permute_randomly(List<Vector2Int> dirs)
     {
-        int n = dirs.Count();
+        int n = dirs.Count;
         while (n > 1)
         {
             n--;
@@ -1358,7 +1361,7 @@ class MapGenerator
         queued[start.x, start.y] = true;
         while (!pq.IsEmpty)
         {
-            Vector2Int candidate = pq.Dequeue().Value;
+            Vector2Int candidate = pq.Dequeue();
             if (place_new_door(scratchpad, inwards, candidate))
             {
                 return;
