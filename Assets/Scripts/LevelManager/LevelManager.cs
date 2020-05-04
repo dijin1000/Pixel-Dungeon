@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -9,7 +8,11 @@ public struct Parameters
 {
     public int room;
     public int door;
-
+    public int roomSize;
+    public double spikeRate;
+    public bool narrowRoom;
+    public bool deadEnd;
+    public bool cycles;
     public Parameters(State currentState) : this()
     {
         door = currentState.door;
@@ -107,12 +110,10 @@ public class LevelManager : MonoBehaviour
     {
         Wallsmap.SetTile(new Vector3Int(pos.x, pos.y, 0), Wall);
     }
-    private void PlaceGround(Vector2Int pos)
+    private void BuildGround(Vector2Int pos)
     {
         GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), ground);
     }
-
-
 
     private void BuildExit(int doorNumber, int roomNumber,Vector2Int pos)
     {
@@ -121,33 +122,28 @@ public class LevelManager : MonoBehaviour
         GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), exit);
 
     }
-    /*
-    private void BuildWalls(List<Vector2Int> walls)
+    private void BuildWall(Vector2Int pos)
     {
-        foreach (Vector2Int pos in walls)
-        {
-            bool[] neigbours = new bool[8];
+
+        bool[] neigbours = new bool[8];
 
 
-            neigbours[0] = map.map[pos.x - 1, pos.y + 1] == 1;
-            neigbours[1] = map.map[pos.x, pos.y + 1] == 1;
-            neigbours[2] = map.map[pos.x + 1, pos.y + 1] == 1;
-            neigbours[3] = map.map[pos.x + 1, pos.y] == 1;
-            neigbours[4] = map.map[pos.x + 1, pos.y - 1] == 1;
-            neigbours[5] = map.map[pos.x, pos.y - 1] == 1;
-            neigbours[6] = map.map[pos.x - 1, pos.y - 1] == 1;
-            neigbours[7] = map.map[pos.x - 1, pos.y] == 1;
+        neigbours[0] = map.map[pos.x - 1, pos.y + 1] == 1;
+        neigbours[1] = map.map[pos.x, pos.y + 1] == 1;
+        neigbours[2] = map.map[pos.x + 1, pos.y + 1] == 1;
+        neigbours[3] = map.map[pos.x + 1, pos.y] == 1;
+        neigbours[4] = map.map[pos.x + 1, pos.y - 1] == 1;
+        neigbours[5] = map.map[pos.x, pos.y - 1] == 1;
+        neigbours[6] = map.map[pos.x - 1, pos.y - 1] == 1;
+        neigbours[7] = map.map[pos.x - 1, pos.y] == 1;
 
-            PlaceWallPrime(pos, neigbours);
-        }
+        PlaceWallPrime(pos, neigbours);
+        
     }
-    */
-    private void BuildGround(List<Vector2Int> grounds)
+
+    private void BuildSpike(Vector2Int key)
     {
-        foreach (Vector2Int ground in grounds)
-        {
-            PlaceGround(ground);
-        }
+        throw new NotImplementedException();
     }
 
     private void SpawnPlayer(Vector2 pos)
@@ -163,16 +159,8 @@ public class LevelManager : MonoBehaviour
 
     private async Task<int> PlaceLevel(Parameters param)
     {
-        //Mathe's Code
-        int doorNumber = param.door;
-        int roomNumber = param.room;
-        if (true)
-            return 0;// map.createFirstRoom();
-        else
-            return 0;// map.GenerateLevel(doorNumber, roomNumber);
+        return map.GenerateLevel(param);
     }
-
-
 
     public async Task CreateNewLevel(Parameters param)
     {
@@ -196,57 +184,48 @@ public class LevelManager : MonoBehaviour
 
 
     private IEnumerator RendererLevel(int door, int currentRoom)
-    {/*
+    {
         updated = true;
         Wallsmap.ClearAllTiles();
         GroundsMap.ClearAllTiles();
 
-        List<Vector2Int> walls = new List<Vector2Int>();
-        List<Vector2Int> grounds = new List<Vector2Int>();
-        Dictionary<int, List<Vector2Int>> doors = new Dictionary<int, List<Vector2Int>>();
-        Vector2Int player = new Vector2Int(2,2);
         bool playerSet = false;
-        Debug.Log(currentRoom);
-        int x = map.room_location[currentRoom].x;
-        int y = map.room_location[currentRoom].y;
-        List<Task> tasks = new List<Task>();
-        while (y < 10)
+        Dictionary<Vector2Int, int> points = map.GetRoom(currentRoom);
+
+        foreach(KeyValuePair<Vector2Int,int> point in points)
         {
-            if(map.map[x, y] < 0)
-            {
-                BuildExit(map.map[x,y],currentRoom,new Vector2Int(x,y));
-            }
+            int currentLocation = point.Value;
 
+            if (currentLocation == 0)
+            {
+                BuildWall(point.Key);
+            }
+            else if (currentLocation > 0)
+            {
+                if( currentLocation % 2 == 0)
+                {
+                    BuildSpike(point.Key);
+                }
+                else
+                {
+                    BuildGround(point.Key);
+                }
 
-            if (map.map[x, y] == 1 && x != 0 && y != 0 && y != height - 1 && x != width - 1)
-            {
-                walls.Add(new Vector2Int(x, y));
             }
+            else if ( currentLocation < 0 )
+            {
+                Tuple<int, int> rooms = map.connected_doors[currentLocation];
 
-            if (map.map[x,y] > 0)
-            {
-                grounds.Add(new Vector2Int(x, y));
-            }
+                int room = rooms.Item1 == currentLocation ? rooms.Item2 : rooms.Item1;
 
-            if(map.map[x,y] == door && !playerSet)
-            {
-                player = new Vector2Int(x, y);
-                playerSet = true;
- 
+                BuildExit(currentLocation,room,point.Key);
+                if (Math.Abs(currentLocation)  == door && playerSet == false)
+                {
+                    SpawnPlayer(point.Key);
+                    playerSet = true;
+                }
             }
-            
-            if (x == 9)
-            {
-                y++;
-                x = 0;
-            }
-            x++;
         }
-
-        BuildGround(grounds);
-        BuildWalls(walls);
-        SpawnPlayer(player);
-        */
         yield return null;
     }
 }

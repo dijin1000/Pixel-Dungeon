@@ -5,6 +5,16 @@ using UnityEngine;
 public abstract class IUnit : MonoBehaviour
 {
     public bool test = true;
+
+    public enum Unit
+    {
+        Player,
+        Monster,
+        Default
+    }
+    private Unit unit;
+    protected Weapon w;
+
     public abstract float Get_Health();
     public abstract bool Get_Death();
     protected abstract void Set_Health(float newHealth);
@@ -24,14 +34,6 @@ public abstract class IUnit : MonoBehaviour
         }
     }
 
-    public enum Unit
-    {
-        Player,
-        Monster,
-        Default
-    }
-    private Unit unit;
-    protected Weapon w;
     protected virtual void Awake()
     {
         unit = (tag == "Player") ? Unit.Player : ((tag == "Monster") ? Unit.Monster : Unit.Default);

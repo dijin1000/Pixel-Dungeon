@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Tilemaps;
 
 public enum typeOfScene
 {
@@ -110,7 +108,6 @@ public class SceneTransistionManager : MonoBehaviour
         Application.Quit();
         
     }
-
     private IEnumerator OnBackToMainMenu()
     {
         Task slide = Task.Run(() => UIManager.UiInstance.SlideClose());
@@ -130,7 +127,6 @@ public class SceneTransistionManager : MonoBehaviour
 
         isTransitioning = false;
     }
-
     private IEnumerator OnGameStart(int slotloading = -1)
     {
         Task slide = Task.Run(() => UIManager.UiInstance.SlideClose());
@@ -176,7 +172,6 @@ public class SceneTransistionManager : MonoBehaviour
 
         isTransitioning = false;
     }
-
     private IEnumerator NextLevel()
     {
         Task slide = Task.Run(() => UIManager.UiInstance.SlideClose());

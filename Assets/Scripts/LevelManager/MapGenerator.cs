@@ -1,11 +1,26 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-class MapGenerator
+public class PriorityQueue<T, U>
 {
-    /*
-    
+    public bool IsEmpty { get; internal set; }
+
+    public void Enqueue(T v, U start)
+    {
+        
+    }
+
+    public KeyValuePair<T,U> Dequeue()
+    {
+        throw new NotImplementedException();
+    }
+}
+
+class MapGenerator
+{  
     struct Door
     {
         public int doorNumber;
@@ -46,7 +61,6 @@ class MapGenerator
             return "Door{" + doorNumber + ", " + left.ToString() + ", " + right.ToString() + "}";
         }
     }
-
     struct Rect
     {
         public Vector2Int topLeft;
@@ -57,25 +71,19 @@ class MapGenerator
         {
             return "Rect{tl: " + topLeft + ", w: " + width + ", h: " + height + "}";
         }
-    }
-    
+    } 
     struct Component
     {
         public int color;
         public Vector2Int point; // any point belonging to the component
         public int area;
-    }
-
-    
+    }  
     
     private static Vector2Int LEFT = Vector2Int.left;
     private static Vector2Int RIGHT = Vector2Int.right;
     private static Vector2Int UP = Vector2Int.down; // we use positive y direction is down
     private static Vector2Int DOWN = Vector2Int.up; // so these are not typos
     private static Vector2Int[] perpUnits = {LEFT, RIGHT, UP, DOWN};
-
-
-
 
     int roomCounter; // total number of rooms currently in the game; every room has an associated room number,
                     // so during the game these room numbers are {1, 2, 3, ..., roomCounter}
@@ -85,22 +93,23 @@ class MapGenerator
                     // are also given the same door number
 
     const int mapWidth = 1500, mapHeight = 1500;
-    int[, ] map;  // For 0 <= x < mapWidth and 0 <= y < mapHeight we will have:
-                  // map[x,y] == 0    means tile at (x,y) is unwalkable wall
-                  // map[x,y] > 0     means tile at (x,y) is walkable ground;
-                  //                      the value map[x,y]/2 denotes the room number this tile belongs to
-                  //                      the value map[x,y]%2 is 0 for empty ground and is 1 for spiked ground
-                  // map[x,y] < 0     means tile at (x,y) is a door;
-                  //                      the absolute value of map[x,y] denotes the door number this tile belongs to
+    public int[, ] map;           // For 0 <= x < mapWidth and 0 <= y < mapHeight we will have:
+                                  // map[x,y] == 0      means tile at (x,y) is unwalkable wall
+                                  // map[x,y] > 0       means tile at (x,y) is walkable ground;
+                                  //                    the value map[x,y]/2 denotes the room number this tile belongs to
+                                  //                    the value map[x,y]%2 is 0 for empty ground and is 1 for spiked ground
+                                  // map[x,y] < 0       means tile at (x,y) is a door;
+                                  //                    the absolute value of map[x,y] denotes the door number this tile belongs to
 
-    public Dictionary<int, Vector2Int> room_location; // keys are room numbers of already existing rooms
-                                               // room_location[r] gives the coordinates of some tile belonging to room
-                                               // number r
-                                               // So if room_location[r] == (x,y), then we know that map[x,y]/2 == r
+    public Dictionary<int, Vector2Int> room_location;   // keys are room numbers of already existing rooms
+                                                        // room_location[r] gives the coordinates of some tile belonging to room
+                                                        // number r
+                                                        // So if room_location[r] == (x,y), then we know that map[x,y]/2 == r
 
-    public Dictionary<int, Tuple<int, int>> connected_doors; // keys are door numbers of doors that are connected to two rooms
-                                                    // connected_doors[d] gives the two room numbers that this door connects
-                                                    // warning: the order of the room numbers is undefined
+    public Dictionary<int, Tuple<int, int>> connected_doors;    // keys are door numbers of doors that are connected to two rooms
+                                                                // connected_doors[d] gives the two room numbers that this door 
+                                                                //connects
+                                                                // warning: the order of the room numbers is undefined
                                                     
     // constants to denote types of room space. Should be bigger than roomCounter will ever be
     private const int FREE = 9999999; 
@@ -112,6 +121,12 @@ class MapGenerator
 
     private const int maxRoomWidth = 30;
     private const int maxRoomHeight = 30;
+
+    internal Dictionary<Vector2Int, int> GetRoom(int currentRoom)
+    {
+        throw new NotImplementedException();
+    }
+
     private const int maxConnectDistance = 14; // maximal distance on the map for two doors to be connected
     private const double drawRandomness = 0.5; // between 0 and 1
     private const int avgExtraDoors = 4; // The average number of unconnected doors on the map
@@ -130,11 +145,12 @@ class MapGenerator
         for (int x = 0; x < mapWidth; x++)
         for (int y = 0; y < mapHeight; y++)
             map[x, y] = 0;
-        createFirstRoom();
     }
 
-    public int GenerateLevel(int doorNumber, int old_roomNumber)
+    public int GenerateLevel(Parameters param)
     {
+        int doorNumber = param.door;
+        int old_roomNumber = param.room;
         //doorNumber: the number of the door the player just walked through
         //old_roomNumber: the number of the room the player was in before walking through the door
 
@@ -207,7 +223,6 @@ class MapGenerator
     /************************************
      *** GenerateLevel() subfunctions ***
      ************************************/
-    /*
     private int createFirstRoom()
     {
         roomCounter++;
@@ -503,7 +518,7 @@ class MapGenerator
         {
             draw_new_door(scratchpad, dirs[dir_idx]);
             doors_build++;
-            dir_idx = (dir_idx + 1) % dirs.Count();
+            dir_idx = (dir_idx + 1) % dirs.Count;
         }
     }
     
@@ -556,7 +571,7 @@ class MapGenerator
     /*************************
      *** Utility functions ***
      *************************/
-    /*
+
     private Door get_door(Vector2Int doorPos)
     {
         if (verbose)
@@ -620,7 +635,6 @@ class MapGenerator
     /********************************
      *** draw_room() subfunctions ***
      ********************************/
-     /*
     private void keep_only_one_component(int [,] scratchpad, int colorToKeep)
     {
         for (int x = 0; x < maxRoomWidth; x++)
@@ -753,7 +767,6 @@ class MapGenerator
         
         return dig_out_room(scratchpad, targets);
     }
-
     private Vector2Int draw_rect_room(int[,] scratchpad)
     {
         System.Console.WriteLine("draw rect");
@@ -774,7 +787,6 @@ class MapGenerator
         
         return dig_out_room(scratchpad, targets);
     }
-
     private Vector2Int draw_diamond_room(int[,] scratchpad)
     {
         System.Console.WriteLine("draw diamond");
@@ -795,7 +807,6 @@ class MapGenerator
         
         return dig_out_room(scratchpad, targets);
     }
-
     private Vector2Int draw_C_room(int[,] scratchpad)
     {
         System.Console.WriteLine("draw C");
@@ -833,7 +844,6 @@ class MapGenerator
         
         return dig_out_room(scratchpad, targets);
     }
-
     private Vector2Int draw_X_room(int[,] scratchpad)
     {
         System.Console.WriteLine("draw X");
@@ -865,7 +875,6 @@ class MapGenerator
     /*******************************
      *** door building functions ***
      *******************************/
-    /*
     private Vector2Int clip(Rect scratchpadRect, Door door)
     {
         Vector2Int doorPos = door.left - scratchpadRect.topLeft;
@@ -1035,7 +1044,7 @@ class MapGenerator
 
     private void permute_randomly(List<Vector2Int> dirs)
     {
-        int n = dirs.Count();
+        int n = dirs.Count;
         while (n > 1)
         {
             n--;
@@ -1194,7 +1203,6 @@ class MapGenerator
     /*********************************
      *** add_spikes() subfunctions ***
      *********************************/
-     /*
     private int spike_stamp(int[,] scratchpad)
         // Returns the number of spikes added to scratchpad
     {
@@ -1215,6 +1223,5 @@ class MapGenerator
 
         return count;
     }
-    */
     
 } // end of class MapGenerator

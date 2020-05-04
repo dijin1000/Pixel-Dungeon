@@ -31,12 +31,14 @@ public class Item : MonoBehaviour
         }
     }
 
-
     public virtual void Consume(ref PlayerData data) 
     {
-        data.Health += Heal;
-        data.Dmg += DmgIncrease;
-        data.Speed += SpeedIncrease;
+        if(Heal > 0)
+            data.Health += Heal;
+        if(DmgIncrease > 0)
+            data.Dmg += DmgIncrease;
+        if(SpeedIncrease > 0)
+            data.Speed += SpeedIncrease;
 
         Consume();
     }
@@ -44,6 +46,6 @@ public class Item : MonoBehaviour
     public void Consume()
     {
         StatisticsManager.StatisticsInstance.GetItem(Value);
+        Destroy(gameObject);
     }
-
 }

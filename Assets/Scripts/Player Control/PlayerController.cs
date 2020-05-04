@@ -129,7 +129,7 @@ public class PlayerController : IUnit
     }
 
 
-    public void PickUpItem(Item item)
+    private void PickUpItem(Item item)
     {
         switch(item.TypeItem)
         {
@@ -142,6 +142,14 @@ public class PlayerController : IUnit
             case TypeItem.Money:
                 item.Consume();
                 break;
+        }
+    }
+
+    public void OnTriggerEnter2D(Collider2D col )
+    { 
+        if (col.gameObject.tag == "Item")
+        {
+            PickUpItem(col.gameObject.GetComponent<Item>());
         }
     }
 }
