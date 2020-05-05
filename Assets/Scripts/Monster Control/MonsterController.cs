@@ -26,7 +26,7 @@ public class MonsterController : IUnit
                 healthBar.value = newHealth;
             }
             );
-        Set_Health(100f);
+        Set_Health(maxHealth);
     }
 
     public override bool Get_Death()
