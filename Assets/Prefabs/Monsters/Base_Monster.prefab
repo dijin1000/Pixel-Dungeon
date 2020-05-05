@@ -42,8 +42,9 @@ GameObject:
   - component: {fileID: 7252793310745472657}
   - component: {fileID: 7252793310745472662}
   - component: {fileID: 7252793310745472663}
-  - component: {fileID: 7252793310745472660}
-  - component: {fileID: 7526113121915917764}
+  - component: {fileID: 299428467166124452}
+  - component: {fileID: 4381142736534900591}
+  - component: {fileID: 1858604018740401350}
   m_Layer: 0
   m_Name: Base_Monster
   m_TagString: Untagged
@@ -100,8 +101,8 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.6}
+  m_UsedByComposite: 1
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -112,23 +113,9 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.2}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7252793310745472660
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7252793310745472661}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 258d61a9433494a8699aaef6c97c2f11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  accelerationTime: 2
-  moveSpeed: 5
---- !u!114 &7526113121915917764
+--- !u!114 &299428467166124452
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,7 +127,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e445578714338964facb7366ff4fc94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  test: 1
   maxHealth: 100
+--- !u!114 &4381142736534900591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7252793310745472661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 258d61a9433494a8699aaef6c97c2f11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 2
+  maxRange: 4
+  viewRange: 6
+  movementType: 1
+--- !u!114 &1858604018740401350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7252793310745472661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e02ebdf8eb364c9782e8d8a71029d19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  strength: 4
+  attackSpeed: 0.5
+  hitChance: 0.65
 --- !u!1 &7252793311125202652
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,7 +278,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0.042, y: 0.472}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &2217968317718500978
