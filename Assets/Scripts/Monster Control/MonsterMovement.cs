@@ -58,13 +58,30 @@ public class MonsterMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        DetectPlayer();
         CheckMovementRangeBounds();
         DetermineDirection();
         DoMove();
     }
 
+    void DetectPlayer()
+	{
+        // check if player is in visual range
+        // if so set movement type to MovementTypes.ToPlayer
+	}
+
     void CheckMovementRangeBounds()
 	{
+        if (movementType == MovementTypes.Sleep)
+        {
+            return;
+        }
+
+        if (movementType == MovementTypes.ToPlayer)
+        {
+            return;
+        }
+
         Vector2 currentPosition = rb.position;
 
 		double distanceFromOrigin = System.Math.Sqrt(System.Math.Pow((double)(currentPosition.x - initialPosition.x), (double)2) + System.Math.Pow((double)(currentPosition.y - initialPosition.y), (double)2));
@@ -84,6 +101,11 @@ public class MonsterMovement : MonoBehaviour
 		{
             return;
 		}
+
+        if (movementType == MovementTypes.ToPlayer)
+        {
+            return;
+        }
 
         timeLeftForDirectionChange -= Time.deltaTime;
 
