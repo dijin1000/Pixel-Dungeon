@@ -186,20 +186,20 @@ public class LevelManager : MonoBehaviour
     #region Monster Placement
     private void SpawnMonsters(int room, List<Tuple<int,int>> monsters)
     {    
-        List<Vector2Int> points = generator.PointsInRoom(room,monsters.Count);
+        List<Vector2Int> points = generator.PointsInRoom(room,monsters.Select(predicate => predicate.Item2).Sum());
         for (int i = 0; i < points.Count; i++)
         {
             Vector2Int point = points[i];
-            SpawnMonster(point, monsters[i].Item1);
-            monsters[i] = new Tuple<int, int>(monsters[i].Item1, monsters[i].Item2 - 1);
-            if (monsters[i].Item2 == 0)
-                monsters.RemoveAt(i);
+            SpawnMonster(point, monsters[0].Item1);
+            monsters[0] = new Tuple<int, int>(monsters[0].Item1, monsters[0].Item2 - 1);
+            if (monsters[0].Item2 == 0)
+                monsters.RemoveAt(0);
 
         }
     }
     private void SpawnMonster(Vector2Int point, int power)
     {
-        List<GameObject> powerLeveledMonsters = all_monster[0].monsters;
+        List<GameObject> powerLeveledMonsters = all_monster[power].monsters;
         GameObject prefab = powerLeveledMonsters[UnityEngine.Random.Range(0, powerLeveledMonsters.Count)];
         GameObject monster = Instantiate(prefab, new Vector3(point.x, point.y, 0), Quaternion.identity);
     }

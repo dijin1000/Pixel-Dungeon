@@ -133,9 +133,9 @@ class MapGenerator
     private const int CYCLES_AVG_EXTRA_DOORS = 7;
     private const double NORMAL_CONNECT_DISTANCE_OVER_ROOM_SIZE_RATE = 0.4;
     private const double CYCLES_CONNECT_DISTANCE_OVER_ROOM_SIZE_RATE = 0.6;
-    
-    
-    private System.Random rand = new System.Random(55575);
+
+
+    private System.Random rand;
     
 
     private int maxRoomWidth = 30;
@@ -151,6 +151,7 @@ class MapGenerator
                                                     
     public MapGenerator()
     {
+        rand = new System.Random();
         roomCounter = 0;
         doorCounter = 0;
         map = new int[mapWidth, mapHeight];
@@ -159,7 +160,6 @@ class MapGenerator
         for (int x = 0; x < mapWidth; x++)
         for (int y = 0; y < mapHeight; y++)
             map[x, y] = 0;
-        createFirstRoom();
     }
 
     public int GenerateLevel(Parameters par)

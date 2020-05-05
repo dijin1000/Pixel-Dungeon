@@ -26,7 +26,7 @@ public class MonsterMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.AddForce(movement * moveSpeed);
+        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 
 

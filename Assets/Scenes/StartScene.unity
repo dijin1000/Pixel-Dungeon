@@ -1193,8 +1193,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   all_monster:
   - monsters:
-    - {fileID: 135587168573909632, guid: 0de4e21b1726cea4eb2e5eef542552bd, type: 3}
-    difficulty: 0
+    - {fileID: 1599883818028495947, guid: c440c279e1c32f1468517f066feea340, type: 3}
+    difficulty: 1
+  - monsters:
+    - {fileID: 510427305405632226, guid: 42c796c7d3b7a8c43aae545cf802ae49, type: 3}
+    difficulty: 2
   prefabPlayer:
   - {fileID: 7918499700869756376, guid: e4be5cada5a1228488ece8175f2871f1, type: 3}
   wall: {fileID: 11400000, guid: 9eb575bcd7f7e4a45884a7f100baff12, type: 2}

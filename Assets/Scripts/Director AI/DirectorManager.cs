@@ -69,8 +69,8 @@ public class DirectorManager : MonoBehaviour
         Measurements m = StatisticsManager.StatisticsInstance.Measurements;
 
         //LOGIC for JACCO en MAURITS
-        currentState.roomSize = 10;
-        currentState.spikeRate = 0.2;
+        currentState.roomSize = 50;
+        currentState.spikeRate = 0.05;
         currentState.narrowRoom = false;
         currentState.deadEnd = false;
         currentState.cycles = true;
