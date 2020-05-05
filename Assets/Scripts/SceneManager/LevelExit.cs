@@ -6,8 +6,8 @@ using UnityEngine.Tilemaps;
 
 public class LevelExit : MonoBehaviour
 {
-    public Dictionary<int,int> room;
-    public Dictionary<Vector2Int,int> doors;
+    public Dictionary<int,int> room = new Dictionary<int, int>(); // Key holder for doors to which room
+    public Dictionary<Vector2Int,int> doors = new Dictionary<Vector2Int, int>(); //which positions is for which door
 
     private Tilemap map;
     public void Awake()

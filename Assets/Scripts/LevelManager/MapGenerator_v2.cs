@@ -248,6 +248,7 @@ class MapGenerator
     public Dictionary<Vector2Int, int> GetRoom(int roomNumber)
     {
         Dictionary<Vector2Int, int> points = new Dictionary<Vector2Int, int>();
+        var teta = room_location[roomNumber];
         collect_room_points(points, room_location[roomNumber]);
         return points;
     }

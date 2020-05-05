@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using System.Linq;
 using System;
 using System.Collections;
-using System.Threading.Tasks;
 
 public enum UIState
 {
@@ -201,13 +200,13 @@ public class UIManager : MonoBehaviour
         StartCoroutine(onGameStart(-1));
     }
 
-    public void SlideClose()
+    public IEnumerator SlideClose()
     {
-        return;
+        yield return null;
     }
-    public void SlideOpen()
+    public IEnumerator SlideOpen()
     {
-        return;
+        yield return null;
     }
 
     public void AreYouSure(string displayText, Func<IEnumerator> actionOnRelease)
@@ -217,5 +216,6 @@ public class UIManager : MonoBehaviour
             {
                 StartCoroutine(actionOnRelease());
             };
+        Debug.Log("Here Right");
     }
 }

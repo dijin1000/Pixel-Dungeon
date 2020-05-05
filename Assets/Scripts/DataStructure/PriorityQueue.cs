@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class PriorityQueue<T,U> 
 {
-    private List<KeyValuePair<T,U>> queue;
+    private List<KeyValuePair<T,U>> queue = new List<KeyValuePair<T, U>>();
 
     public bool IsEmpty
     {

@@ -133,6 +133,10 @@ public class StatisticsManager : MonoBehaviour
         {
             return measurements;
         }
+        set
+        {
+            measurements = value;
+        }
     }
     public void SubscribeScoreChange(Action<float> registerAction)
     {
@@ -211,11 +215,14 @@ public class StatisticsManager : MonoBehaviour
     }
     public void Update()
     {
-        Timer += Time.deltaTime;
-        if (Run)
-            measurements.steps += Time.deltaTime;
-        else
-            measurements.noMove += Time.deltaTime;
+        if (measurements != null)
+        {
+            Timer += Time.deltaTime;
+            if (Run)
+                measurements.steps += Time.deltaTime;
+            else
+                measurements.noMove += Time.deltaTime;
+        }
     }
 }
 public enum messageType

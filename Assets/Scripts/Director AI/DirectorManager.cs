@@ -1,8 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
+
+
+public enum MonsterTypes
+{
+    Cute = 1,
+    Easy = 2,
+    Medium = 3,
+    Hard = 4
+}
 
 public class DirectorManager : MonoBehaviour
 {
@@ -29,16 +37,6 @@ public class DirectorManager : MonoBehaviour
     int results;
     private Parameters currentState;
 
-
-    private bool finished;
-    public bool Finished
-    {
-        get
-        { 
-            return finished; 
-        }
-    }
-
     void Awake()
     {
         DirectorInstance = this;
@@ -53,6 +51,7 @@ public class DirectorManager : MonoBehaviour
         currentState = new Parameters();
         currentState.room = 0;
         currentState.door = -1;
+        StatisticsManager.StatisticsInstance.Measurements = new Measurements();
     }
     public void SaveSlot()
     {
@@ -65,21 +64,19 @@ public class DirectorManager : MonoBehaviour
         currentState.room = room;
     }
 
-    public async Task NextLevel()
+    public IEnumerator NextLevel()
     {
-        finished = false;
         Measurements m = StatisticsManager.StatisticsInstance.Measurements;
 
-
-        //currentState.roomSize = ? ;
-
         //LOGIC for JACCO en MAURITS
+        currentState.roomSize = 10;
+        currentState.spikeRate = 0.2;
+        currentState.narrowRoom = false;
+        currentState.deadEnd = false;
+        currentState.cycles = true;
+        currentState.Monsters = new List<Tuple<int, int>>();
+        currentState.Monsters.Add(new Tuple<int,int>((int)MonsterTypes.Cute, 2));
 
-
-
-
-        
-        await LevelManager.LevelInstance.CreateNewLevel(currentState);
-        finished = true;
+        yield return LevelManager.LevelInstance.CreateNewLevel(currentState);
     }
 }
