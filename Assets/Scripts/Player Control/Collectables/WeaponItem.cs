@@ -4,8 +4,29 @@ using UnityEngine;
 
 public class WeaponItem : Item
 {
+    private enum WeaponType
+    {
+        Dagger = 0,
+        Sword = 1
+    }
+
+    [SerializeField]
+    private WeaponType type;
+
+    [SerializeField]
+    private List<AnimatorOverrideController> weaponAnimations;
+
     public GameObject weapon;
-    public Animator anim;
+    public AnimatorOverrideController anim;
+
+    public void Awake()
+    {
+        anim = weaponAnimations[(int)type];
+        GetComponentInChildren<SpriteRenderer>().sprite = weapon.GetComponent<SpriteRenderer>().sprite;
+    }
+
+
+
     /*
     public override void Consume(PlayerData data)
     {

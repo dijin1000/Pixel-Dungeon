@@ -11,5 +11,6 @@ public struct Parameters
     public bool narrowRoom;
     public bool deadEnd;
     public bool cycles;
+    
     public List<Tuple<int, int>> Monsters;
 }

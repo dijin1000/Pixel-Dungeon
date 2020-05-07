@@ -1,12 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 using System.Linq;
 
 class MapGenerator
 {
-    #region Structs
+    
     struct Door
     {
         public int doorNumber;
@@ -41,37 +40,32 @@ class MapGenerator
             // We should never get here...
             return 0; // This is an invalid room number: room numbers should be positive
         }
-
-        public override string ToString()
-        {
-            return "Door{" + doorNumber + ", " + left.ToString() + ", " + right.ToString() + "}";
-        }
     }
+
     struct Rect
     {
         public Vector2Int topLeft;
         public int width;
         public int height;
-
-        public override string ToString()
-        {
-            return "Rect{tl: " + topLeft + ", w: " + width + ", h: " + height + "}";
-        }
-    }   
+    }
+    
     struct Component
     {
         public int color;
         public Vector2Int point; // any point belonging to the component
         public int area;
     }
-    #endregion
-    #region Statics
+
+    
+    
     private static Vector2Int LEFT = Vector2Int.left;
     private static Vector2Int RIGHT = Vector2Int.right;
     private static Vector2Int UP = Vector2Int.down; // we use positive y direction is down
     private static Vector2Int DOWN = Vector2Int.up; // so these are not typos
     private static Vector2Int[] perpUnits = {LEFT, RIGHT, UP, DOWN};
-    #endregion
+
+
+
 
     int roomCounter; // total number of rooms currently in the game; every room has an associated room number,
                     // so during the game these room numbers are {1, 2, 3, ..., roomCounter}
@@ -89,15 +83,55 @@ class MapGenerator
                   // map[x,y] < 0     means tile at (x,y) is a door;
                   //                      the absolute value of map[x,y] denotes the door number this tile belongs to
 
-
     Dictionary<int, Vector2Int> room_location; // keys are room numbers of already existing rooms
                                                // room_location[r] gives the coordinates of some tile belonging to room
                                                // number r
                                                // So if room_location[r] == (x,y), then we know that map[x,y]/2 == r
 
     Dictionary<int, Tuple<int, int>> connected_doors; // keys are door numbers of doors that are connected to two rooms
-                                                      // connected_doors[d] gives the two room numbers that this door connects
-                                                      // warning: the order of the room numbers is undefined
+                                                    // connected_doors[d] gives the two room numbers that this door connects
+                                                    // warning: the order of the room numbers is undefined
+                                                    
+    // constants to denote types of room space. Should be bigger than roomCounter will ever be
+    private const int FREE = 9999999;
+    private const int FULL = 9999998;
+    private const int BLOCKED = 9999997;
+    private const int FULL_BLOCKED = 9999996;
+    private const int SPIKES = 9999995;
+    private const int GROUND = 9999994;
+    private const int SPIKED_GROUND = 9999993;
+
+    private const double MIN_DRAW_RANDOMNESS = 0.4;
+    private const double MAX_DRAW_RANDOMNESS = 0.6;
+    private const int MIN_ROOM_SIZE = 15;
+    private const int MAX_ROOM_SIZE = 40;
+    private const int MIN_ROOM_AREA = 40;
+    private const int TRIES_PER_OFFSET = 3;
+    private const double MIN_SPIKE_RATE = 0.0;
+    private const double MAX_SPIKE_RATE = 0.9;
+    private const int SPIKE_STAMP_SIZE = 2;
+    private const int MIN_EXTRA_DOORS = 2; // The minimal number of unconnected doors on the map
+    private const int NORMAL_AVG_EXTRA_DOORS = 4;
+    private const int CYCLES_AVG_EXTRA_DOORS = 6;
+    private const double NORMAL_CONNECT_DISTANCE_OVER_ROOM_SIZE_RATE = 0.4;
+    private const double CYCLES_CONNECT_DISTANCE_OVER_ROOM_SIZE_RATE = 0.6;
+
+    private System.Random rand = new System.Random();
+    
+
+    private int maxRoomWidth = 25;
+    private int maxRoomHeight = 25;
+    private int maxConnectDistance = 12; // maximal distance on the map for two doors to be connected
+    private double drawRandomness = 0.5; // between 0 and 1
+    private int avgExtraDoors = 4; // The average number of unconnected doors on the map
+    private double spikeRate = 0.2;
+    private bool narrowRooms = false;
+    private bool extraDeadEnds = false;
+    private bool placeNewDoorsTowardsRooms = false;
+
+    private const bool verbose = true;
+       
+    
     public int[,] GetMap
     {
         get
@@ -113,45 +147,12 @@ class MapGenerator
             return connected_doors;
         }
     }
-    // constants to denote types of room space. Should be bigger than roomCounter will ever be
-    private const int FREE = 9999999;
-    private const int FULL = 9999998;
-    private const int BLOCKED = 9999997;
-    private const int SPIKES = 9999996;
-    private const int GROUND = 9999995;
-    private const int SPIKED_GROUND = 9999994;
 
-    private const double MIN_DRAW_RANDOMNESS = 0.4;
-    private const double MAX_DRAW_RANDOMNESS = 0.6;
-    private const int MIN_ROOM_SIZE = 25;
-    private const int MAX_ROOM_SIZE = 40;
-    private const double MIN_SPIKE_RATE = 0.0;
-    private const double MAX_SPIKE_RATE = 0.9;
-    private const int SPIKE_STAMP_SIZE = 2;
-    private const int MIN_EXTRA_DOORS = 2; // The minimal number of unconnected doors on the map
-    private const int NORMAL_AVG_EXTRA_DOORS = 4;
-    private const int CYCLES_AVG_EXTRA_DOORS = 7;
-    private const double NORMAL_CONNECT_DISTANCE_OVER_ROOM_SIZE_RATE = 0.4;
-    private const double CYCLES_CONNECT_DISTANCE_OVER_ROOM_SIZE_RATE = 0.6;
-
-
-    private System.Random rand;
-    
-
-    private int maxRoomWidth = 30;
-    private int maxRoomHeight = 30;
-    private int maxConnectDistance = 14; // maximal distance on the map for two doors to be connected
-    private double drawRandomness = 0.5; // between 0 and 1
-    private int avgExtraDoors = 4; // The average number of unconnected doors on the map
-    private double spikeRate = 0.2;
-    private bool extraDeadEnds = false;
-    private bool placeNewDoorsTowardsRooms = false;
-
-    private const bool verbose = true;
-                                                    
     public MapGenerator()
     {
-        rand = new System.Random();
+        int seed = rand.Next();
+        rand = new System.Random(seed);
+        
         roomCounter = 0;
         doorCounter = 0;
         map = new int[mapWidth, mapHeight];
@@ -193,47 +194,39 @@ class MapGenerator
         // Compute the door that the player just walked through:
         Door exitDoor = search_door(old_roomNumber, doorNumber);
         
-        // Compute where we want to place our new room:
-        Rect scratchpadRect = compute_scratchpad_rect(exitDoor);
-        // Create a "scratchpad": a maxRoomWidth x maxRoomHeight 2D int array, to draw the new room on in several steps:
-        int[,] scratchpad = create_scratchpad(scratchpadRect);
+        
+        int[,] scratchpad = new int[maxRoomWidth, maxRoomHeight];
+        Rect scratchpadRect = position_and_draw_room(scratchpad, exitDoor);
         // Most of our scratchpad is FREE. Tiles that are within distance 1 from existing rooms on our map are marked FULL
         
-        // Make the room:
-        draw_room(scratchpad);
-        // scatchpad state: points belonging to the new room are FREE, the rest is FULL
         
-        
-        // Put doors in the room:
-        Rect searchRect = compute_search_rect(exitDoor);
+        Rect searchRect = compute_search_rect(scratchpadRect, scratchpad);
         List<Door> connectableDoors = search_connectable_doors(searchRect);
+        if (!connectableDoors.Contains(exitDoor))
+            connectableDoors.Insert(0, exitDoor);
         foreach (Door door in connectableDoors)
         {
             draw_and_connect_door(scratchpad, scratchpadRect, door);
-            if (verbose)
-                Console.WriteLine("Connectable door: {0}", door);
         }
-        // scratchpad state: doors are marked -doorNumber, open tiles around doors are marked BLOCKED, other open tiles
+        // scratchpad state: doors are marked -doorNumber, tiles around & behind doors are marked (FULL_)BLOCKED, other open tiles
         // are marked FREE, the rest is FULL
         
         build_new_doors(scratchpad, scratchpadRect, connectableDoors);
-        // scratchpad state: doors are marked -doorNumber, open tiles around doors are marked BLOCKED, other open tiles
+        // scratchpad state: doors are marked -doorNumber, tiles around & behind doors are marked (FULL_)BLOCKED, other open tiles
         // are marked FREE, the rest is FULL
         
         add_spikes(scratchpad);
-        // scratchpad state: doors are marked -doorNumber, open tiles around doors are marked BLOCKED, open tiles with
+        // scratchpad state: doors are marked -doorNumber, tiles around & behind doors are marked (FULL_)BLOCKED, open tiles with
         // spikes are marked SPIKES, other open tiles are marked FREE, the rest is FULL
         
-        // Remove blocked areas around doors, set them to FREE
+        // Remove blocked areas around doors, set them to FREE/FULL
         unblock(scratchpad);
         // scratchpad state: doors are marked -doorNumber,  open tiles with spikes are marked SPIKES, other open tiles
         // are marked FREE, the rest is FUL
 
-        // Compute some point inside the current room
+        // Register the location of our new room:
         Vector2Int pointInRoom = point_in_room(scratchpad);
-        // Translate pointInRoom to the corresponding coordinates on map:
         Vector2Int pointInRoomOnMap = pointInRoom + scratchpadRect.topLeft;
-        // Register pointInRoomOnMap as the location of our new room:
         room_location[roomCounter] = pointInRoomOnMap;
         
         remove_size_1_bulges(scratchpad, pointInRoom);
@@ -248,7 +241,6 @@ class MapGenerator
     public Dictionary<Vector2Int, int> GetRoom(int roomNumber)
     {
         Dictionary<Vector2Int, int> points = new Dictionary<Vector2Int, int>();
-        var teta = room_location[roomNumber];
         collect_room_points(points, room_location[roomNumber]);
         return points;
     }
@@ -270,63 +262,6 @@ class MapGenerator
         return points;
     }
 
-    /*
-    public void printMap(int x_size, int y_size, int x_topLeft, int y_topLeft)
-    {
-        var stringBuilder = new StringBuilder();
-        for (int y = y_topLeft; y < y_topLeft + y_size; y++)
-        {
-            for (int x = x_topLeft; x < x_topLeft + x_size; x++)
-            {
-                string str = "";
-                if (map[x, y] < 0)
-                    str = map[x, y].ToString();
-                else if (map[x, y] == 0)
-                    str = "##";
-                else if (map[x, y] % 2 == 1)
-                    str = "^^";
-                else
-                {
-                    str = " " + (map[x, y] / 2).ToString();
-                }
-
-                stringBuilder.Append(str);
-            }
-            stringBuilder.Append('\n');
-        }
-        System.Console.Write(stringBuilder.ToString());
-    }
-    
-    private void print_scratchpad(int[,] scratchpad)
-    {
-        var stringBuilder = new StringBuilder();
-        for (int y = 0; y < maxRoomHeight; y++)
-        {
-            for (int x = 0; x < maxRoomWidth; x++)
-            {
-                string str = "";
-                if (scratchpad[x, y] < 0)
-                    str = scratchpad[x, y].ToString();
-                else if (scratchpad[x, y] == FREE)
-                    str = "  ";
-                else if (scratchpad[x, y] == FULL)
-                    str = "##";
-                else if (scratchpad[x, y] == BLOCKED)
-                    str = "~~";
-                else if (scratchpad[x, y] == SPIKES)
-                    str = "^^";
-                else
-                    str = "." + scratchpad[x, y].ToString();
-
-                stringBuilder.Append(str);
-            }
-            stringBuilder.Append('\n');
-        }
-        System.Console.WriteLine(stringBuilder.ToString());
-    }
-    */
-
-
     /************************************
      *** GenerateLevel() subfunctions ***
      ************************************/
@@ -338,6 +273,7 @@ class MapGenerator
         maxRoomWidth = roomSize;
         maxRoomHeight = roomSize;
         spikeRate = Math.Max(MIN_SPIKE_RATE, Math.Min(par.spikeRate, MAX_SPIKE_RATE));
+        narrowRooms = par.narrowRoom;
         extraDeadEnds = par.deadEnd;
 
         if (par.cycles)
@@ -362,9 +298,11 @@ class MapGenerator
         rect.width = maxRoomWidth;
         rect.height = maxRoomHeight;
         
-        int[,] scratchpad = create_scratchpad(rect);
+        int[,] scratchpad = new int[maxRoomWidth, maxRoomHeight];
+        initialize_scratchpad(rect, scratchpad);
+        draw_room(scratchpad);
         
-        Vector2Int pointInRoom = draw_room(scratchpad);
+        Vector2Int pointInRoom = point_in_room(scratchpad);
         Vector2Int pointInRoomOnMap = pointInRoom + rect.topLeft;
         room_location[roomCounter] = pointInRoomOnMap;
 
@@ -383,8 +321,6 @@ class MapGenerator
 
     private Door search_door(int old_roomNumber, int doorNumber)
     {
-        if (verbose)
-            Console.WriteLine("search_door({0}, {1})", old_roomNumber, doorNumber);
         Vector2Int start = room_location[old_roomNumber];
         bool doorFound = false;
         Vector2Int doorPos = new Vector2Int();
@@ -425,137 +361,62 @@ class MapGenerator
         return get_door(doorPos);
     }
 
-    private Rect compute_scratchpad_rect(Door exitDoor)
+    private Rect position_and_draw_room(int[,] scratchpad, Door exitDoor)
     {
-        if (verbose)
-            Console.WriteLine("compute_scratchpad_rect({0})", exitDoor);
-        Vector2Int outwards = exitDoor.outwards();
-        Rect rect = new Rect();
-        rect.width = maxRoomWidth;
-        rect.height = maxRoomHeight;
-        if (outwards.y == 0) // outwards is left or right
+        int area = -1;
+        Rect scratchpadRect = new Rect();
+        int offset = 0;
+        while (area < MIN_ROOM_AREA)
         {
-            rect.topLeft.y = exitDoor.left.y - maxRoomHeight/2;
-            if (outwards.x == 1) // right
-                rect.topLeft.x = exitDoor.left.x + 1;
-            else // left
-                rect.topLeft.x = exitDoor.left.x - 1 - rect.width;
-        }
-        else // outwards is up or down
-        {
-            rect.topLeft.x = exitDoor.left.x - maxRoomWidth/2;
-            if (outwards.y == 1) // down
-                rect.topLeft.y = exitDoor.left.y + 1;
-            else // up
-                rect.topLeft.y = exitDoor.left.y - 1 - rect.height;
-        }
-        if (verbose)
-            Console.WriteLine("compute_scratchpad_rect({0}) returns {1}", exitDoor, rect);
-        return rect;
-    }
-    
-    private int[,] create_scratchpad(Rect scratchpadRect)
-    {
-        if (verbose)
-            Console.WriteLine("create_scratchpad({0})", scratchpadRect);
-        int spWidth = scratchpadRect.width;
-        int spHeight = scratchpadRect.height;
-        int[,] scratchpad = new int[maxRoomWidth, maxRoomHeight];
-        for (int x = 0; x < spWidth; x++)
-        {
-            for (int y = 0; y < spHeight; y++)
+            scratchpadRect = compute_scratchpad_rect(exitDoor, offset);
+            for (int i = 0; i < TRIES_PER_OFFSET && area < MIN_ROOM_AREA; i++)
             {
-                scratchpad[x, y] = FREE;
+                initialize_scratchpad(scratchpadRect, scratchpad);
+                area = draw_room(scratchpad);
             }
+            offset += maxRoomHeight / 2;
         }
-        
-        for (int x = -1; x <= spWidth; x++)
+
+        return scratchpadRect;
+    }
+
+    private Rect compute_room_rect(Rect scratchpadRect, int[,] scratchpad)
+    {
+        int min_x = 999999, max_x = -1, min_y = 999999, max_y = -1;
+        for (int x = 0; x < maxRoomWidth; x++)
         {
-            for (int y = -1; y <= spHeight; y++)
+            for (int y = 0; y < maxRoomHeight; y++)
             {
-                int xMap = x + scratchpadRect.topLeft.x;
-                int yMap = y + scratchpadRect.topLeft.y;
-                if (map[xMap, yMap] != 0)
+                if (scratchpad[x, y] == FREE)
                 {
-                    for (int i = -1; i <= 1; i ++)
-                    for (int j = -1; j <= 1; j++)
-                        if (0 <= x + i && x + i < spWidth && 0 <= y + j && y + j < spHeight)
-                            scratchpad[x+i, y+j] = FULL;
+                    min_x = Math.Min(x, min_x);
+                    max_x = Math.Max(x, max_x);
+                    min_y = Math.Min(y, min_y);
+                    max_y = Math.Max(y, max_y);
                 }
             }
         }
-        return scratchpad;
-    }
-    
-    private Vector2Int draw_room(int[,] scratchpad)
-        // Sets the whole scratchpad to FULL and carves out a room, whose tiles it sets to FREE
-    {
-        // Set probability distruction of the shapes of rooms. Sum of all chances should be 1!
-        double chance_square = 0.3;
-        double chance_rect = 0.2;
-        double chance_diamond = 0.1;
-        double chance_C = 0.2;
-        double chance_X = 0.2;
-
-        double p = rand.NextDouble();
-
-        if (p < chance_square)
-            return draw_square_room(scratchpad);
-        p -= chance_square;
-
-        if (p < chance_rect)
-            return draw_rect_room(scratchpad);
-        p -= chance_rect;
-        
-        if (p < chance_diamond)
-            return draw_diamond_room(scratchpad);
-        p -= chance_diamond;
-
-        if (p < chance_C)
-            return draw_C_room(scratchpad);
-        p -= chance_C;
-
-        if (p < chance_X)
-            return draw_X_room(scratchpad);
-        p -= chance_X;
-        
-        // We should never reach this point, but anyway we set a default:
-        return draw_rect_room(scratchpad);
+        Rect roomRect = new Rect();
+        roomRect.width = max_x - min_x + 1;
+        roomRect.height = max_y - min_y + 1;
+        roomRect.topLeft = new Vector2Int();
+        roomRect.topLeft.x = scratchpadRect.topLeft.x + min_x;
+        roomRect.topLeft.y = scratchpadRect.topLeft.y + min_y;
+        return roomRect;
     }
 
-    private Rect compute_search_rect(Door exitDoor)
+    private Rect compute_search_rect(Rect scratchpadRect, int[,] scratchpad)
     {
-        if (verbose)
-            Console.WriteLine("compute_search_rect({0})", exitDoor);
-        Rect rect = new Rect();
-        Vector2Int outwards = exitDoor.outwards();
-        rect.width = maxRoomWidth + 2 * maxConnectDistance;
-        rect.height = maxRoomHeight + 2 * maxConnectDistance;
-        if (outwards.y == 0) // outwards is left or right
-        {
-            rect.topLeft.y = exitDoor.left.y - (maxRoomHeight/2 + maxConnectDistance);
-            if (outwards.x == 1) // right
-                rect.topLeft.x = exitDoor.left.x + 1 - maxConnectDistance;
-            else // left
-                rect.topLeft.x = exitDoor.left.x - 1 + maxConnectDistance - rect.width;
-        }
-        else // outwards is up or down
-        {
-            rect.topLeft.x = exitDoor.left.x - (maxRoomWidth/2 + maxConnectDistance);
-            if (outwards.y == 1) // down
-                rect.topLeft.y = exitDoor.left.y + 1 - maxConnectDistance;
-            else // up
-                rect.topLeft.y = exitDoor.left.y - 1 + maxConnectDistance - rect.height;
-        }
-        if (verbose)
-            Console.WriteLine("compute_search_rect({0}) returns {1}", exitDoor, rect);
-        return rect;
+        Rect roomRect = compute_room_rect(scratchpadRect, scratchpad);
+        Rect searchRect = new Rect();
+        searchRect.width = roomRect.width + 2 * maxConnectDistance;
+        searchRect.height = roomRect.height + 2 * maxConnectDistance;
+        searchRect.topLeft = roomRect.topLeft - new Vector2Int(maxConnectDistance, maxConnectDistance);
+        return searchRect;
     }
 
     private List<Door> search_connectable_doors(Rect searchRect)
     {
-        if (verbose)
-            Console.WriteLine("search_connectable_doors({0})", searchRect);
         List<Door> list = new List<Door>();
         for (int x = searchRect.topLeft.x; x < searchRect.topLeft.x + searchRect.width; x++)
         {
@@ -585,46 +446,43 @@ class MapGenerator
                 }
             }
         }
-
-        if (verbose)
-            Console.WriteLine("search_connectable_doors({0}) returns {1}", searchRect, list);
         return list;
     }
     
     private void draw_and_connect_door(int[,] scratchpad, Rect scratchpadRect, Door door)
-             {
-                 Vector2Int start = clip(scratchpadRect, door);
-                 bool[,] queued = new bool[maxRoomWidth, maxRoomHeight]; // remember which coordinates we queued already
-                 // At the start, we did not queue anything yet
-                 for (int x = 0; x < maxRoomWidth; x++)
-                     for (int y = 0; y < maxRoomHeight; y++)
-                         queued[x, y] = false;
+    {
+        Vector2Int start = clip(scratchpadRect, door);
+        bool[,] queued = new bool[maxRoomWidth, maxRoomHeight]; // remember which coordinates we queued already
+        // At the start, we did not queue anything yet
+        for (int x = 0; x < maxRoomWidth; x++)
+            for (int y = 0; y < maxRoomHeight; y++)
+                queued[x, y] = false;
          
-                 // The following priority queue dequeues smallest elements first.
-                 PriorityQueue<double, Vector2Int> pq = new PriorityQueue<double, Vector2Int>();
-                 pq.Enqueue(0, start);
-                 queued[start.x, start.y] = true;
-                 while (!pq.IsEmpty)
-                 {
-                     Vector2Int candidate = pq.Dequeue();
-                     if (place_connected_door(scratchpad, door, candidate))
-                     {
-                         return;
-                     }
+        // The following priority queue dequeues smallest elements first.
+        PriorityQueue<double, Vector2Int> pq = new PriorityQueue<double, Vector2Int>();
+        pq.Enqueue(0, start);
+        queued[start.x, start.y] = true;
+        while (!pq.IsEmpty)
+        {
+            Vector2Int candidate = pq.Dequeue();
+            if (place_connected_door(scratchpad, door, candidate))
+            {
+                return;
+            }
                      
-                     queued[candidate.x, candidate.y] = true;
+            queued[candidate.x, candidate.y] = true;
          
-                     List<Vector2Int> neighbors = getNeighbors(candidate);
-                     foreach (Vector2Int neighbor in neighbors)
-                     {
-                         if (!queued[neighbor.x, neighbor.y])
-                         {
-                             double priority = Vector2Int.Distance(start, neighbor);
-                             pq.Enqueue(priority, neighbor);
-                             queued[neighbor.x, neighbor.y] = true;
-                         }
-                     }
-                 }
+            List<Vector2Int> neighbors = getNeighbors(candidate);
+            foreach (Vector2Int neighbor in neighbors)
+            {
+                if (!queued[neighbor.x, neighbor.y])
+                {
+                    double priority = Vector2Int.Distance(start, neighbor);
+                    pq.Enqueue(priority, neighbor);
+                    queued[neighbor.x, neighbor.y] = true;
+                }
+            }
+        }
         
         // We should not get here
         // If we get here, we did not find any spot to place the door. The door will stay unconnected...
@@ -665,6 +523,8 @@ class MapGenerator
             {
                 if (scratchpad[x, y] == BLOCKED)
                     scratchpad[x, y] = FREE;
+                if (scratchpad[x, y] == FULL_BLOCKED)
+                    scratchpad[x, y] = FULL;
             }
         }
     }
@@ -762,8 +622,6 @@ class MapGenerator
     
     private Door get_door(Vector2Int doorPos)
     {
-        if (verbose)
-            Console.WriteLine("get_door({0})", doorPos);
         Door door = new Door();
         int doorNumber = -map[doorPos.x, doorPos.y];
         if (doorNumber <= 0)
@@ -799,9 +657,6 @@ class MapGenerator
             else
                 door.right = new Vector2Int(doorPos.x + 1, doorPos.y);
         }
-
-        if (verbose)
-            Console.WriteLine("get_door({0}) returns {1}", doorPos, door);
         return door;
     }
 
@@ -874,9 +729,106 @@ class MapGenerator
     
     
     
-    /********************************
-     *** draw_room() subfunctions ***
-     ********************************/
+    /*********************************************
+     *** position_and_draw_room() subfunctions ***
+     *********************************************/
+
+    private Rect compute_scratchpad_rect(Door exitDoor, int offset)
+    {
+        Vector2Int outwards = exitDoor.outwards();
+        Rect rect = new Rect();
+        rect.width = maxRoomWidth;
+        rect.height = maxRoomHeight;
+        if (outwards.y == 0) // outwards is left or right
+        {
+            rect.topLeft.y = exitDoor.left.y - maxRoomHeight/2;
+            if (outwards.x == 1) // right
+                rect.topLeft.x = exitDoor.left.x + 1;
+            else // left
+                rect.topLeft.x = exitDoor.left.x - 1 - rect.width;
+        }
+        else // outwards is up or down
+        {
+            rect.topLeft.x = exitDoor.left.x - maxRoomWidth/2;
+            if (outwards.y == 1) // down
+                rect.topLeft.y = exitDoor.left.y + 1;
+            else // up
+                rect.topLeft.y = exitDoor.left.y - 1 - rect.height;
+        }
+
+        Vector2Int offsetVector = new Vector2Int(offset * outwards.x, offset * outwards.y);
+        rect.topLeft += offsetVector;
+        return rect;
+    }
+    
+    private void initialize_scratchpad(Rect scratchpadRect, int[,] scratchpad)
+    {
+        int spWidth = scratchpadRect.width;
+        int spHeight = scratchpadRect.height;
+        for (int x = 0; x < spWidth; x++)
+        {
+            for (int y = 0; y < spHeight; y++)
+            {
+                scratchpad[x, y] = FREE;
+            }
+        }
+        
+        for (int x = -1; x <= spWidth; x++)
+        {
+            for (int y = -1; y <= spHeight; y++)
+            {
+                int xMap = x + scratchpadRect.topLeft.x;
+                int yMap = y + scratchpadRect.topLeft.y;
+                if (map[xMap, yMap] != 0)
+                {
+                    for (int i = -2; i <= 2; i++)
+                    {
+                        for (int j = -2; j <= 2; j++)
+                        {
+                            if (0 <= x + i && x + i < spWidth && 0 <= y + j && y + j < spHeight)
+                                scratchpad[x + i, y + j] = FULL;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private int draw_room(int[,] scratchpad)
+        // Carves out a room, whose tiles are kept FREE. The rest is set to FULL. Returns area of the room
+    {
+        // Set probability distribution of the shapes of rooms. Sum of all chances should be 1!
+        double chance_square = narrowRooms ? 0.0 : 0.3;
+        double chance_rect = narrowRooms ? 0.5 : 0.2;
+        double chance_diamond = 0.1;
+        double chance_C = 0.2;
+        double chance_X = 0.2;
+
+        double p = rand.NextDouble();
+
+        if (p < chance_square)
+            return draw_square_room(scratchpad);
+        p -= chance_square;
+
+        if (p < chance_rect)
+            return draw_rect_room(scratchpad);
+        p -= chance_rect;
+        
+        if (p < chance_diamond)
+            return draw_diamond_room(scratchpad);
+        p -= chance_diamond;
+
+        if (p < chance_C)
+            return draw_C_room(scratchpad);
+        p -= chance_C;
+
+        if (p < chance_X)
+            return draw_X_room(scratchpad);
+        p -= chance_X;
+        
+        // We should never reach this point, but anyway we set a default:
+        return draw_rect_room(scratchpad);
+    }
 
     private void keep_only_one_component(int [,] scratchpad, int colorToKeep)
     {
@@ -973,7 +925,7 @@ class MapGenerator
         return neighbors[idx];
     }
 
-    private Vector2Int dig_out_room(int[,] scratchpad, List<Vector2Int> targets)
+    private int dig_out_room(int[,] scratchpad, List<Vector2Int> targets)
     {
         Vector2Int build = targets.LastOrDefault();
         foreach (Vector2Int target in targets)
@@ -984,17 +936,15 @@ class MapGenerator
                 build = chooseNext(build, target);
             }
         }
+        
         floodFill(scratchpad);
         Component biggestComponent = color_components(scratchpad);
         keep_only_one_component(scratchpad, biggestComponent.color);
-        if (verbose)
-            Console.WriteLine("area dug out room: " + biggestComponent.area);
-        return biggestComponent.point;
+        return biggestComponent.area;
     }
 
-    private Vector2Int draw_square_room(int[,] scratchpad)
+    private int draw_square_room(int[,] scratchpad)
     {
-        System.Console.WriteLine("draw square");
         int small0 = rand.Next(maxRoomWidth / 10, 3 * maxRoomWidth / 10);
         int small1 = rand.Next(maxRoomWidth / 10, 3 * maxRoomWidth / 10);
         int small2 = rand.Next(maxRoomWidth / 10, 3 * maxRoomWidth / 10);
@@ -1013,17 +963,26 @@ class MapGenerator
         return dig_out_room(scratchpad, targets);
     }
 
-    private Vector2Int draw_rect_room(int[,] scratchpad)
+    private int draw_rect_room(int[,] scratchpad)
     {
-        System.Console.WriteLine("draw rect");
         int x_small0 = rand.Next(0, 2 * maxRoomWidth / 10);
         int x_small1 = rand.Next(0, 2 * maxRoomWidth / 10);
         int y_small0 = rand.Next(2 * maxRoomHeight / 10, 4 * maxRoomHeight / 10);
         int y_small1 = rand.Next(2 * maxRoomHeight / 10, 4 * maxRoomHeight / 10);
+        if (narrowRooms)
+        {
+            y_small0 = rand.Next(7 * maxRoomHeight / 20, 9 * maxRoomHeight / 20);
+            y_small1 = rand.Next(7 * maxRoomHeight / 20, 9 * maxRoomHeight / 20);
+        }
         int x_big0 = rand.Next(8 * maxRoomWidth / 10, maxRoomWidth);
         int x_big1 = rand.Next(8 * maxRoomWidth / 10, maxRoomWidth);
         int y_big0 = rand.Next(6 * maxRoomHeight / 10, 8 * maxRoomHeight / 10);
         int y_big1 = rand.Next(6 * maxRoomHeight / 10, 8 * maxRoomHeight / 10);
+        if (narrowRooms)
+        {
+            y_big0 = rand.Next(11 * maxRoomHeight / 20, 13 * maxRoomHeight / 20);
+            y_big1 = rand.Next(11 * maxRoomHeight / 20, 13 * maxRoomHeight / 20);
+        }
             
         List<Vector2Int> targets = new List<Vector2Int>();
         targets.Add(new Vector2Int(x_small0, y_small0));
@@ -1034,16 +993,19 @@ class MapGenerator
         return dig_out_room(scratchpad, targets);
     }
 
-    private Vector2Int draw_diamond_room(int[,] scratchpad)
+    private int draw_diamond_room(int[,] scratchpad)
     {
-        System.Console.WriteLine("draw diamond");
         int x_small = rand.Next(maxRoomWidth / 10, 2 * maxRoomWidth / 10);
+        if (narrowRooms)
+            x_small += 2 * maxRoomWidth / 10;
         int y_small = rand.Next(0, maxRoomWidth / 10);
         int x_medium0 = rand.Next(4 * maxRoomWidth / 10, 6 * maxRoomWidth / 10);
         int x_medium1 = rand.Next(4 * maxRoomWidth / 10, 6 * maxRoomWidth / 10);
         int y_medium0 = rand.Next(4 * maxRoomWidth / 10, 6 * maxRoomWidth / 10);
         int y_medium1 = rand.Next(4 * maxRoomWidth / 10, 6 * maxRoomWidth / 10);
         int x_big = rand.Next(8 * maxRoomWidth / 10, 9 * maxRoomWidth / 10);
+        if (narrowRooms)
+            x_big -= 2 * maxRoomWidth / 10;
         int y_big = rand.Next(9 * maxRoomWidth / 10, maxRoomWidth);
             
         List<Vector2Int> targets = new List<Vector2Int>();
@@ -1055,15 +1017,18 @@ class MapGenerator
         return dig_out_room(scratchpad, targets);
     }
 
-    private Vector2Int draw_C_room(int[,] scratchpad)
-    {
-        System.Console.WriteLine("draw C");
-        
+    private int draw_C_room(int[,] scratchpad)
+    {       
         int x_smallest = rand.Next(0, maxRoomWidth / 20);
         int x_small0 = rand.Next(maxRoomWidth / 10, 2 * maxRoomWidth / 10);
         int x_small1 = rand.Next(maxRoomWidth / 10, 2 * maxRoomWidth / 10);
         int x_medium0 = rand.Next(4 * maxRoomWidth / 10, 6 * maxRoomWidth / 10);
         int x_medium1 = rand.Next(4 * maxRoomWidth / 10, 6 * maxRoomWidth / 10);
+        if (narrowRooms)
+        {
+            x_medium0 = rand.Next(7 * maxRoomWidth / 20, 9 * maxRoomWidth / 20);
+            x_medium1 = rand.Next(7 * maxRoomWidth / 20, 9 * maxRoomWidth / 20);
+        }
         int x_high0 = rand.Next(9 * maxRoomWidth / 10, maxRoomWidth);
         int x_high1 = rand.Next(9 * maxRoomWidth / 10, maxRoomWidth);
         int x_high2 = rand.Next(9 * maxRoomWidth / 10, maxRoomWidth);
@@ -1093,9 +1058,8 @@ class MapGenerator
         return dig_out_room(scratchpad, targets);
     }
 
-    private Vector2Int draw_X_room(int[,] scratchpad)
+    private int draw_X_room(int[,] scratchpad)
     {
-        System.Console.WriteLine("draw X");
         int x_small0 = rand.Next(0, 2 * maxRoomWidth / 10);
         int x_small1 = rand.Next(0, 2 * maxRoomWidth / 10);
         int x_mid_left = rand.Next(7 * maxRoomWidth / 20, 8 * maxRoomWidth / 20);
@@ -1109,14 +1073,23 @@ class MapGenerator
         int y_medium1 = rand.Next(4 * maxRoomHeight / 10, 6 * maxRoomHeight / 10);
         int y_big0 = rand.Next(3 * maxRoomHeight/4, maxRoomHeight);
         int y_big1 = rand.Next(3 * maxRoomHeight/4, maxRoomHeight);
+
+        int x_extra0 = rand.Next(9 * maxRoomWidth / 20, 11 * maxRoomWidth / 20);
+        int x_extra1 = rand.Next(9 * maxRoomWidth / 20, 11 * maxRoomWidth / 20);
+        int y_extra_small = rand.Next(1 * maxRoomWidth / 10, 2 * maxRoomWidth / 10);
+        int y_extra_big = rand.Next(8 * maxRoomWidth / 10, 9 * maxRoomWidth / 10);
             
         List<Vector2Int> targets = new List<Vector2Int>();
         targets.Add(new Vector2Int(x_small0, y_small0));
         targets.Add(new Vector2Int(x_mid_left, y_medium0));
         targets.Add(new Vector2Int(x_small1, y_big0));
+        if (narrowRooms)
+            targets.Add(new Vector2Int(x_extra0, y_extra_big));
         targets.Add(new Vector2Int(x_big0, y_big1));
         targets.Add(new Vector2Int(x_mid_right, y_medium1));
         targets.Add(new Vector2Int(x_big1, y_small1));
+        if (narrowRooms)
+            targets.Add(new Vector2Int(x_extra1, y_extra_small));
         
         return dig_out_room(scratchpad, targets);
     }
@@ -1170,6 +1143,9 @@ class MapGenerator
         //     - registers the door as connected in connected_doors
         // door is the door we should connect our new door to
         // doorPos is the potential position of the new door
+
+        if (scratchpad[doorPos.x, doorPos.y] != FULL)
+            return false;
         
         Vector2Int freeSpot = doorPos + door.outwards();
         if (scratchpad[freeSpot.x, freeSpot.y] != FREE)
@@ -1182,24 +1158,56 @@ class MapGenerator
             {
                 upDoorPos = doorPos + UP;
                 downDoorPos = doorPos;
+                
+                Vector2Int corner = doorPos + UP + UP;
+                if (scratchpad[corner.x, corner.y] == FREE || scratchpad[corner.x, corner.y] == BLOCKED)
+                {
+                    Vector2Int P = corner + UP + door.outwards();
+                    if (scratchpad[P.x, P.y] == FULL || scratchpad[P.x, P.y] == FULL_BLOCKED)
+                        return false;
+                }
             }
             else if (scratchpad[freeSpot.x, freeSpot.y + 1] == FREE)
             {
                 upDoorPos = doorPos;
                 downDoorPos = doorPos + DOWN;
+                
+                Vector2Int corner = doorPos + DOWN + DOWN;
+                if (scratchpad[corner.x, corner.y] == FREE || scratchpad[corner.x, corner.y] == BLOCKED)
+                {
+                    Vector2Int P = corner + DOWN + door.outwards();
+                    if (scratchpad[P.x, P.y] == FULL || scratchpad[P.x, P.y] == FULL_BLOCKED)
+                        return false;
+                }
             }
             else
             {
                 return false;
             }
+            
+            int check_x_min = door.outwards() == LEFT ? upDoorPos.x + 1 : 0;
+            int check_x_max = door.outwards() == LEFT ? maxRoomWidth - 1 : upDoorPos.x - 1;
+            for (int check_x = check_x_min; check_x <= check_x_max; check_x++)
+            {
+                if (scratchpad[check_x, upDoorPos.y] == FULL_BLOCKED || scratchpad[check_x, upDoorPos.y] < 0
+                                                                     || scratchpad[check_x, downDoorPos.y] ==
+                                                                     FULL_BLOCKED ||
+                                                                     scratchpad[check_x, downDoorPos.y] < 0)
+                    return false;
+            }
+            
 
-            scratchpad[upDoorPos.x, upDoorPos.y - 1] = FULL;
+            scratchpad[upDoorPos.x, upDoorPos.y - 1] = FULL_BLOCKED;
             scratchpad[upDoorPos.x, upDoorPos.y] = -door.doorNumber;
             scratchpad[downDoorPos.x, downDoorPos.y] = -door.doorNumber;
-            scratchpad[downDoorPos.x, downDoorPos.y + 1] = FULL;
+            scratchpad[downDoorPos.x, downDoorPos.y + 1] = FULL_BLOCKED;
 
             int block_x = upDoorPos.x + door.outwards().x;
-            for (int block_y = upDoorPos.y - 1; block_y <= downDoorPos.y + 1; block_y++)
+            for (int block_y = Math.Max(upDoorPos.y - 2, 0); block_y <= Math.Min(downDoorPos.y + 2, maxRoomHeight-1); block_y++)
+                if (scratchpad[block_x, block_y] == FREE)
+                    scratchpad[block_x, block_y] = BLOCKED;
+            block_x += door.outwards().x;
+            for (int block_y = Math.Max(upDoorPos.y - 2, 0); block_y <= Math.Min(downDoorPos.y + 2, maxRoomHeight-1); block_y++)
                 if (scratchpad[block_x, block_y] == FREE)
                     scratchpad[block_x, block_y] = BLOCKED;
 
@@ -1207,7 +1215,7 @@ class MapGenerator
             int fill_x_max = door.outwards() == LEFT ? maxRoomWidth - 1 : upDoorPos.x - 1;
             for (int fill_x = fill_x_min; fill_x <= fill_x_max; fill_x++)
             for (int fill_y = upDoorPos.y - 1; fill_y <= downDoorPos.y + 1; fill_y++)
-                scratchpad[fill_x, fill_y] = FULL;
+                scratchpad[fill_x, fill_y] = FULL_BLOCKED;
         }
         else // outwards is UP or DOWN
         {
@@ -1216,32 +1224,66 @@ class MapGenerator
             {
                 leftDoorPos = doorPos + LEFT;
                 rightDoorPos = doorPos;
+                
+                Vector2Int corner = doorPos + LEFT + LEFT;
+                if (scratchpad[corner.x, corner.y] == FREE || scratchpad[corner.x, corner.y] == BLOCKED)
+                {
+                    Vector2Int P = corner + LEFT + door.outwards();
+                    if (scratchpad[P.x, P.y] == FULL || scratchpad[P.x, P.y] == FULL_BLOCKED)
+                        return false;
+                }
             }
             else if (scratchpad[freeSpot.x + 1, freeSpot.y] == FREE)
             {
                 leftDoorPos = doorPos;
                 rightDoorPos = doorPos + RIGHT;
+                
+                Vector2Int corner = doorPos + RIGHT + RIGHT;
+                if (scratchpad[corner.x, corner.y] == FREE || scratchpad[corner.x, corner.y] == BLOCKED)
+                {
+                    Vector2Int P = corner + RIGHT + door.outwards();
+                    if (scratchpad[P.x, P.y] == FULL || scratchpad[P.x, P.y] == FULL_BLOCKED)
+                        return false;
+                }
             }
             else
             {
                 return false;
             }
+            
+            
+            int check_y_min = door.outwards() == UP ? doorPos.y + 1 : 0;
+            int check_y_max = door.outwards() == UP ? maxRoomHeight - 1 : doorPos.y - 1;
+            for (int check_y = check_y_min; check_y <= check_y_max; check_y++)
+            {
+                if (scratchpad[leftDoorPos.x, check_y] == FULL_BLOCKED || scratchpad[leftDoorPos.x, check_y] < 0
+                                                                       || scratchpad[rightDoorPos.x, check_y] ==
+                                                                       FULL_BLOCKED ||
+                                                                       scratchpad[rightDoorPos.x, check_y] < 0)
+                    return false;
+            }
+            
+            
 
-            scratchpad[leftDoorPos.x - 1, leftDoorPos.y] = FULL;
+            scratchpad[leftDoorPos.x - 1, leftDoorPos.y] = FULL_BLOCKED;
             scratchpad[leftDoorPos.x, leftDoorPos.y] = -door.doorNumber;
             scratchpad[rightDoorPos.x, rightDoorPos.y] = -door.doorNumber;
-            scratchpad[rightDoorPos.x + 1, rightDoorPos.y] = FULL;
+            scratchpad[rightDoorPos.x + 1, rightDoorPos.y] = FULL_BLOCKED;
 
             int block_y = doorPos.y + door.outwards().y;
-            for (int block_x = leftDoorPos.x - 1; block_x <= rightDoorPos.x + 1; block_x++)
+            for (int block_x = Math.Max(leftDoorPos.x - 2, 0); block_x <= Math.Min(rightDoorPos.x + 2, maxRoomWidth-1); block_x++)
+                if (scratchpad[block_x, block_y] == FREE)
+                    scratchpad[block_x, block_y] = BLOCKED;
+            block_y += door.outwards().y;
+            for (int block_x = Math.Max(leftDoorPos.x - 2, 0); block_x <= Math.Min(rightDoorPos.x + 2, maxRoomWidth-1); block_x++)
                 if (scratchpad[block_x, block_y] == FREE)
                     scratchpad[block_x, block_y] = BLOCKED;
 
             int fill_y_min = door.outwards() == UP ? doorPos.y + 1 : 0;
             int fill_y_max = door.outwards() == UP ? maxRoomHeight - 1 : doorPos.y - 1;
-            for (int fill_x = leftDoorPos.x - 1; fill_x <= rightDoorPos.y + 1; fill_x++)
+            for (int fill_x = leftDoorPos.x - 1; fill_x <= rightDoorPos.x + 1; fill_x++)
                 for (int fill_y = fill_y_min; fill_y <= fill_y_max; fill_y++)
-                    scratchpad[fill_x, fill_y] = FULL;
+                    scratchpad[fill_x, fill_y] = FULL_BLOCKED;
         }
         
         // Register the door as connected.
@@ -1323,7 +1365,7 @@ class MapGenerator
 
     private void permute_randomly(List<Vector2Int> dirs)
     {
-        int n = dirs.Count;
+        int n = dirs.Count();
         while (n > 1)
         {
             n--;
@@ -1400,8 +1442,6 @@ class MapGenerator
         if (scratchpad[doorPos.x, doorPos.y] != FULL)
             return false;
         
-        
-        
         Vector2Int freeSpot = doorPos + inwards;
         if (scratchpad[freeSpot.x, freeSpot.y] != FREE)
             return false;
@@ -1413,26 +1453,57 @@ class MapGenerator
             {
                 upDoorPos = doorPos + UP;
                 downDoorPos = doorPos;
+                
+                Vector2Int corner = doorPos + UP + UP;
+                if (scratchpad[corner.x, corner.y] == FREE || scratchpad[corner.x, corner.y] == BLOCKED)
+                {
+                    Vector2Int P = corner + UP + inwards;
+                    if (scratchpad[P.x, P.y] == FULL || scratchpad[P.x, P.y] == FULL_BLOCKED)
+                        return false;
+                }
             }
             else if (scratchpad[freeSpot.x, freeSpot.y + 1] == FREE)
             {
                 upDoorPos = doorPos;
                 downDoorPos = doorPos + DOWN;
+                
+                Vector2Int corner = doorPos + UP + UP;
+                if (scratchpad[corner.x, corner.y] == FREE || scratchpad[corner.x, corner.y] == BLOCKED)
+                {
+                    Vector2Int P = corner + DOWN + inwards;
+                    if (scratchpad[P.x, P.y] == FULL || scratchpad[P.x, P.y] == FULL_BLOCKED)
+                        return false;
+                }
             }
             else
             {
                 return false;
             }
+            
+            int check_x_min = inwards == LEFT ? upDoorPos.x + 1 : 0;
+            int check_x_max = inwards == LEFT ? maxRoomWidth - 1 : upDoorPos.x - 1;
+            for (int check_x = check_x_min; check_x <= check_x_max; check_x++)
+            {
+                if (scratchpad[check_x, upDoorPos.y] == FULL_BLOCKED || scratchpad[check_x, upDoorPos.y] < 0
+                                                                     || scratchpad[check_x, downDoorPos.y] ==
+                                                                     FULL_BLOCKED ||
+                                                                     scratchpad[check_x, downDoorPos.y] < 0)
+                    return false;
+            }
 
             // Found a spot to place the new door!
             doorCounter++;
-            scratchpad[upDoorPos.x, upDoorPos.y - 1] = FULL;
+            scratchpad[upDoorPos.x, upDoorPos.y - 1] = FULL_BLOCKED;
             scratchpad[upDoorPos.x, upDoorPos.y] = -doorCounter;
             scratchpad[downDoorPos.x, downDoorPos.y] = -doorCounter;
-            scratchpad[downDoorPos.x, downDoorPos.y + 1] = FULL;
+            scratchpad[downDoorPos.x, downDoorPos.y + 1] = FULL_BLOCKED;
 
             int block_x = upDoorPos.x + inwards.x;
-            for (int block_y = upDoorPos.y - 1; block_y <= downDoorPos.y + 1; block_y++)
+            for (int block_y = Math.Max(upDoorPos.y - 2, 0); block_y <= Math.Min(downDoorPos.y + 2, maxRoomHeight-1); block_y++)
+                if (scratchpad[block_x, block_y] == FREE)
+                    scratchpad[block_x, block_y] = BLOCKED;
+            block_x += inwards.x;
+            for (int block_y = Math.Max(upDoorPos.y - 2, 0); block_y <= Math.Min(downDoorPos.y + 2, maxRoomHeight-1); block_y++)
                 if (scratchpad[block_x, block_y] == FREE)
                     scratchpad[block_x, block_y] = BLOCKED;
 
@@ -1440,7 +1511,7 @@ class MapGenerator
             int fill_x_max = inwards == LEFT ? maxRoomWidth - 1 : upDoorPos.x - 1;
             for (int fill_x = fill_x_min; fill_x <= fill_x_max; fill_x++)
             for (int fill_y = upDoorPos.y - 1; fill_y <= downDoorPos.y + 1; fill_y++)
-                scratchpad[fill_x, fill_y] = FULL;
+                scratchpad[fill_x, fill_y] = FULL_BLOCKED;
         }
         else // outwards is UP or DOWN
         {
@@ -1449,34 +1520,66 @@ class MapGenerator
             {
                 leftDoorPos = doorPos + LEFT;
                 rightDoorPos = doorPos;
+                
+                Vector2Int corner = doorPos + LEFT + LEFT;
+                if (scratchpad[corner.x, corner.y] == FREE || scratchpad[corner.x, corner.y] == BLOCKED)
+                {
+                    Vector2Int P = corner + LEFT + inwards;
+                    if (scratchpad[P.x, P.y] == FULL || scratchpad[P.x, P.y] == FULL_BLOCKED)
+                        return false;
+                }
             }
             else if (scratchpad[freeSpot.x + 1, freeSpot.y] == FREE)
             {
                 leftDoorPos = doorPos;
                 rightDoorPos = doorPos + RIGHT;
+                
+                Vector2Int corner = doorPos + RIGHT + RIGHT;
+                if (scratchpad[corner.x, corner.y] == FREE || scratchpad[corner.x, corner.y] == BLOCKED)
+                {
+                    Vector2Int P = corner + RIGHT + inwards;
+                    if (scratchpad[P.x, P.y] == FULL || scratchpad[P.x, P.y] == FULL_BLOCKED)
+                        return false;
+                }
             }
             else
             {
                 return false;
             }
+
+            int check_y_min = inwards == UP ? doorPos.y + 1 : 0;
+            int check_y_max = inwards == UP ? maxRoomHeight - 1 : doorPos.y - 1;
+            for (int check_y = check_y_min; check_y <= check_y_max; check_y++)
+            {
+                if (scratchpad[leftDoorPos.x, check_y] == FULL_BLOCKED || scratchpad[leftDoorPos.x, check_y] < 0
+                                                                       || scratchpad[rightDoorPos.x, check_y] ==
+                                                                       FULL_BLOCKED ||
+                                                                       scratchpad[rightDoorPos.x, check_y] < 0)
+                    return false;
+            }
+            
             
             // Found a spot to place the new door!
             doorCounter++;
-            scratchpad[leftDoorPos.x - 1, leftDoorPos.y] = FULL;
+            scratchpad[leftDoorPos.x - 1, leftDoorPos.y] = FULL_BLOCKED;
             scratchpad[leftDoorPos.x, leftDoorPos.y] = -doorCounter;
             scratchpad[rightDoorPos.x, rightDoorPos.y] = -doorCounter;
-            scratchpad[rightDoorPos.x + 1, rightDoorPos.y] = FULL;
+            scratchpad[rightDoorPos.x + 1, rightDoorPos.y] = FULL_BLOCKED;
 
             int block_y = doorPos.y + inwards.y;
-            for (int block_x = leftDoorPos.x - 1; block_x <= rightDoorPos.x + 1; block_x++)
+            for (int block_x = Math.Max(leftDoorPos.x - 2, 0); block_x <= Math.Min(rightDoorPos.x + 2, maxRoomWidth-1); block_x++)
+                if (scratchpad[block_x, block_y] == FREE)
+                    scratchpad[block_x, block_y] = BLOCKED;
+            block_y += inwards.y;
+            for (int block_x = Math.Max(leftDoorPos.x - 2, 0); block_x <= Math.Min(rightDoorPos.x + 2, maxRoomWidth-1); block_x++)
                 if (scratchpad[block_x, block_y] == FREE)
                     scratchpad[block_x, block_y] = BLOCKED;
 
             int fill_y_min = inwards == UP ? doorPos.y + 1 : 0;
             int fill_y_max = inwards == UP ? maxRoomHeight - 1 : doorPos.y - 1;
-            for (int fill_x = leftDoorPos.x - 1; fill_x <= rightDoorPos.y + 1; fill_x++)
-                for (int fill_y = fill_y_min; fill_y <= fill_y_max; fill_y++)
-                    scratchpad[fill_x, fill_y] = FULL;
+            for (int fill_x = leftDoorPos.x - 1; fill_x <= rightDoorPos.x + 1; fill_x++)
+            for (int fill_y = fill_y_min; fill_y <= fill_y_max; fill_y++)
+                scratchpad[fill_x, fill_y] = FULL_BLOCKED;
         }
         
         return true;

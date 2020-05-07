@@ -6,10 +6,9 @@ using UnityEngine;
 
 public enum MonsterTypes
 {
-    Cute = 1,
-    Easy = 2,
-    Medium = 3,
-    Hard = 4
+    Soft = 1,
+    Medium = 2,
+    Hard = 3
 }
 
 public class DirectorManager : MonoBehaviour
@@ -75,7 +74,7 @@ public class DirectorManager : MonoBehaviour
         currentState.deadEnd = false;
         currentState.cycles = true;
         currentState.Monsters = new List<Tuple<int, int>>();
-        currentState.Monsters.Add(new Tuple<int,int>((int)MonsterTypes.Cute, 2));
+        currentState.Monsters.Add(new Tuple<int,int>((int)MonsterTypes.Soft, 2));
 
         yield return LevelManager.LevelInstance.CreateNewLevel(currentState);
     }
