@@ -1,36 +1,48 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+[Serializable]
+public class MonsterCategory
+{
+    public List<GameObject> monsters;
+    public int difficulty;
+}
+
 public class LevelManager : MonoBehaviour
 {
-    private LevelConfig config;
     private GameObject player;
-    public List<GameObject> prefab = new List<GameObject>();
+    private LevelExit exitComponent;
+    private MapGenerator generator;
+    private bool updated = true;
+    private Parameters copy;
 
-    public TileBase Wall;
+    [SerializeField]
+    private List<MonsterCategory> all_monster = new List<MonsterCategory>();
+    [SerializeField]
+    private List<GameObject> prefabPlayer = new List<GameObject>();
+
+    //Different Tile bases for different tile maps
+    public TileBase wall;
     public TileBase ground;
     public TileBase exit;
+    public TileBase spike;
 
     public Tilemap Wallsmap;
     public Tilemap GroundsMap;
     public Tilemap ExitMap;
+    public Tilemap SpikeMap;
 
-    int width;
-    int height;
-
-    LevelExit ExitComponent;
-    MapGenerator map;
-    public bool updated = true;
-    private Parameters copy;
 
     /// <summary>
     /// Signleton Pattern
     /// </summary>
     private static LevelManager levelInstance;
+
+
     public static LevelManager LevelInstance
     {
         get
@@ -47,7 +59,25 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    #region Static Placements
+    private void PlaceWallAndNeigbours(Vector2Int pos)
+    {
 
+        bool[] neigbours = new bool[8];
+
+        neigbours[0] = generator.GetMap[pos.x - 1, pos.y + 1] == 0;
+        neigbours[1] = generator.GetMap[pos.x, pos.y + 1] == 0;
+        neigbours[2] = generator.GetMap[pos.x + 1, pos.y + 1] == 0;
+        neigbours[3] = generator.GetMap[pos.x + 1, pos.y] == 0;
+        neigbours[4] = generator.GetMap[pos.x + 1, pos.y - 1] == 0;
+        neigbours[5] = generator.GetMap[pos.x, pos.y - 1] == 0;
+        neigbours[6] = generator.GetMap[pos.x - 1, pos.y - 1] == 0;
+        neigbours[7] = generator.GetMap[pos.x - 1, pos.y] == 0;
+
+        PlaceWallPrime(pos, neigbours);
+        PlaceGround(pos);
+
+    }
     private void PlaceWallPrime(Vector2Int pos, bool[] neigbours)
     {
         PlaceWall(pos);
@@ -87,18 +117,19 @@ public class LevelManager : MonoBehaviour
     }
     private void PlaceWall(Vector2Int pos)
     {
-        Wallsmap.SetTile(new Vector3Int(pos.x, pos.y, 0), Wall);
+        Wallsmap.SetTile(new Vector3Int(pos.x, pos.y, 0), wall);
     }
-    private void BuildGround(Vector2Int pos)
+    private void PlaceGround(Vector2Int pos)
     {
         GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), ground);
     }
-
-    private void BuildExit(int doorNumber, int roomNumber,Vector2Int pos)
+    private void PlaceExit(int doorNumber, int roomNumber,Vector2Int pos)
     {
+        exitComponent.doors.Add(pos, doorNumber);
+        exitComponent.room.Add(doorNumber, roomNumber);
         ExitMap.SetTile(new Vector3Int(pos.x, pos.y, 0), exit);
 
-        int[,] tempMap = map.GetMap;
+        int[,] tempMap = generator.GetMap;
 
         if(tempMap[pos.x - 1,pos.y]  == Mathf.Abs(doorNumber))
         {
@@ -128,102 +159,119 @@ public class LevelManager : MonoBehaviour
         }
 
     }
-    private void BuildWall(Vector2Int pos)
+    private void PlaceSpike(Vector2Int pos)
     {
-
-        bool[] neigbours = new bool[8];
-
-
-        neigbours[0] = map.GetMap[pos.x - 1, pos.y + 1] == 1;
-        neigbours[1] = map.GetMap[pos.x, pos.y + 1] == 1;
-        neigbours[2] = map.GetMap[pos.x + 1, pos.y + 1] == 1;
-        neigbours[3] = map.GetMap[pos.x + 1, pos.y] == 1;
-        neigbours[4] = map.GetMap[pos.x + 1, pos.y - 1] == 1;
-        neigbours[5] = map.GetMap[pos.x, pos.y - 1] == 1;
-        neigbours[6] = map.GetMap[pos.x - 1, pos.y - 1] == 1;
-        neigbours[7] = map.GetMap[pos.x - 1, pos.y] == 1;
-
-        PlaceWallPrime(pos, neigbours);
-        
+        SpikeMap.SetTile(new Vector3Int(pos.x, pos.y, 0), spike);
     }
+    #endregion
 
-    private void BuildSpike(Vector2Int key)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void SpawnPlayer(Vector2 pos)
-    {
-        if (player == null)
-            player = Instantiate(prefab[UnityEngine.Random.Range(0, prefab.Count)], pos, Quaternion.identity);
-        else
-        {
-            player = Instantiate(player, pos, Quaternion.identity);
-        }
-    }
-
-    private void PlaceItems()
+    #region Object Placement
+    #region Item Placement
+    private void SpawnItems()
     {
         List<Vector2Int> points = new List<Vector2Int>();
         foreach(Vector2Int point in points)
         {
-            PlaceItem(point);
+            SpawnItem(point);
         }
     }
-    private void PlaceItem(Vector2Int point)
+    private void SpawnItem(Vector2Int point)
     {
         GameObject prefab = null;
         GameObject item = Instantiate(prefab, new Vector3(point.x, point.y, 0), Quaternion.identity);
 
 
     }
-    private void PlaceMonsters(int room, List<Tuple<int,int>> monsters)
-    {
-        
-        List<Vector2Int> points = map.PointsInRoom(room,monsters.Count);
+    #endregion
+    #region Monster Placement
+    private void SpawnMonsters(int room, List<Tuple<int,int>> monsters)
+    {    
+        List<Vector2Int> points = generator.PointsInRoom(room,monsters.Select(predicate => predicate.Item2).Sum());
         for (int i = 0; i < points.Count; i++)
         {
             Vector2Int point = points[i];
-            PlaceMonster(point, monsters[i].Item1);
-            monsters[i] = new Tuple<int, int>(monsters[i].Item1, monsters[i].Item2 - 1);
-            if (monsters[i].Item2 == 0)
-                monsters.RemoveAt(i);
+            SpawnMonster(point, monsters[0].Item1);
+            monsters[0] = new Tuple<int, int>(monsters[0].Item1, monsters[0].Item2 - 1);
+            if (monsters[0].Item2 == 0)
+                monsters.RemoveAt(0);
 
         }
     }
-    private void PlaceMonster(Vector2Int point, int power)
+    private void SpawnMonster(Vector2Int point, int power)
     {
-        GameObject prefab = null;// = all_monster[power];
+        List<GameObject> powerLeveledMonsters = all_monster[power].monsters;
+        GameObject prefab = powerLeveledMonsters[UnityEngine.Random.Range(0, powerLeveledMonsters.Count)];
         GameObject monster = Instantiate(prefab, new Vector3(point.x, point.y, 0), Quaternion.identity);
     }
+    #endregion
+    private void SpawnPlayer(Vector2 pos)
+    { 
+        if (player == null)
+            player = Instantiate(prefabPlayer[UnityEngine.Random.Range(0, prefabPlayer.Count)], pos, Quaternion.identity);
+        else
+        {
+            player = Instantiate(player, pos, Quaternion.identity);
+        }
+    }
+    #endregion
 
-    private async Task<int> PlaceLevel(Parameters param)
+    private IEnumerator PlaceLevel(Parameters param)
     {
-        int currentRoom = map.GenerateLevel(param);
+        int currentRoom = generator.GenerateLevel(param);
 
-        PlaceMonsters(currentRoom, param.Monsters);
+        int door = param.door;
+        SpawnMonsters(currentRoom, param.Monsters);
 
-        PlaceItems();
+        //SpawnItems();
 
-        return currentRoom;
+
+        if (param.room == 0)
+        {
+            SpawnPlayer(generator.PointsInRoom(currentRoom,1).FirstOrDefault());
+        }
+        else
+        {
+            Dictionary<Vector2Int,int> room = generator.GetRoom(currentRoom);
+            Vector2Int location = room.FirstOrDefault(predicate => predicate.Value == param.door).Key;
+
+            Vector2Int Up = new Vector2Int(location.x, location.y + 1);
+            Vector2Int Down = new Vector2Int(location.x, location.y - 1);
+            Vector2Int Left = new Vector2Int(location.x - 1, location.y);
+            Vector2Int Right = new Vector2Int(location.x + 1, location.y);
+
+            if (room.ContainsKey(Up) && room[Up] > 1)
+                SpawnPlayer(Up);
+            else if (room.ContainsKey(Down) && room[Down] > 1)
+                SpawnPlayer(Down);
+            else if (room.ContainsKey(Left) && room[Left] > 1)
+                SpawnPlayer(Left);
+            else if (room.ContainsKey(Right) && room[Right] > 1)
+                SpawnPlayer(Right);
+        }
+
+        exitComponent.room.Clear();
+        exitComponent.doors.Clear();
+
+        param.room = currentRoom;
+        copy = param;
+        yield return null;
     }
 
-    public async Task CreateNewLevel(Parameters param)
+    public IEnumerator CreateNewLevel(Parameters param)
     {
-        int x = await PlaceLevel(param);
-        copy = param;
+        yield return PlaceLevel(param);
         updated = false;
-        return;
+        yield return RendererLevel(copy);
     }
 
     private IEnumerator RendererLevel(Parameters copy)
     {
+
         updated = true;
         Wallsmap.ClearAllTiles();
         GroundsMap.ClearAllTiles();
 
-        bool playerSet = false;
-        Dictionary<Vector2Int, int> points = map.GetRoom(copy.room);
+        Dictionary<Vector2Int, int> points = generator.GetRoom(copy.room);
 
         foreach (KeyValuePair<Vector2Int, int> point in points)
         {
@@ -231,34 +279,30 @@ public class LevelManager : MonoBehaviour
 
             if (currentLocation == 0)
             {
-                BuildWall(point.Key);
+                PlaceWallAndNeigbours(point.Key);
             }
             else if (currentLocation > 0)
             {
-                if (currentLocation % 2 == 0)
+                if (currentLocation % 2 == 1)
                 {
-                    BuildSpike(point.Key);
+                    PlaceSpike(point.Key);
                 }
                 else
                 {
-                    BuildGround(point.Key);
+                    PlaceGround(point.Key);
                 }
 
             }
             else if (currentLocation < 0)
             {
-                Tuple<int, int> rooms = map.Connected_Doors[currentLocation];
+                Tuple<int, int> rooms = generator.Connected_Doors[currentLocation];
 
                 int room = rooms.Item1 == currentLocation ? rooms.Item2 : rooms.Item1;
 
-                BuildExit(currentLocation, room, point.Key);
-                if (Math.Abs(currentLocation) == copy.door && playerSet == false)
-                {
-                    SpawnPlayer(point.Key);
-                    playerSet = true;
-                }
+                PlaceExit(currentLocation, room, point.Key);
             }
         }
+        
         yield return null;
     }
 
@@ -266,19 +310,14 @@ public class LevelManager : MonoBehaviour
     void Awake()
     {
         LevelInstance = this;
-        config = new LevelConfig();
-        config.Width = ConfigurationManager.ConfigInstance.getConfig<int>("Width");
-        config.Height = ConfigurationManager.ConfigInstance.getConfig<int>("Height");
-        map = new MapGenerator();
+        generator = new MapGenerator();
 
-        ExitComponent = ExitMap.gameObject.GetComponent<LevelExit>();
+        exitComponent = ExitMap.gameObject.GetComponent<LevelExit>();
     }
     public void Update()
     {
         if (updated == false)
-        {
             StartCoroutine(RendererLevel(copy));
-        }
     }
     #endregion
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -102,17 +101,12 @@ public class SceneTransistionManager : MonoBehaviour
 
     private IEnumerator OnExit()
     {
-        Task slide = Task.Run(() => UIManager.UiInstance.SlideClose());
-        while (slide.Status == TaskStatus.Running)
-            yield return null;
-        Application.Quit();
-        
+        yield return UIManager.UiInstance.SlideClose();      
+        Application.Quit();       
     }
     private IEnumerator OnBackToMainMenu()
     {
-        Task slide = Task.Run(() => UIManager.UiInstance.SlideClose());
-        while (slide.Status == TaskStatus.Running)
-            yield return null;
+        yield return UIManager.UiInstance.SlideClose();
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("StartScene");
 
@@ -121,17 +115,15 @@ public class SceneTransistionManager : MonoBehaviour
             yield return null;
         }
 
-        Task slideOpen = Task.Run(() => UIManager.UiInstance.SlideOpen());
-        while (slideOpen.Status == TaskStatus.Running)
-            yield return null;
+        UIManager.UiInstance.ChangeStateTo(UIState.InMainMenu);
+
+        yield return UIManager.UiInstance.SlideOpen();
 
         isTransitioning = false;
     }
     private IEnumerator OnGameStart(int slotloading = -1)
     {
-        Task slide = Task.Run(() => UIManager.UiInstance.SlideClose());
-        while (slide.Status == TaskStatus.Running)
-            yield return null;
+        yield return UIManager.UiInstance.SlideClose();
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("EmptyScene");
 
@@ -143,40 +135,23 @@ public class SceneTransistionManager : MonoBehaviour
         if (slotloading != -1)  //SAVED GAME
         {
             DirectorManager.DirectorInstance.Load(slotloading);
-            Task.Run(async () => await DirectorManager.DirectorInstance.NextLevel());
-            while (DirectorManager.DirectorInstance.Finished)
-            {
-                yield return null;
-            }
+            yield return DirectorManager.DirectorInstance.NextLevel();
         }
         else //NEWGAME
         {
             DirectorManager.DirectorInstance.NewSlot();
-            Task.Run(async () => await DirectorManager.DirectorInstance.NextLevel());
-            while (DirectorManager.DirectorInstance.Finished)
-            {
-                yield return null;
-            }
+            yield return DirectorManager.DirectorInstance.NextLevel();
         }
 
-        while(!LevelManager.LevelInstance.updated )
-        {
-            yield return null;
-        }
+        UIManager.UiInstance.ChangeStateTo(UIState.InGame);
 
-        //UIManager.UiInstance.Switch(false);
-
-        Task slideOpen = Task.Run(() => UIManager.UiInstance.SlideOpen());
-        while (slideOpen.Status == TaskStatus.Running)
-            yield return null;
+        yield return UIManager.UiInstance.SlideOpen();
 
         isTransitioning = false;
     }
     private IEnumerator NextLevel()
     {
-        Task slide = Task.Run(() => UIManager.UiInstance.SlideClose());
-        while (slide.Status == TaskStatus.Running)
-            yield return null;
+       yield return UIManager.UiInstance.SlideClose();
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("EmptyScene");
 
@@ -185,15 +160,9 @@ public class SceneTransistionManager : MonoBehaviour
             yield return null;
         }
 
-        Task.Run(async () => await DirectorManager.DirectorInstance.NextLevel());
-        while (DirectorManager.DirectorInstance.Finished)
-        {
-            yield return null;
-        }
+        yield return DirectorManager.DirectorInstance.NextLevel();
 
-        Task slideOpen = Task.Run(() => UIManager.UiInstance.SlideOpen());
-        while (slideOpen.Status == TaskStatus.Running)
-            yield return null;
+        yield return UIManager.UiInstance.SlideOpen();
 
         isTransitioning = false;
     }
