@@ -64,10 +64,6 @@ public class MonsterMovement : MonoBehaviour
         CheckMovementRangeBounds();
         DetermineDirection();
         DoMove();
-<<<<<<< HEAD
-
-=======
->>>>>>> b6fc8d1f3028f688d32bc87187f73e54b09661c4
     }
 
     void DetectPlayer()
