@@ -7,7 +7,8 @@ public enum MovementTypes
     Random,
     Horizontal,
     Vertical,
-    ToPlayer
+    ToPlayer,
+    ReturnToInitialPosition
 }
 
 public class MonsterMovement : MonoBehaviour
@@ -21,6 +22,7 @@ public class MonsterMovement : MonoBehaviour
     private float timeLeftForDirectionChange = 2f;
     private Vector2 movement = Vector2.zero;
     private Vector2 initialPosition;
+    private Vector2 playerPosition;
    
     void Awake()
     {
@@ -32,7 +34,7 @@ public class MonsterMovement : MonoBehaviour
 
         // Cannot go directly to player on awake
         // need to spot the player first
-        if(movementType == MovementTypes.ToPlayer)
+        if(movementType == MovementTypes.ToPlayer || movementType == MovementTypes.ReturnToInitialPosition)
 		{
             movementType = MovementTypes.Random;
 		}
@@ -62,18 +64,39 @@ public class MonsterMovement : MonoBehaviour
         CheckMovementRangeBounds();
         DetermineDirection();
         DoMove();
+<<<<<<< HEAD
 
+=======
+>>>>>>> b6fc8d1f3028f688d32bc87187f73e54b09661c4
     }
 
     void DetectPlayer()
 	{
-        // check if player is in visual range
-        // if so set movement type to MovementTypes.ToPlayer
+        GameObject playerObject = GameObject.FindWithTag("Player");
+        Rigidbody2D playerRigidBody = playerObject.GetComponent<Rigidbody2D>();
+
+        Vector2 currentPosition = rb.position;
+        playerPosition = playerRigidBody.position;
+
+        double distanceFromPlayer = System.Math.Sqrt(System.Math.Pow((double)(currentPosition.x - playerPosition.x), (double)2) + System.Math.Pow((double)(currentPosition.y - playerPosition.y), (double)2));
+
+        if ((float)distanceFromPlayer <= viewRange)
+		{
+			movementType = MovementTypes.ToPlayer;
+		}
+        else if(movementType == MovementTypes.ToPlayer)
+        {
+            movementType = MovementTypes.ReturnToInitialPosition;
+        }
 	}
 
     void CheckMovementRangeBounds()
 	{
-        if (movementType == MovementTypes.Sleep)
+        if (
+            movementType == MovementTypes.Sleep
+            || movementType == MovementTypes.ToPlayer
+            || movementType == MovementTypes.ReturnToInitialPosition
+        )
         {
             return;
         }
@@ -89,9 +112,6 @@ public class MonsterMovement : MonoBehaviour
 
 		if ((float)distanceFromOrigin >= maxRange)
 		{
-			Debug.Log("Out of range");
-			Debug.Log(distanceFromOrigin);
-
 			timeLeftForDirectionChange = -1f;
 		}
 	}
@@ -154,12 +174,26 @@ public class MonsterMovement : MonoBehaviour
             return;
 		}
 
+        if(movementType == MovementTypes.ReturnToInitialPosition)
+		{
+            MoveToInitialPosition();
+            return;
+		}
+
         rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
     }
 
     void MoveToPlayer()
 	{
-        // determine where the player is.
-        // move to that position
+        if(movementType == MovementTypes.ToPlayer) {
+            rb.MovePosition (Vector2.Lerp (rb.position, playerPosition, (speed * Time.fixedDeltaTime)));
+        }
 	}
+
+    void MoveToInitialPosition()
+    {
+        if(movementType == MovementTypes.ReturnToInitialPosition) {
+            rb.MovePosition (Vector2.Lerp (rb.position, initialPosition, (speed * Time.fixedDeltaTime)));
+        }
+    }
 }
