@@ -70,7 +70,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -4233585214795007072, guid: 74dee1b8826deb9468c810208fa0dcc3,
+  m_Sprite: {fileID: 2175426034081879774, guid: 74dee1b8826deb9468c810208fa0dcc3,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 5333170621658619734}
   - component: {fileID: 4919268772353225466}
   m_Layer: 0
-  m_Name: Potion
+  m_Name: Small Potion
   m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ecf3da9a7c74f642b1e41edfc486ad4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DmgIncrease: 100
+  DmgIncrease: 0
   SpeedIncrease: 0
   Heal: 0
   Value: 0

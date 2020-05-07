@@ -30,8 +30,6 @@ public class MonsterMovement : MonoBehaviour
 
         initialPosition = rb.position;
 
-        Debug.Log(initialPosition);
-
         // Cannot go directly to player on awake
         // need to spot the player first
         if(movementType == MovementTypes.ToPlayer || movementType == MovementTypes.ReturnToInitialPosition)

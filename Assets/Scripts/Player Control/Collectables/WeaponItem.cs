@@ -11,7 +11,7 @@ public class WeaponItem : Item
     }
 
     [SerializeField]
-    private WeaponType type;
+    private WeaponType Weapontype;
 
     [SerializeField]
     private List<AnimatorOverrideController> weaponAnimations;
@@ -21,7 +21,7 @@ public class WeaponItem : Item
 
     public void Awake()
     {
-        anim = weaponAnimations[(int)type];
+        anim = weaponAnimations[(int)Weapontype];
         GetComponentInChildren<SpriteRenderer>().sprite = weapon.GetComponent<SpriteRenderer>().sprite;
     }
 
