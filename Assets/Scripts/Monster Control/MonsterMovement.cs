@@ -60,14 +60,10 @@ public class MonsterMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-<<<<<<< HEAD
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-=======
         DetectPlayer();
         CheckMovementRangeBounds();
         DetermineDirection();
         DoMove();
->>>>>>> 36df4de0fd333b15735ad4ba1c90d05ac5c26b52
     }
 
     void DetectPlayer()
