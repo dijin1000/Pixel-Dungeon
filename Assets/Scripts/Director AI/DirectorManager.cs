@@ -67,14 +67,51 @@ public class DirectorManager : MonoBehaviour
     {
         Measurements m = StatisticsManager.StatisticsInstance.Measurements;
 
-        //LOGIC for JACCO en MAURITS
-        currentState.roomSize = 50;
-        currentState.spikeRate = 0.05;
-        currentState.narrowRoom = false;
-        currentState.deadEnd = false;
-        currentState.cycles = true;
+        int monstercount = m.monsters;
+        if (m.monsterKille == 0)
+            monstercount++;
+        if (m.lethality() > 0.5)
+            monstercount++;
+        if (m.roomTime < 10)
+            monstercount++;
+        if (m.lethality() < 0.5 && m.monsterhit > 0)
+            monstercount--;
         currentState.Monsters = new List<Tuple<int, int>>();
-        currentState.Monsters.Add(new Tuple<int,int>((int)MonsterTypes.Soft, 2));
+        currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, monstercount));
+
+        double RSmean = 30 + 10 * monstercount;
+        double RSstdDev = 10;
+        MathNet.Numerics.Distributions.Normal normalDist = new Normal(RSmean, RSstdDev);
+        currentState.roomSize = randomGaussianValue = normalDist.Sample();
+
+        int spikeChange = 0;
+        if (m.trapped == 0)
+            spikeChange += 0.05;
+        else
+            spikeChange -= m.trapped / 100;
+        if (spikeChange < -0.10)
+            spikeChange = -0.10;
+
+        double Smean = 0.15;
+        double SstdDev = 0.05;
+        MathNet.Numerics.Distributions.Normal normalDist = new Normal(Smean, SstdDev);
+        currentState.spikeRate = randomGaussianValue = normalDist.Sample();
+
+        if(m.monsterhit == 0)
+            currentState.narrowRoom = true;
+        if (m.monsterhit > 1)
+            currentState.narrowRoom = false;
+
+        if (m.monsterhit > 1)
+        {
+            currentState.cycles = true;
+            currentState.deadEnd = false;
+        }
+        else
+        {
+            currentState.cycles = false;
+            currentState.deadEnd = true;
+        }
 
         yield return LevelManager.LevelInstance.CreateNewLevel(currentState);
     }
