@@ -54,10 +54,7 @@ class MapGenerator
         public int color;
         public Vector2Int point; // any point belonging to the component
         public int area;
-    }
-
-    
-    
+    }    
     private static Vector2Int LEFT = Vector2Int.left;
     private static Vector2Int RIGHT = Vector2Int.right;
     private static Vector2Int UP = Vector2Int.down; // we use positive y direction is down
@@ -150,7 +147,7 @@ class MapGenerator
 
     public MapGenerator()
     {
-        int seed = rand.Next();
+        int seed = 0;//rand.Next();
         rand = new System.Random(seed);
         
         roomCounter = 0;
@@ -661,7 +658,7 @@ class MapGenerator
         return door;
     }
 
-    private List<Vector2Int> allNeighbors(Vector2Int p)
+    public List<Vector2Int> allNeighbors(Vector2Int p)
     {
         // return all neighbors, including the diagonal ones
         List<Vector2Int> list = new List<Vector2Int>();

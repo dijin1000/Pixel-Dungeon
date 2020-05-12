@@ -302,7 +302,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 167448888}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.108385, y: -5.9060125, z: -10}
+  m_LocalPosition: {x: 4.9999995, y: -0.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 941502250}
@@ -387,6 +387,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6970bb8c933d5654f99e83cf18af1687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentState:
+    room: 0
+    door: 0
+    roomSize: 0
+    spikeRate: 0
+    narrowRoom: 0
+    deadEnd: 0
+    cycles: 0
+    lastDoor: 0
 --- !u!224 &487790863 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 561501995964609331, guid: 6a468cadb7ba3444693c937c55795799,
@@ -714,7 +723,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 40.3
+  m_fontSize: 61.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1206,6 +1215,7 @@ MonoBehaviour:
   wall: {fileID: 11400000, guid: 9eb575bcd7f7e4a45884a7f100baff12, type: 2}
   ground: {fileID: 11400000, guid: a19c19f232b822843a5a38a8e555ff74, type: 2}
   exit: {fileID: 11400000, guid: aa233024c15131747b2fb9c979f8f7d9, type: 2}
+  finalExit: {fileID: 11400000, guid: 37c408ba83609264fa59a80fcd5462a2, type: 2}
   spike: {fileID: 11400000, guid: 34126ffdcf76ad1409a96b02271c8bbd, type: 2}
   Wallsmap: {fileID: 1831275423}
   GroundsMap: {fileID: 853517797}
@@ -1361,7 +1371,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -2227,7 +2237,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 6
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -2560,7 +2570,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -2803,7 +2813,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16

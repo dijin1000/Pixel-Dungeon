@@ -6,10 +6,12 @@ using UnityEngine.Tilemaps;
 
 public class LevelExit : MonoBehaviour
 {
-    public Dictionary<int,int> room = new Dictionary<int, int>(); // Key holder for doors to which room
     public Dictionary<Vector2Int,int> doors = new Dictionary<Vector2Int, int>(); //which positions is for which door
 
     private Tilemap map;
+    private bool isProcessing = false;
+    public Dictionary<Vector2Int,bool> isLastDoor = new Dictionary<Vector2Int, bool>();
+    
     public void Awake()
     {
         map = GetComponent<Tilemap>();
@@ -33,27 +35,31 @@ public class LevelExit : MonoBehaviour
         }
     }
 
-    bool isLastDoor = false;
+
     public void Exit(Collider2D col)
     {
-        if (!isLastDoor)
+        if (!isProcessing)
         {
-            this.isLastDoor = false;
-            List<ContactPoint2D> points = new List<ContactPoint2D>();
-            int amount = col.GetContacts(points);
-            if (amount != 1)
+            isProcessing = true;
+            if (col.tag == "Player") 
             {
-                Debug.LogError("Error");
+                var x = map.WorldToCell(col.transform.position);
+                if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.levelComplete))
+                    Debug.LogError("Message didnt send");
+
+                if (!isLastDoor[new Vector2Int(x.x, x.y)])
+                {
+                    int door = doors[new Vector2Int(x.x, x.y)];
+                    DirectorManager.DirectorInstance.UpdateState(door);
+
+                    SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.Game);
+                }
+                else
+                {
+                    UIManager.UiInstance.ChangeStateTo(UIState.InScoreboard);
+                } 
             }
-
-            var x = map.WorldToCell(points[0].point);
-            if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.levelComplete))
-                Debug.LogError("Message didnt send");
-
-            int door = doors[new Vector2Int(x.x, x.y)];
-            DirectorManager.DirectorInstance.UpdateState(room[door],door);
-
-            SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.Game);
+            isProcessing = false;
         }
         else
         {

@@ -29,6 +29,7 @@ public class LevelManager : MonoBehaviour
     public TileBase wall;
     public TileBase ground;
     public TileBase exit;
+    public TileBase finalExit;
     public TileBase spike;
 
     public Tilemap Wallsmap;
@@ -41,7 +42,7 @@ public class LevelManager : MonoBehaviour
     /// Signleton Pattern
     /// </summary>
     private static LevelManager levelInstance;
-
+    private int FinalDoorMark;
 
     public static LevelManager LevelInstance
     {
@@ -62,7 +63,6 @@ public class LevelManager : MonoBehaviour
     #region Static Placements
     private void PlaceWallAndNeigbours(Vector2Int pos)
     {
-
         bool[] neigbours = new bool[8];
 
         neigbours[0] = generator.GetMap[pos.x - 1, pos.y + 1] == 0;
@@ -123,42 +123,43 @@ public class LevelManager : MonoBehaviour
     {
         GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), ground);
     }
-    private void PlaceExit(int doorNumber, int roomNumber,Vector2Int pos)
+    private void PlaceExit(int doorNumber, Vector2Int pos)
     {
+        bool isLastDoor = doorNumber == FinalDoorMark;
+        exitComponent.isLastDoor.Add(pos,isLastDoor);
         exitComponent.doors.Add(pos, doorNumber);
-        exitComponent.room.Add(doorNumber, roomNumber);
-        ExitMap.SetTile(new Vector3Int(pos.x, pos.y, 0), exit);
+
+        TileBase Exit = isLastDoor ? finalExit : exit;
+
+        ExitMap.SetTile(new Vector3Int(pos.x, pos.y, 0), Exit);
+        PlaceGround(pos);
 
         int[,] tempMap = generator.GetMap;
 
-        if(tempMap[pos.x - 1,pos.y]  == Mathf.Abs(doorNumber))
+        if (tempMap[pos.x, pos.y - 1] > 0)
         {
-            ExitMap.SetTile(new Vector3Int(pos.x, pos.y + 1, 0), exit);
-            ExitMap.SetTile(new Vector3Int(pos.x, pos.y + 2, 0), exit);
-            ExitMap.SetTile(new Vector3Int(pos.x + 1, pos.y, 0), exit);
-            ExitMap.SetTile(new Vector3Int(pos.x + 1, pos.y + 1, 0), exit);
-        }
-        else if (tempMap[pos.x + 1, pos.y] == Mathf.Abs(doorNumber))
-        {
-            ExitMap.SetTile(new Vector3Int(pos.x , pos.y + 1, 0), exit);
-            ExitMap.SetTile(new Vector3Int(pos.x, pos.y + 2, 0), exit);
-            ExitMap.SetTile(new Vector3Int(pos.x - 1, pos.y, 0), exit);
-            ExitMap.SetTile(new Vector3Int(pos.x - 1, pos.y + 1, 0), exit);
-        }
-        else if(tempMap[pos.x,pos.y+1] != Mathf.Abs(doorNumber))
-        {
-            PlaceWall(pos);
-            if(tempMap[pos.x+1,pos.y+1] == 0)
+            if (Mathf.Abs(tempMap[pos.x - 1, pos.y]) == Mathf.Abs(doorNumber))
             {
-                PlaceWall(new Vector2Int(pos.x,pos.y+1));
+                ExitMap.SetTile(new Vector3Int(pos.x, pos.y + 1, 0), Exit);
+                ExitMap.SetTile(new Vector3Int(pos.x, pos.y + 2, 0), Exit);
+                ExitMap.SetTile(new Vector3Int(pos.x + 1, pos.y, 0), Exit);
+                ExitMap.SetTile(new Vector3Int(pos.x + 1, pos.y + 1, 0), Exit);
             }
-            else
+            else if (Mathf.Abs(tempMap[pos.x + 1, pos.y]) == Mathf.Abs(doorNumber))
             {
-                PlaceWall(new Vector2Int(pos.x, pos.y - 1));
+                ExitMap.SetTile(new Vector3Int(pos.x, pos.y + 1, 0), Exit);
+                ExitMap.SetTile(new Vector3Int(pos.x, pos.y + 2, 0), Exit);
+                ExitMap.SetTile(new Vector3Int(pos.x - 1, pos.y, 0), Exit);
+                ExitMap.SetTile(new Vector3Int(pos.x - 1, pos.y + 1, 0), Exit);
             }
         }
-
     }
+
+    private void RemoveWall(Vector2Int pos)
+    {
+        Wallsmap.SetTile(new Vector3Int(pos.x, pos.y, 0), null);
+    }
+
     private void PlaceSpike(Vector2Int pos)
     {
         SpikeMap.SetTile(new Vector3Int(pos.x, pos.y, 0), spike);
@@ -179,22 +180,23 @@ public class LevelManager : MonoBehaviour
     {
         GameObject prefab = null;
         GameObject item = Instantiate(prefab, new Vector3(point.x, point.y, 0), Quaternion.identity);
-
-
     }
     #endregion
     #region Monster Placement
     private void SpawnMonsters(int room, List<Tuple<int,int>> monsters)
-    {    
-        List<Vector2Int> points = generator.PointsInRoom(room,monsters.Select(predicate => predicate.Item2).Sum());
-        for (int i = 0; i < points.Count; i++)
+    {
+        if (monsters != null && monsters.Count > 0)
         {
-            Vector2Int point = points[i];
-            SpawnMonster(point, monsters[0].Item1);
-            monsters[0] = new Tuple<int, int>(monsters[0].Item1, monsters[0].Item2 - 1);
-            if (monsters[0].Item2 == 0)
-                monsters.RemoveAt(0);
+            List<Vector2Int> points = generator.PointsInRoom(room, monsters.Select(predicate => predicate.Item2).Sum());
+            for (int i = 0; i < points.Count; i++)
+            {
+                Vector2Int point = points[i];
+                SpawnMonster(point, monsters[0].Item1);
+                monsters[0] = new Tuple<int, int>(monsters[0].Item1, monsters[0].Item2 - 1);
+                if (monsters[0].Item2 == 0)
+                    monsters.RemoveAt(0);
 
+            }
         }
     }
     private void SpawnMonster(Vector2Int point, int power)
@@ -219,6 +221,7 @@ public class LevelManager : MonoBehaviour
     {
         int currentRoom = generator.GenerateLevel(param);
 
+
         int door = param.door;
         SpawnMonsters(currentRoom, param.Monsters);
 
@@ -232,7 +235,7 @@ public class LevelManager : MonoBehaviour
         else
         {
             Dictionary<Vector2Int,int> room = generator.GetRoom(currentRoom);
-            Vector2Int location = room.FirstOrDefault(predicate => predicate.Value == param.door).Key;
+            Vector2Int location = room.FirstOrDefault(predicate => Mathf.Abs(predicate.Value) == param.door).Key;
 
             Vector2Int Up = new Vector2Int(location.x, location.y + 1);
             Vector2Int Down = new Vector2Int(location.x, location.y - 1);
@@ -248,12 +251,19 @@ public class LevelManager : MonoBehaviour
             else if (room.ContainsKey(Right) && room[Right] > 1)
                 SpawnPlayer(Right);
         }
-
-        exitComponent.room.Clear();
         exitComponent.doors.Clear();
-
+        exitComponent.isLastDoor.Clear();
         param.room = currentRoom;
         copy = param;
+
+
+        if(param.lastDoor)
+        {
+            List<int> doors = generator.GetRoom(currentRoom).Select(predicate => predicate.Value).Where(predicate => predicate < 0).Distinct().ToList();
+
+            int randomIndex = UnityEngine.Random.Range(0, doors.Count);
+            FinalDoorMark = doors[randomIndex];
+        }
         yield return null;
     }
 
@@ -261,6 +271,7 @@ public class LevelManager : MonoBehaviour
     {
         yield return PlaceLevel(param);
         updated = false;
+        DirectorManager.DirectorInstance.currentState = copy;
         yield return RendererLevel(copy);
     }
 
@@ -270,6 +281,8 @@ public class LevelManager : MonoBehaviour
         updated = true;
         Wallsmap.ClearAllTiles();
         GroundsMap.ClearAllTiles();
+        ExitMap.ClearAllTiles();
+        SpikeMap.ClearAllTiles();
 
         Dictionary<Vector2Int, int> points = generator.GetRoom(copy.room);
 
@@ -295,11 +308,7 @@ public class LevelManager : MonoBehaviour
             }
             else if (currentLocation < 0)
             {
-                Tuple<int, int> rooms = generator.Connected_Doors[currentLocation];
-
-                int room = rooms.Item1 == currentLocation ? rooms.Item2 : rooms.Item1;
-
-                PlaceExit(currentLocation, room, point.Key);
+                PlaceExit(Mathf.Abs(currentLocation), point.Key);
             }
         }
         

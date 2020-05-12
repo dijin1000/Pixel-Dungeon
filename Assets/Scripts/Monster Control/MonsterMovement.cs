@@ -188,7 +188,7 @@ public class MonsterMovement : MonoBehaviour
             return;
 		}
 
-        rb.MovePosition(rb.position + movement * Sspeed * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + movement * Speed * Time.fixedDeltaTime);
     }
 
     void MoveToPlayer()

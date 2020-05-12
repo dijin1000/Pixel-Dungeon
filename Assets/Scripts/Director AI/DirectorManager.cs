@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MathNet.Numerics.Distributions;
 
 public enum MonsterTypes
 {
@@ -33,7 +32,7 @@ public class DirectorManager : MonoBehaviour
         }
     }
     int results;
-    private Parameters currentState;
+    public Parameters currentState;
 
     void Awake()
     {
@@ -45,8 +44,6 @@ public class DirectorManager : MonoBehaviour
     private void Update()
     {
         time += Time.deltaTime;
-        if (time > MaxTime)
-            UIManager.UiInstance.ChangeStateTo(UIState.InScoreboard);
     }
 
     public void Load(int slotloading)
@@ -65,72 +62,119 @@ public class DirectorManager : MonoBehaviour
         throw new NotImplementedException();
     }
 
-    public void UpdateState(int room,int door)
+    public void UpdateState(int door)
     {
         currentState.door = door;
-        currentState.room = room;
     }
+
+    private int x = 0;
+    private bool FirstLevel = true;
 
     public IEnumerator NextLevel()
     {
-        Measurements m = StatisticsManager.StatisticsInstance.Measurements;
-
-        int monstercount = m.monsters;
-        if (m.monsterKilled == 0)
-            monstercount++;
-        if (m.lethality > 0.5)
-            monstercount++;
-        if (m.roomTime[currentState.room] < 10)
-            monstercount++;
-        if (m.lethality < 0.5 && m.monsterhit > 0)
-            monstercount--;
-
-        currentState.Monsters = new List<Tuple<int, int>>();
-        currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, monstercount));
-
-        float RSmean = 30 + 10 * monstercount;
-        float RSstdDev = 10;
-        Normal normalDist = new Normal(RSmean, RSstdDev);
-        currentState.roomSize = normalDist.Sample();
-
-        float spikeChange = 0;
-        if (m.trapped == 0)
-            spikeChange += 0.05f;
-        else
-            spikeChange -= m.trapped / 100;
-        if (spikeChange < -0.10f)
-            spikeChange = -0.10f;
-
-        float Smean = 0.15f;
-        float SstdDev = 0.05f;
-        Normal normalDist = new Normal(Smean, SstdDev);
-        currentState.spikeRate = normalDist.Sample();
-
-        if(m.monsterhit == 0)
-            currentState.narrowRoom = true;
-        if (m.monsterhit > 1)
-            currentState.narrowRoom = false;
-
-        if (m.monsterhit > 1)
+        switch (x)
         {
-            currentState.cycles = true;
-            currentState.deadEnd = false;
+            case 1:
+                Easy();
+                break;
+            case 2:
+                Scaled();
+                break;
+            case 3:
+                Hard();
+                break;
         }
-        else
-        {
-            currentState.cycles = false;
-            currentState.deadEnd = true;
-        }
-
-        GlobalManager.GlobalInstance.MonsterHealthFlat = 0;
-        GlobalManager.GlobalInstance.MonsterHealhtPercentage = 100f;
-
-        GlobalManager.GlobalInstance.MonsterDamageFlat = 0;
-        GlobalManager.GlobalInstance.MonsterDamagePercentage = 100f;
-
-        GlobalManager.GlobalInstance.MonsterSpeedFlat = 0;
-        GlobalManager.GlobalInstance.MonsterSpeedPercentage = 100f;
-
+        if (time > MaxTime)
+            currentState.lastDoor = true;
         yield return LevelManager.LevelInstance.CreateNewLevel(currentState);
+    }
+
+    private void Easy()
+    {
+        if (FirstLevel)
+        {
+            FirstLevel = false;
+        }
+        else
+        {
+        }
+    }
+    private void Scaled() 
+    {
+        if (FirstLevel)
+        {
+            FirstLevel = false;
+        }
+        else
+        {
+            Measurements m = StatisticsManager.StatisticsInstance.Measurements;
+
+            int monstercount = m.monsters;
+            if (m.monsterKilled == 0)
+                monstercount++;
+            if (m.lethality > 0.5)
+                monstercount++;
+            if (m.roomTime[currentState.room] < 10)
+                monstercount++;
+            if (m.lethality < 0.5 && m.monsterhit > 0)
+                monstercount--;
+
+            currentState.Monsters = new List<Tuple<int, int>>();
+            currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, monstercount));
+            /*
+            float RSmean = 30 + 10 * monstercount;
+            float RSstdDev = 10;
+            Normal normalDist = new Normal(RSmean, RSstdDev);
+            currentState.roomSize = normalDist.Sample();
+
+            float spikeChange = 0;
+            if (m.trapped == 0)
+                spikeChange += 0.05f;
+            else
+                spikeChange -= m.trapped / 100;
+            if (spikeChange < -0.10f)
+                spikeChange = -0.10f;
+
+            float Smean = 0.15f;
+            float SstdDev = 0.05f;
+            Normal normalDist = new Normal(Smean, SstdDev);
+            currentState.spikeRate = normalDist.Sample();
+
+            if(m.monsterhit == 0)
+                currentState.narrowRoom = true;
+            if (m.monsterhit > 1)
+                currentState.narrowRoom = false;
+
+            if (m.monsterhit > 1)
+            {
+                currentState.cycles = true;
+                currentState.deadEnd = false;
+            }
+            else
+            {
+                currentState.cycles = false;
+                currentState.deadEnd = true;
+            }
+            */
+            GlobalManager.GlobalInstance.MonsterHealthFlat = 0;
+            GlobalManager.GlobalInstance.MonsterHealhtPercentage = 100f;
+
+            GlobalManager.GlobalInstance.MonsterDamageFlat = 0;
+            GlobalManager.GlobalInstance.MonsterDamagePercentage = 100f;
+
+            GlobalManager.GlobalInstance.MonsterSpeedFlat = 0;
+            GlobalManager.GlobalInstance.MonsterSpeedPercentage = 100f;
+        }
+    }
+    private void Hard()
+    {
+        if (FirstLevel)
+        {
+            FirstLevel = false;
+        }
+        else
+        {
+
+        }
     }
 }
