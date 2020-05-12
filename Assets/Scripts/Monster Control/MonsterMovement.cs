@@ -17,15 +17,7 @@ public class MonsterMovement : MonoBehaviour
     private float minSpeed = 2f;
     private float maxSpeed = 4f;
 
-    private float speed ;
-
-    private float Speed
-    {
-        get
-        {
-            return speed * GlobalManager.GlobalInstance.MonsterSpeedPercentage + GlobalManager.GlobalInstance.MonsterSpeedFlat;
-        }
-    }
+    private float speed;
 
     public float maxRange = 4f;
     public float viewRange = 6f;
@@ -188,20 +180,20 @@ public class MonsterMovement : MonoBehaviour
             return;
 		}
 
-        rb.MovePosition(rb.position + movement * Speed * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
     }
 
     void MoveToPlayer()
 	{
         if(movementType == MovementTypes.ToPlayer) {
-            rb.MovePosition (Vector2.Lerp (rb.position, playerPosition, (Speed * Time.fixedDeltaTime)));
+            rb.MovePosition (Vector2.Lerp (rb.position, playerPosition, (speed * Time.fixedDeltaTime)));
         }
 	}
 
     void MoveToInitialPosition()
     {
         if(movementType == MovementTypes.ReturnToInitialPosition) {
-            rb.MovePosition (Vector2.Lerp (rb.position, initialPosition, (Speed * Time.fixedDeltaTime)));
+            rb.MovePosition (Vector2.Lerp (rb.position, initialPosition, (speed * Time.fixedDeltaTime)));
         }
     }
 }

@@ -13,14 +13,6 @@ public class MonsterAttack : MonoBehaviour
     private float hitChance = 0.65f; // change the monster hits player
 
 
-    private float Strength
-    {
-        get
-        {
-            return strength * GlobalManager.GlobalInstance.MonsterDamagePercentage + GlobalManager.GlobalInstance.MonsterDamageFlat;
-        }
-    }
-
     private Rigidbody2D rb;
    
     void Awake()
