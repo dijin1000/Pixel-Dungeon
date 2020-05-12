@@ -12,7 +12,7 @@ public class PriorityQueue<T,U>
     {
         get
         {
-            return queue.Any();
+            return !queue.Any();
         }
     }
 

@@ -161,6 +161,7 @@ class MapGenerator
         for (int x = 0; x < mapWidth; x++)
         for (int y = 0; y < mapHeight; y++)
             map[x, y] = 0;
+        createFirstRoom();
     }
 
     public int GenerateLevel(Parameters par)

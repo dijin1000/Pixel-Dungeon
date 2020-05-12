@@ -71,7 +71,7 @@ public class DirectorManager : MonoBehaviour
         currentState.roomSize = 50;
         currentState.spikeRate = 0.05;
         currentState.narrowRoom = false;
-        currentState.deadEnd = false;
+        currentState.deadEnd = true;
         currentState.cycles = true;
         currentState.Monsters = new List<Tuple<int, int>>();
         currentState.Monsters.Add(new Tuple<int,int>((int)MonsterTypes.Soft, 2));
