@@ -155,11 +155,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private void RemoveWall(Vector2Int pos)
-    {
-        Wallsmap.SetTile(new Vector3Int(pos.x, pos.y, 0), null);
-    }
-
     private void PlaceSpike(Vector2Int pos)
     {
         SpikeMap.SetTile(new Vector3Int(pos.x, pos.y, 0), spike);
