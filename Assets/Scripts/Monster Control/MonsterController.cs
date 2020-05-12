@@ -10,11 +10,28 @@ public class MonsterController : IUnit
     private float health = 100f;
 
     [SerializeField]
-    private float maxHealth = 100f;
+    private float minmaxHealth = 80f;
+    [SerializeField]
+    private float maxmaxHealth = 100f;
+    private float maxHealth;
+
+    private float MaxHealth
+    {
+        get
+        {
+            return maxHealth * GlobalManager.GlobalInstance.MonsterHealhtPercentage + GlobalManager.GlobalInstance.MonsterHealthFlat;
+        }
+    }
 
     private Action<float> onHealthChange;
     private GameObject UICanvas;
     private Slider healthBar;
+
+    protected override void Awake()
+    {
+        maxHealth = UnityEngine.Random.Range(minmaxHealth,maxmaxHealth);
+        base.Awake();
+    }
 
     public void Start()
     {
@@ -26,7 +43,7 @@ public class MonsterController : IUnit
                 healthBar.value = newHealth;
             }
             );
-        Set_Health(maxHealth);
+        Set_Health(MaxHealth);
     }
 
     public override bool Get_Death()

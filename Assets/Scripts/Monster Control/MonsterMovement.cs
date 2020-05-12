@@ -13,7 +13,20 @@ public enum MovementTypes
 
 public class MonsterMovement : MonoBehaviour
 {
-    public float speed = 2f;
+    [SerializeField]
+    private float minSpeed = 2f;
+    private float maxSpeed = 4f;
+
+    private float speed ;
+
+    private float Speed
+    {
+        get
+        {
+            return speed * GlobalManager.GlobalInstance.MonsterSpeedPercentage + GlobalManager.GlobalInstance.MonsterSpeedFlat;
+        }
+    }
+
     public float maxRange = 4f;
     public float viewRange = 6f;
     public MovementTypes movementType = MovementTypes.Random;
@@ -26,6 +39,7 @@ public class MonsterMovement : MonoBehaviour
    
     void Awake()
     {
+        speed = UnityEngine.Random.Range(minSpeed, maxSpeed);
         rb = GetComponent<Rigidbody2D>();
 
         initialPosition = rb.position;
@@ -174,20 +188,20 @@ public class MonsterMovement : MonoBehaviour
             return;
 		}
 
-        rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + movement * Sspeed * Time.fixedDeltaTime);
     }
 
     void MoveToPlayer()
 	{
         if(movementType == MovementTypes.ToPlayer) {
-            rb.MovePosition (Vector2.Lerp (rb.position, playerPosition, (speed * Time.fixedDeltaTime)));
+            rb.MovePosition (Vector2.Lerp (rb.position, playerPosition, (Speed * Time.fixedDeltaTime)));
         }
 	}
 
     void MoveToInitialPosition()
     {
         if(movementType == MovementTypes.ReturnToInitialPosition) {
-            rb.MovePosition (Vector2.Lerp (rb.position, initialPosition, (speed * Time.fixedDeltaTime)));
+            rb.MovePosition (Vector2.Lerp (rb.position, initialPosition, (Speed * Time.fixedDeltaTime)));
         }
     }
 }
