@@ -25,14 +25,11 @@ public class WeaponItem : Item
         GetComponentInChildren<SpriteRenderer>().sprite = weapon.GetComponent<SpriteRenderer>().sprite;
     }
 
-
-
-    /*
-    public override void Consume(PlayerData data)
+    public override void Consume(ref PlayerData data)
     {
+        data.Controller = anim;
+        data.Weapon = weapon;
 
-
-        base.Consume(data);
+        base.Consume(ref data);
     }
-    */
 }

@@ -22,8 +22,6 @@ public class PlayerInput : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         controls = new InputMaster();
         controls.Player.Movement.performed += ctx => movement = ctx.ReadValue<Vector2>();
-        //controls.Player.PickUp.performed +=;
-        //controls.Player.Attack.performed +=;
     }
 
     public void Subscribe(Action<InputAction.CallbackContext> action, ControlType type)

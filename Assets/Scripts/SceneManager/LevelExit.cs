@@ -33,12 +33,12 @@ public class LevelExit : MonoBehaviour
         }
     }
 
-    bool x = true;
+    bool isLastDoor = false;
     public void Exit(Collider2D col)
     {
-        if (x)
+        if (!isLastDoor)
         {
-            this.x = false;
+            this.isLastDoor = false;
             List<ContactPoint2D> points = new List<ContactPoint2D>();
             int amount = col.GetContacts(points);
             if (amount != 1)
@@ -54,7 +54,10 @@ public class LevelExit : MonoBehaviour
             DirectorManager.DirectorInstance.UpdateState(room[door],door);
 
             SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.Game);
-            this.x = true;
+        }
+        else
+        {
+            UIManager.UiInstance.ChangeStateTo(UIState.InScoreboard);
         }
     }
 }

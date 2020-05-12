@@ -14,6 +14,8 @@ public class PlayerController : IUnit
     private SpriteRenderer renderer_sprite;
     private Animator anim;
     private Transform graphics;
+    [SerializeField]
+    private GameObject weaponHolder;
 
     #region Getters/Setters
     /// <summary>
@@ -106,7 +108,7 @@ public class PlayerController : IUnit
         anim = GetComponent<Animator>();
         graphics = transform.Find("GFX");
         PlayerInstance = this;
-        data = new PlayerData(null,null,null,100f,false);
+        data = new PlayerData(null,null,null,null,null,100f,false,1,5,null,null);
         renderer_sprite = transform.GetComponentsInChildren<SpriteRenderer>(true).FirstOrDefault(predicate => predicate.name == "Player_Body"); ;
         Sprite_Player = renderer_sprite.sprite;
         SubscribeGraphicxsChange((Sprite sprite) => { renderer_sprite.sprite = sprite; });
@@ -122,10 +124,23 @@ public class PlayerController : IUnit
 
             }
             , ControlType.Movement);
+
         //DontDestroyOnLoad(gameObject);
 
         data.SubscribeDmgChange((float addedDmg) => { this.w.Subscribe((float input) => { return input + addedDmg; }); });
         data.SubscribeSpeedChange((float addedSpeed) => { this.p_Input.moveSpeed += addedSpeed; });
+        data.SubscribeControllerChange((AnimatorOverrideController controller) => { anim.runtimeAnimatorController = controller; });
+        data.SubscribeWeaponChange((GameObject weapon) =>
+        {
+            if (weaponHolder.transform.childCount != 0)
+            {
+                foreach (Transform child in weaponHolder.transform)
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+            }
+            GameObject.Instantiate(weapon, weaponHolder.transform);
+        });
     }
 
 
@@ -157,17 +172,28 @@ public class PlayerController : IUnit
 [Serializable]
 public struct PlayerData
 {
-    public PlayerData(Action<float> onHealthChange = null, Action<float> onDmgChange = null, Action<float> onSpeedChange = null, float _health = 100f, bool death = false, float _dmg = 1f, float _speed = 5f)
+    public PlayerData(Action<float> onHealthChange = null, Action<float> onDmgChange = null, Action<float> onSpeedChange = null, Action<GameObject> onWeaponChange = null, Action<AnimatorOverrideController> onControllerChange = null, float _health = 100f, bool death = false, float _dmg = 1f, float _speed = 5f, GameObject _weapon = null, AnimatorOverrideController _controller = null)
     {
         Death = death;
         maxHealth = _health;
         dmg = _dmg;
         health = _health;
         speed = _speed;
+        weapon = _weapon;
+        controller = _controller;
         OnHealthChange = onHealthChange ?? ((float newhealth) => { });
         OnDmgChange = onDmgChange ?? ((float newdmg) => { });
         OnSpeedChange = onSpeedChange ?? ((float newspeed) => { });
+        OnWeaponChange = onWeaponChange ?? ((GameObject newweapon) => { });
+        OnControllerChange = onControllerChange ?? ((AnimatorOverrideController controller) => { });
+
     }
+
+    private GameObject weapon;
+    private AnimatorOverrideController controller;
+
+    private Action<GameObject> OnWeaponChange;
+    private Action<AnimatorOverrideController> OnControllerChange;
 
     private Action<float> OnHealthChange;
     private Action<float> OnDmgChange;
@@ -219,6 +245,31 @@ public struct PlayerData
     }
     public bool Death;
 
+    public GameObject Weapon
+    {
+        get
+        {
+            return weapon;
+        }
+        set
+        {
+            weapon = value;
+            OnWeaponChange?.Invoke(weapon);
+        }
+    }
+
+    public AnimatorOverrideController Controller
+    {
+        get
+        {
+            return controller;
+        }
+        set
+        {
+            controller = value;
+            OnControllerChange?.Invoke(controller);
+        }
+    }
 
     internal void SubscribeHealthChange(Action<float> actionToRegister)
     {
@@ -232,5 +283,15 @@ public struct PlayerData
     internal void SubscribeSpeedChange(Action<float> actionToRegister)
     {
         OnSpeedChange += actionToRegister;
+    }
+
+    public void SubscribeWeaponChange(Action<GameObject> actionToRegister)
+    {
+        OnWeaponChange += actionToRegister;
+    }
+
+    public void SubscribeControllerChange(Action<AnimatorOverrideController> actionToRegister)
+    {
+        OnControllerChange += actionToRegister;
     }
 }

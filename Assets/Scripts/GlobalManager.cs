@@ -28,7 +28,7 @@ public class GlobalManager : MonoBehaviour
         private set
         {
             if (globalInstance != null)
-                Debug.LogError("Two instances of the " + GlobalInstance.GetType() + " are sethere is no DirectorAI set.");
+                Debug.LogError("Two instances of the " + GlobalInstance.GetType() + " are set.");
             globalInstance = value;
         }
     }

@@ -39,7 +39,16 @@ public class DirectorManager : MonoBehaviour
     {
         DirectorInstance = this;
     }
-    
+
+    private float time = 0;
+    private float MaxTime = 300;
+    private void Update()
+    {
+        time += Time.deltaTime;
+        if (time > MaxTime)
+            UIManager.UiInstance.ChangeStateTo(UIState.InScoreboard);
+    }
+
     public void Load(int slotloading)
     {
         throw new NotImplementedException();
