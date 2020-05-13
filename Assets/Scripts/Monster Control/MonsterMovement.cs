@@ -60,6 +60,8 @@ public class MonsterMovement : MonoBehaviour
             List<Vector2> possibleDirections = new List<Vector2> { Vector2.left, Vector2.right, Vector2.up, Vector2.down };
             movement = possibleDirections[Random.Range(0, possibleDirections.Count)];
         }
+
+        Debug.Log("I am awake!");
     }
 
     void FixedUpdate()
