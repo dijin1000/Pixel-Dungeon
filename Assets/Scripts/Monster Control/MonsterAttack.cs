@@ -8,7 +8,7 @@ public class MonsterAttack : MonoBehaviour
     private float maxStrength = 4f;
     private float strength; // damage on hit
     [SerializeField]
-    private float attackSpeed = 0.5f; // attacks per second
+    private float hitsPerSecond = 2f; // attacks per second
     [SerializeField]
     private float hitChance = 0.65f; // change the monster hits player
 
@@ -18,15 +18,13 @@ public class MonsterAttack : MonoBehaviour
     void Awake()
     {
         strength = UnityEngine.Random.Range(minStrength, maxStrength);
-        Debug.Log("Awake!");
         rb = GetComponent<Rigidbody2D>();
     }
 
     void FixedUpdate()
     {
-        Debug.Log("Fixed update");
         if(PlayerIsCloseEnough()) {
-            Attack();
+            Invoke("Attack", hitsPerSecond);
         }
     }
 
@@ -40,26 +38,16 @@ public class MonsterAttack : MonoBehaviour
 
         double distanceFromPlayer = System.Math.Sqrt(System.Math.Pow((double)(currentPosition.x - playerPosition.x), (double)2) + System.Math.Pow((double)(currentPosition.y - playerPosition.y), (double)2));
 
-        return (float)distanceFromPlayer <= 1f;
-    }
-
-    bool TimeToAttack()
-    {
-        // something to keep track of the hit speed
-        // hit speed of 0.5 -> attack each 2 seconds
-        // hit speed of 0.1 -> attack every 10 seconds
-
-        return true;
+        return (float)distanceFromPlayer <= 1.1f;
     }
 
     void Attack()
     {
-        Debug.Log("Attack!");
-        // if(TimeToAttack())
-        // {
-        //     if(Random.Range(0f, 1f) < hitChance) {
-        //         Debug.Log("Hit!");
-        //     }
-        // }
+        if(PlayerIsCloseEnough())
+        {
+            if(Random.Range(0f, 1f) < hitChance) {
+                Debug.Log("Hit!");
+            }
+        }
     }
 }

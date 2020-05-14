@@ -12,7 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e02ebdf8eb364c9782e8d8a71029d19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  strength: 4
+  minStrength: 2
+  maxStrength: 4
+  attackSpeed: 0.5
+  hitChance: 0.65
+--- !u!114 &7742168649459072970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4450295367103008057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e02ebdf8eb364c9782e8d8a71029d19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minStrength: 2
+  maxStrength: 4
   attackSpeed: 0.5
   hitChance: 0.65
 --- !u!1001 &6441758355054519212
@@ -95,7 +112,7 @@ PrefabInstance:
     - target: {fileID: 7252793310745472661, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
       propertyPath: m_Name
-      value: Hard_Monste
+      value: Hard_Monster
       objectReference: {fileID: 0}
     - target: {fileID: 7252793311125202654, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
