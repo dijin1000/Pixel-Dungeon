@@ -65,14 +65,14 @@ public class LevelManager : MonoBehaviour
     {
         bool[] neigbours = new bool[8];
 
-        neigbours[0] = generator.GetMap[pos.x - 1, pos.y + 1] == 0;
-        neigbours[1] = generator.GetMap[pos.x, pos.y + 1] == 0;
-        neigbours[2] = generator.GetMap[pos.x + 1, pos.y + 1] == 0;
-        neigbours[3] = generator.GetMap[pos.x + 1, pos.y] == 0;
-        neigbours[4] = generator.GetMap[pos.x + 1, pos.y - 1] == 0;
-        neigbours[5] = generator.GetMap[pos.x, pos.y - 1] == 0;
-        neigbours[6] = generator.GetMap[pos.x - 1, pos.y - 1] == 0;
-        neigbours[7] = generator.GetMap[pos.x - 1, pos.y] == 0;
+        neigbours[0] = generator.GetMap[pos.x - 1, pos.y + 1] == 0 && !(generator.GetMap[pos.x, pos.y + 1] < 0); 
+        neigbours[1] = generator.GetMap[pos.x, pos.y + 1] == 0 && !(generator.GetMap[pos.x + 1, pos.y + 1] < 0) && !(generator.GetMap[pos.x -1, pos.y + 1] < 0);
+        neigbours[2] = generator.GetMap[pos.x + 1, pos.y + 1] == 0 && !(generator.GetMap[pos.x, pos.y + 1] < 0) && !(generator.GetMap[pos.x + 1, pos.y] < 0); 
+        neigbours[3] = generator.GetMap[pos.x + 1, pos.y] == 0 && !(generator.GetMap[pos.x + 1, pos.y - 1] < 0);
+        neigbours[4] = generator.GetMap[pos.x + 1, pos.y - 1] == 0 && !(generator.GetMap[pos.x, pos.y - 1] < 0) && !(generator.GetMap[pos.x - 1, pos.y - 1] < 0);
+        neigbours[5] = generator.GetMap[pos.x, pos.y - 1] == 0 && !(generator.GetMap[pos.x - 1, pos.y - 1] < 0) && !(generator.GetMap[pos.x + 1, pos.y] < 0);
+        neigbours[6] = generator.GetMap[pos.x - 1, pos.y - 1] == 0 && !(generator.GetMap[pos.x, pos.y + 1] < 0);
+        neigbours[7] = generator.GetMap[pos.x - 1, pos.y] == 0 && !(generator.GetMap[pos.x - 1, pos.y - 1] < 0);
 
         PlaceWallPrime(pos, neigbours);
         PlaceGround(pos);

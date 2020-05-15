@@ -9,32 +9,22 @@ public class LevelExit : MonoBehaviour
     public Dictionary<Vector2Int,int> doors = new Dictionary<Vector2Int, int>(); //which positions is for which door
 
     private Tilemap map;
+    private TilemapCollider2D collider2D;
     private bool isProcessing = false;
     public Dictionary<Vector2Int,bool> isLastDoor = new Dictionary<Vector2Int, bool>();
     
     public void Awake()
     {
         map = GetComponent<Tilemap>();
+        collider2D = GetComponent<TilemapCollider2D>();
     }
-    void OnTriggerEnter2D(Collider2D col)
+    void OnTriggerStay2D(Collider2D col)
     {
         if (col.tag == "Player")
         {
-            storedAction = (InputAction.CallbackContext parameter) => { Exit(col); };
-            PlayerController.PlayerInstance.Subscribe(storedAction, ControlType.Enter);
+            Exit(col);
         }
     }
-
-    Action<InputAction.CallbackContext> storedAction;
-
-    void OnTriggerExit2D(Collider2D col)
-    {
-        if (col.tag == "Player")
-        {
-            PlayerController.PlayerInstance.UnSubscribe(storedAction, ControlType.Enter);
-        }
-    }
-
 
     public void Exit(Collider2D col)
     {
@@ -43,21 +33,25 @@ public class LevelExit : MonoBehaviour
             isProcessing = true;
             if (col.tag == "Player") 
             {
-                var x = map.WorldToCell(col.transform.position);
-                if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.levelComplete))
-                    Debug.LogError("Message didnt send");
-
-                if (!isLastDoor[new Vector2Int(x.x, x.y)])
+                Vector3Int collisionPoint = map.WorldToCell(collider2D.ClosestPoint(col.transform.position));
+                TileBase hasTile = map.GetTile(collisionPoint);
+                if (hasTile != null)
                 {
-                    int door = doors[new Vector2Int(x.x, x.y)];
-                    DirectorManager.DirectorInstance.UpdateState(door);
+                    if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.levelComplete))
+                        Debug.LogError("Message didnt send");
 
-                    SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.Game);
+                    if (!isLastDoor[(Vector2Int)collisionPoint])
+                    {
+                        int door = doors[(Vector2Int)collisionPoint];
+                        DirectorManager.DirectorInstance.UpdateState(door);
+
+                        SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.Game);
+                    }
+                    else
+                    {
+                        UIManager.UiInstance.ChangeStateTo(UIState.InScoreboard);
+                    }
                 }
-                else
-                {
-                    UIManager.UiInstance.ChangeStateTo(UIState.InScoreboard);
-                } 
             }
             isProcessing = false;
         }
