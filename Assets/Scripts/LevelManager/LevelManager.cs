@@ -64,16 +64,23 @@ public class LevelManager : MonoBehaviour
     private void PlaceWallAndNeigbours(Vector2Int pos)
     {
         bool[] neigbours = new bool[8];
-
-        neigbours[0] = generator.GetMap[pos.x - 1, pos.y + 1] == 0 && !(generator.GetMap[pos.x, pos.y + 1] < 0); 
+        
+        
         neigbours[1] = generator.GetMap[pos.x, pos.y + 1] == 0 && !(generator.GetMap[pos.x + 1, pos.y + 1] < 0) && !(generator.GetMap[pos.x -1, pos.y + 1] < 0);
-        neigbours[2] = generator.GetMap[pos.x + 1, pos.y + 1] == 0 && !(generator.GetMap[pos.x, pos.y + 1] < 0) && !(generator.GetMap[pos.x + 1, pos.y] < 0); 
-        neigbours[3] = generator.GetMap[pos.x + 1, pos.y] == 0 && !(generator.GetMap[pos.x + 1, pos.y - 1] < 0);
-        neigbours[4] = generator.GetMap[pos.x + 1, pos.y - 1] == 0 && !(generator.GetMap[pos.x, pos.y - 1] < 0) && !(generator.GetMap[pos.x - 1, pos.y - 1] < 0);
-        neigbours[5] = generator.GetMap[pos.x, pos.y - 1] == 0 && !(generator.GetMap[pos.x - 1, pos.y - 1] < 0) && !(generator.GetMap[pos.x + 1, pos.y] < 0);
-        neigbours[6] = generator.GetMap[pos.x - 1, pos.y - 1] == 0 && !(generator.GetMap[pos.x, pos.y + 1] < 0);
-        neigbours[7] = generator.GetMap[pos.x - 1, pos.y] == 0 && !(generator.GetMap[pos.x - 1, pos.y - 1] < 0);
+        
+        neigbours[2] = generator.GetMap[pos.x + 1, pos.y + 1] == 0 && !(generator.GetMap[pos.x, pos.y + 1] < 0); 
 
+        
+        neigbours[3] = generator.GetMap[pos.x + 1, pos.y] == 0 && !(generator.GetMap[pos.x + 1, pos.y + 1] < 0);
+        
+        neigbours[4] = generator.GetMap[pos.x + 1, pos.y - 1] == 0 && !(generator.GetMap[pos.x, pos.y - 1] < 0) && !(generator.GetMap[pos.x + 1, pos.y] < 0);
+        
+          
+        neigbours[5] = generator.GetMap[pos.x, pos.y - 1] == 0 && !(generator.GetMap[pos.x - 1, pos.y - 1] < 0) && !(generator.GetMap[pos.x + 1, pos.y] < 0);
+        neigbours[6] = generator.GetMap[pos.x - 1, pos.y - 1] == 0 && !(generator.GetMap[pos.x, pos.y - 1] < 0) && !(generator.GetMap[pos.x -1, pos.y] < 0) ;
+        neigbours[7] = generator.GetMap[pos.x - 1, pos.y] == 0 && !(generator.GetMap[pos.x - 1, pos.y + 1] < 0);
+        neigbours[0] = generator.GetMap[pos.x - 1, pos.y + 1] == 0 && !(generator.GetMap[pos.x, pos.y + 1] < 0);
+        
         PlaceWallPrime(pos, neigbours);
         PlaceGround(pos);
 
@@ -152,6 +159,37 @@ public class LevelManager : MonoBehaviour
                 ExitMap.SetTile(new Vector3Int(pos.x - 1, pos.y, 0), Exit);
                 ExitMap.SetTile(new Vector3Int(pos.x - 1, pos.y + 1, 0), Exit);
             }
+        }
+
+        if(tempMap[pos.x,pos.y + 1] < 0)
+        {
+            PlaceWall(new Vector2Int(pos.x, pos.y));
+            if(tempMap[pos.x+1,pos.y] > 0)
+            {
+                PlaceWall(new Vector2Int(pos.x - 1,pos.y));
+
+            }
+            else
+            {
+                PlaceWall(new Vector2Int(pos.x + 1, pos.y));
+            }
+        }
+
+        if(tempMap[pos.x, pos.y + 1] > 0)
+        {
+            if (tempMap[pos.x + 1, pos.y] < 0)
+            {
+                ExitMap.SetTile(new Vector3Int(pos.x - 1, pos.y, 0), Exit);
+                exitComponent.isLastDoor.Add(new Vector2Int(pos.x - 1, pos.y), isLastDoor);
+                exitComponent.doors.Add(new Vector2Int(pos.x - 1, pos.y), doorNumber);
+            }
+            else if (tempMap[pos.x - 1, pos.y] < 0)
+            {
+                ExitMap.SetTile(new Vector3Int(pos.x + 1, pos.y, 0), Exit);
+                exitComponent.isLastDoor.Add(new Vector2Int(pos.x + 1, pos.y), isLastDoor);
+                exitComponent.doors.Add(new Vector2Int(pos.x + 1, pos.y), doorNumber);
+            }
+
         }
     }
 
@@ -257,7 +295,7 @@ public class LevelManager : MonoBehaviour
             List<int> doors = generator.GetRoom(currentRoom).Select(predicate => predicate.Value).Where(predicate => predicate < 0).Distinct().ToList();
 
             int randomIndex = UnityEngine.Random.Range(0, doors.Count);
-            FinalDoorMark = doors[randomIndex];
+            FinalDoorMark = Mathf.Abs(doors[randomIndex]);
         }
         yield return null;
     }

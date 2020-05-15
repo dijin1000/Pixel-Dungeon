@@ -101,6 +101,7 @@ public class SceneTransistionManager : MonoBehaviour
 
     private IEnumerator OnExit()
     {
+        Debug.Log("Exit");
         yield return UIManager.UiInstance.SlideClose();      
         Application.Quit();       
     }
