@@ -137,7 +137,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7252793310745472661}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 258d61a9433494a8699aaef6c97c2f11, type: 3}
   m_Name: 
@@ -153,14 +153,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7252793310745472661}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e02ebdf8eb364c9782e8d8a71029d19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   minStrength: 2
   maxStrength: 4
-  attackSpeed: 0.5
+  hitsPerSecond: 2
   hitChance: 0.65
 --- !u!1 &7252793311125202652
 GameObject:

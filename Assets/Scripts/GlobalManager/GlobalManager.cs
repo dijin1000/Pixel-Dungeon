@@ -13,6 +13,24 @@ public class GlobalManager : MonoBehaviour
     public float MonsterSpeedFlat = 0;
     public float MonsterSpeedPercentage = 100f;
 
+    public float ItemStrengthFlat = 0;
+    public float ItemStrengthPercentage = 100f;
+
+    public float PotionHealingFlat = 0;
+    public float PotionHealingPercentage = 100f;
+
+    public float PotionSpeedFlat = 0;
+    public float PotionSpeedPercentage = 100f;
+
+    public float PotionDmgFlat = 0;
+    public float PotionDmgPercentage = 100f;
+
+    public float MoneyIncreaseFlat = 0;
+    public float MoneyIncreasePercentage = 100f;
+
+    public float WeaponRarity = 0;
+
+
     /// <summary>
     /// Signleton Pattern
     /// </summary>

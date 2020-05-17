@@ -65,14 +65,22 @@ public class DirectorManager : MonoBehaviour
     public void UpdateState(int door)
     {
         currentState.door = door;
+        StatisticsManager.StatisticsInstance.FinishedRoom(currentState.room);
     }
 
-    private int x = 0;
+    private int buildtype = 2;
+    public int GetBuildType
+    {
+        get
+        {
+            return buildtype;
+        }
+    }
     private bool FirstLevel = true;
 
     public IEnumerator NextLevel()
     {
-        switch (x)
+        switch (buildtype)
         {
             case 1:
                 Easy();
@@ -124,7 +132,7 @@ public class DirectorManager : MonoBehaviour
             /*
             float RSmean = 30 + 10 * monstercount;
             float RSstdDev = 10;
-            Normal normalDist = new Normal(RSmean, RSstdDev);
+            NormalDistribution normalDist = new NormalDistribution(RSmean, RSstdDev);
             currentState.roomSize = normalDist.Sample();
 
             float spikeChange = 0;
@@ -137,7 +145,7 @@ public class DirectorManager : MonoBehaviour
 
             float Smean = 0.15f;
             float SstdDev = 0.05f;
-            Normal normalDist = new Normal(Smean, SstdDev);
+            NormalDistribution normalDist = new NormalDistribution(Smean, SstdDev);
             currentState.spikeRate = normalDist.Sample();
 
             if(m.monsterhit == 0)

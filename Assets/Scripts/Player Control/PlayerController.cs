@@ -15,7 +15,7 @@ public class PlayerController : IUnit
     private Animator anim;
     private Transform graphics;
     [SerializeField]
-    private GameObject weaponHolder;
+    private GameObject weaponHolder = null;
 
     #region Getters/Setters
     /// <summary>
@@ -239,7 +239,7 @@ public struct PlayerData
         }
         set
         {
-            health = value;
+            health = Mathf.Min(value,maxHealth);
             OnHealthChange?.Invoke(Health);
         }
     }

@@ -402,6 +402,66 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1352882091}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &543206516
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 543206517}
+  - component: {fileID: 543206518}
+  m_Layer: 0
+  m_Name: GlobalManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &543206517
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543206516}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 941502250}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &543206518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543206516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63cbd15b5d77bb4418c12ad04929ec44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MonsterHealthFlat: 0
+  MonsterHealhtPercentage: 100
+  MonsterDamageFlat: 0
+  MonsterDamagePercentage: 100
+  MonsterSpeedFlat: 0
+  MonsterSpeedPercentage: 100
+  ItemStrengthFlat: 0
+  ItemStrengthPercentage: 100
+  PotionHealingFlat: 0
+  PotionHealingPercentage: 100
+  PotionSpeedFlat: 0
+  PotionSpeedPercentage: 100
+  PotionDmgFlat: 0
+  PotionDmgPercentage: 100
+  MoneyIncreaseFlat: 0
+  MoneyIncreasePercentage: 100
+  WeaponRarity: 0
 --- !u!1 &570076186
 GameObject:
   m_ObjectHideFlags: 0
@@ -864,6 +924,7 @@ Transform:
   - {fileID: 1441525327}
   - {fileID: 1324258066}
   - {fileID: 479086290}
+  - {fileID: 543206517}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1212,6 +1273,21 @@ MonoBehaviour:
     difficulty: 3
   prefabPlayer:
   - {fileID: 7918499700869756376, guid: e4be5cada5a1228488ece8175f2871f1, type: 3}
+  PotionPrefabList:
+  - {fileID: 3829655097148645699, guid: e9cd6f211e170ca4593f54df8b885d40, type: 3}
+  - {fileID: 3829655097148645699, guid: af9c21e45e53bb549803c622241687c1, type: 3}
+  - {fileID: 6651119476062526170, guid: 422c0c5bc677d5f4991ed3f7eb6b09e0, type: 3}
+  - {fileID: 652643955079806875, guid: 7a49a03f8b7213d46aeb1017775e4636, type: 3}
+  - {fileID: 5864232825814670898, guid: c34eb1e94550d0b43b02b05338ba2be5, type: 3}
+  - {fileID: 4305187865585268111, guid: 68f23a869bf20e647a019b9087d81524, type: 3}
+  - {fileID: 6279865677263181910, guid: 862d8908c6154154e84610f1a6156eb9, type: 3}
+  - {fileID: 8913657952268482048, guid: 7f18f3897829240428c2da2bf4132bbc, type: 3}
+  - {fileID: 8988785705186654707, guid: e123b60fb10b614498edf7012c7b48ea, type: 3}
+  - {fileID: 5522534437533968566, guid: da9d3e94972a7e94a8e04d662e817126, type: 3}
+  MoneyPrefab: {fileID: 4079320934541831938, guid: f7c0e1964070e6e49a1e96b82d54b6d9,
+    type: 3}
+  WeaponPrefab: {fileID: 9164846817203184964, guid: f854865c818f2e445b8a4d372ac9cecf,
+    type: 3}
   wall: {fileID: 11400000, guid: 9eb575bcd7f7e4a45884a7f100baff12, type: 2}
   ground: {fileID: 11400000, guid: a19c19f232b822843a5a38a8e555ff74, type: 2}
   exit: {fileID: 11400000, guid: aa233024c15131747b2fb9c979f8f7d9, type: 2}

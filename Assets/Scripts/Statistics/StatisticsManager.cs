@@ -162,12 +162,15 @@ public class StatisticsManager : MonoBehaviour
             measurements.deaths++;
         }
     } 
-    public void FinishedRoom(int currentroom, int nextroom, int monsterroom)
+    public void FinishedRoom(int currentroom)
     {
-        measurements.monsters += monsterroom;
         measurements.roomTime[currentroom] = Timer;
         Timer = 0;
-        measurements.VisitRoom(nextroom);
+    }
+    public void NewRoom(int newRoom, int monsterInRoom)
+    {
+        measurements.monsters += monsterInRoom;
+        measurements.VisitRoom(newRoom);
     }
     public void GetItem(float value = 0)
     {
@@ -186,20 +189,10 @@ public class StatisticsManager : MonoBehaviour
         AnalyticsResult result = AnalyticsResult.InvalidData;
         switch(encoding)
         {
-            case messageType.death:
-                result = Analytics.CustomEvent("Death", new Dictionary<string, object>
-                {
-                    { "level_id", 0 },
-                    { "score", Score },
-                    { "difficulty", 0}
-                });
-                break;
-            case messageType.levelComplete:
+            case messageType.gameover:
                 result = Analytics.CustomEvent("Level Completed", new Dictionary<string, object>
                 {
-                    { "level_id", 0 },
-                    { "time_elapsed", Time.timeSinceLevelLoad },
-                    { "difficulty", 0}
+                    { "build_id", DirectorManager.DirectorInstance.GetBuildType },
                 });
                 break;
             default:

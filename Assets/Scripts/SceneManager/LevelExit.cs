@@ -9,14 +9,14 @@ public class LevelExit : MonoBehaviour
     public Dictionary<Vector2Int,int> doors = new Dictionary<Vector2Int, int>(); //which positions is for which door
 
     private Tilemap map;
-    private TilemapCollider2D collider2D;
+    private TilemapCollider2D tileMapCollider2D;
     private bool isProcessing = false;
     public Dictionary<Vector2Int,bool> isLastDoor = new Dictionary<Vector2Int, bool>();
     
     public void Awake()
     {
         map = GetComponent<Tilemap>();
-        collider2D = GetComponent<TilemapCollider2D>();
+        tileMapCollider2D = GetComponent<TilemapCollider2D>();
     }
     void OnTriggerStay2D(Collider2D col)
     {
@@ -33,7 +33,7 @@ public class LevelExit : MonoBehaviour
             isProcessing = true;
             if (col.tag == "Player") 
             {
-                Vector3Int collisionPoint = map.WorldToCell(collider2D.ClosestPoint(col.transform.position));
+                Vector3Int collisionPoint = map.WorldToCell(tileMapCollider2D.ClosestPoint(col.transform.position));
                 TileBase hasTile = map.GetTile(collisionPoint);
                 if (hasTile != null)
                 {

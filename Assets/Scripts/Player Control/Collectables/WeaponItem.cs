@@ -11,10 +11,10 @@ public class WeaponItem : Item
     }
 
     [SerializeField]
-    private WeaponType Weapontype;
+    private WeaponType Weapontype = WeaponType.Dagger;
 
     [SerializeField]
-    private List<AnimatorOverrideController> weaponAnimations;
+    private List<AnimatorOverrideController> weaponAnimations = new List<AnimatorOverrideController>();
 
     public GameObject weapon;
     public AnimatorOverrideController anim;

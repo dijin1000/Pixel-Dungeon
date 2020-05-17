@@ -19,7 +19,7 @@ public class MonsterController : IUnit
     {
         get
         {
-            return maxHealth * GlobalManager.GlobalInstance.MonsterHealhtPercentage + GlobalManager.GlobalInstance.MonsterHealthFlat;
+            return maxHealth * GlobalManager.GlobalInstance.MonsterHealhtPercentage/100 + GlobalManager.GlobalInstance.MonsterHealthFlat;
         }
     }
 

@@ -84,8 +84,8 @@ public class SceneTransistionManager : MonoBehaviour
                     isTransitioning = true;
                     if (true)
                         UIManager.UiInstance.AreYouSure("", OnBackToMainMenu);
-                    else
-                        UIManager.UiInstance.AreYouSure("", OnBackToMainMenu);
+                    //else
+                      //  UIManager.UiInstance.AreYouSure("", OnBackToMainMenu);
                     break;
                 case typeOfScene.SlotLoad:
                     isTransitioning = true;

@@ -24,6 +24,12 @@ public class LevelManager : MonoBehaviour
     private List<MonsterCategory> all_monster = new List<MonsterCategory>();
     [SerializeField]
     private List<GameObject> prefabPlayer = new List<GameObject>();
+    [SerializeField]
+    private List<GameObject> PotionPrefabList = new List<GameObject>();
+    [SerializeField]
+    private GameObject MoneyPrefab = null;
+    [SerializeField]
+    private GameObject WeaponPrefab = null;
 
     //Different Tile bases for different tile maps
     public TileBase wall;
@@ -201,23 +207,45 @@ public class LevelManager : MonoBehaviour
 
     #region Object Placement
     #region Item Placement
-    private void SpawnItems()
+    private void SpawnItems(int room, List<Tuple<TypeItem, int>> items)
     {
-        List<Vector2Int> points = new List<Vector2Int>();
-        foreach(Vector2Int point in points)
+        if (items != null && items.Count > 0)
         {
-            SpawnItem(point);
+            List<Vector2Int> points = generator.PointsInRoom(room, items.Select(predicate => predicate.Item2).Sum());
+            for (int i = 0; i < points.Count; i++)
+            {
+                Vector2Int point = points[i];
+                SpawnItem(point, items[0].Item1);
+                items[0] = new Tuple<TypeItem, int>(items[0].Item1, items[0].Item2 - 1);
+                if (items[0].Item2 == 0)
+                    items.RemoveAt(0);
+
+            }
         }
     }
-    private void SpawnItem(Vector2Int point)
+    private void SpawnItem(Vector2Int point,TypeItem type)
     {
-        GameObject prefab = null;
-        GameObject item = Instantiate(prefab, new Vector3(point.x, point.y, 0), Quaternion.identity);
+        GameObject item = null;
+        switch (type)
+        {
+            case TypeItem.Money:
+                item = Instantiate(MoneyPrefab, new Vector3(point.x, point.y, 0), Quaternion.identity);
+                break;
+            case TypeItem.Potion:
+                item = Instantiate(PotionPrefabList[UnityEngine.Random.Range(0, PotionPrefabList.Count)], new Vector3(point.x, point.y, 0), Quaternion.identity);
+                break;
+            case TypeItem.Weapon:
+                item = Instantiate(WeaponPrefab, new Vector3(point.x, point.y, 0), Quaternion.identity);
+                break;
+        }
+        item.GetComponent<Item>().Init(type);
+
     }
     #endregion
     #region Monster Placement
-    private void SpawnMonsters(int room, List<Tuple<int,int>> monsters)
+    private int SpawnMonsters(int room, List<Tuple<int,int>> monsters)
     {
+        int number = 0;
         if (monsters != null && monsters.Count > 0)
         {
             List<Vector2Int> points = generator.PointsInRoom(room, monsters.Select(predicate => predicate.Item2).Sum());
@@ -225,12 +253,14 @@ public class LevelManager : MonoBehaviour
             {
                 Vector2Int point = points[i];
                 SpawnMonster(point, monsters[0].Item1);
+                number++;
                 monsters[0] = new Tuple<int, int>(monsters[0].Item1, monsters[0].Item2 - 1);
                 if (monsters[0].Item2 == 0)
                     monsters.RemoveAt(0);
 
             }
         }
+        return number;
     }
     private void SpawnMonster(Vector2Int point, int power)
     {
@@ -256,9 +286,9 @@ public class LevelManager : MonoBehaviour
 
 
         int door = param.door;
-        SpawnMonsters(currentRoom, param.Monsters);
-
-        //SpawnItems();
+        int monsters = SpawnMonsters(currentRoom, param.Monsters);
+        StatisticsManager.StatisticsInstance.NewRoom(currentRoom, monsters);
+        SpawnItems(currentRoom, param.Items);
 
 
         if (param.room == 0)
@@ -301,8 +331,9 @@ public class LevelManager : MonoBehaviour
     }
 
     public IEnumerator CreateNewLevel(Parameters param)
-    {
+    {  
         yield return PlaceLevel(param);
+
         updated = false;
         DirectorManager.DirectorInstance.currentState = copy;
         yield return RendererLevel(copy);
