@@ -4,8 +4,6 @@ using UnityEngine;
 
 public abstract class IUnit : MonoBehaviour
 {
-    public bool test = true;
-
     public enum Unit
     {
         Player,
@@ -24,8 +22,7 @@ public abstract class IUnit : MonoBehaviour
     {
         if (!Get_Death())
         {
-            if(!test)
-                StatisticsManager.StatisticsInstance.SetDamage(unit,dmg);
+            StatisticsManager.StatisticsInstance.SetDamage(unit,dmg);
             Set_Health(Get_Health() - dmg);
             if (Get_Health() < 0)
             {              
@@ -43,8 +40,7 @@ public abstract class IUnit : MonoBehaviour
     public virtual void Death()
     {
         Set_Death(true);
-        if (!test)
-            StatisticsManager.StatisticsInstance.SetDeath(unit);
+        StatisticsManager.StatisticsInstance.SetDeath(unit);
 
         Destroy(gameObject);
     }
