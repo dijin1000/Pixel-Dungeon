@@ -1263,13 +1263,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   all_monster:
   - monsters:
-    - {fileID: 370960702685548524, guid: 498d2274a890b8842ac161a55f58e2ab, type: 3}
+    - {fileID: 6261082529160381938, guid: 498d2274a890b8842ac161a55f58e2ab, type: 3}
     difficulty: 1
   - monsters:
-    - {fileID: 844607577578783093, guid: 10cc95338e4f09545bec533424ad2252, type: 3}
+    - {fileID: 1423899350700067156, guid: 10cc95338e4f09545bec533424ad2252, type: 3}
     difficulty: 2
   - monsters:
-    - {fileID: 4450295367103008057, guid: 95e5d82225a9e1d43820ded6f6d6972e, type: 3}
+    - {fileID: 5359691114186177557, guid: 95e5d82225a9e1d43820ded6f6d6972e, type: 3}
     difficulty: 3
   prefabPlayer:
   - {fileID: 7918499700869756376, guid: e4be5cada5a1228488ece8175f2871f1, type: 3}

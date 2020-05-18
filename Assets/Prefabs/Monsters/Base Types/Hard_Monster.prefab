@@ -1,58 +1,31 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &1095313057322447663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4450295367103008057}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e02ebdf8eb364c9782e8d8a71029d19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minStrength: 2
-  maxStrength: 4
-  attackSpeed: 0.5
-  hitChance: 0.65
---- !u!114 &7742168649459072970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4450295367103008057}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e02ebdf8eb364c9782e8d8a71029d19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minStrength: 2
-  maxStrength: 4
-  attackSpeed: 0.5
-  hitChance: 0.65
---- !u!1001 &6441758355054519212
+--- !u!1001 &3370499831476933248
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 902702344625089604, guid: e096773fd2ae0cf46bbb0705691ba2de,
+    - target: {fileID: 299428467166124452, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
+      propertyPath: minmaxHealth
+      value: 120
       objectReference: {fileID: 0}
-    - target: {fileID: 902702344625089604, guid: e096773fd2ae0cf46bbb0705691ba2de,
+    - target: {fileID: 299428467166124452, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
+      propertyPath: maxmaxHealth
+      value: 140
       objectReference: {fileID: 0}
-    - target: {fileID: 4381142736534900591, guid: e096773fd2ae0cf46bbb0705691ba2de,
+    - target: {fileID: 299428467166124452, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
-      propertyPath: movementType
-      value: 1
+      propertyPath: minStrength
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 299428467166124452, guid: e096773fd2ae0cf46bbb0705691ba2de,
+        type: 3}
+      propertyPath: maxStrength
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7252793310745472657, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
@@ -122,9 +95,3 @@ PrefabInstance:
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e096773fd2ae0cf46bbb0705691ba2de, type: 3}
---- !u!1 &4450295367103008057 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7252793310745472661, guid: e096773fd2ae0cf46bbb0705691ba2de,
-    type: 3}
-  m_PrefabInstance: {fileID: 6441758355054519212}
-  m_PrefabAsset: {fileID: 0}

@@ -136,9 +136,8 @@ public class LevelManager : MonoBehaviour
     {
         GroundsMap.SetTile(new Vector3Int(pos.x, pos.y, 0), ground);
     }
-    private void PlaceExit(int doorNumber, Vector2Int pos)
+    private void PlaceExit(int doorNumber, Vector2Int pos, bool isLastDoor)
     {
-        bool isLastDoor = doorNumber == FinalDoorMark;
         exitComponent.isLastDoor.Add(pos,isLastDoor);
         exitComponent.doors.Add(pos, doorNumber);
 
@@ -275,7 +274,7 @@ public class LevelManager : MonoBehaviour
             player = Instantiate(prefabPlayer[UnityEngine.Random.Range(0, prefabPlayer.Count)], pos, Quaternion.identity);
         else
         {
-            player = Instantiate(player, pos, Quaternion.identity);
+            player.transform.position = pos;
         }
     }
     #endregion
@@ -372,7 +371,7 @@ public class LevelManager : MonoBehaviour
             }
             else if (currentLocation < 0)
             {
-                PlaceExit(Mathf.Abs(currentLocation), point.Key);
+                PlaceExit(Mathf.Abs(currentLocation), point.Key, copy.lastDoor);
             }
         }
         

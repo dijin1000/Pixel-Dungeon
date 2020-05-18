@@ -1,56 +1,30 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &7524951898659989097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 844607577578783093}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e02ebdf8eb364c9782e8d8a71029d19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minStrength: 2
-  maxStrength: 4
-  attackSpeed: 0.5
-  hitChance: 0.65
---- !u!1001 &8007328717401485280
+--- !u!1001 &8603473963256063937
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -9132443416631243759, guid: e096773fd2ae0cf46bbb0705691ba2de,
+    - target: {fileID: 299428467166124452, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
-      propertyPath: strength
-      value: 7
+      propertyPath: minmaxHealth
+      value: 100
       objectReference: {fileID: 0}
-    - target: {fileID: -9132443416631243759, guid: e096773fd2ae0cf46bbb0705691ba2de,
+    - target: {fileID: 299428467166124452, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
-      propertyPath: attackSpeed
-      value: 0.8
+      propertyPath: maxmaxHealth
+      value: 120
       objectReference: {fileID: 0}
-    - target: {fileID: -9132443416631243759, guid: e096773fd2ae0cf46bbb0705691ba2de,
+    - target: {fileID: 299428467166124452, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
-      propertyPath: hitChance
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 4381142736534900591, guid: e096773fd2ae0cf46bbb0705691ba2de,
-        type: 3}
-      propertyPath: speed
+      propertyPath: minStrength
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 4381142736534900591, guid: e096773fd2ae0cf46bbb0705691ba2de,
+    - target: {fileID: 299428467166124452, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
-      propertyPath: maxRange
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4381142736534900591, guid: e096773fd2ae0cf46bbb0705691ba2de,
-        type: 3}
-      propertyPath: viewRange
+      propertyPath: maxStrength
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7252793310745472657, guid: e096773fd2ae0cf46bbb0705691ba2de,
@@ -117,13 +91,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 7385185390787837989, guid: 74dee1b8826deb9468c810208fa0dcc3,
+      objectReference: {fileID: -8927638477173973485, guid: 74dee1b8826deb9468c810208fa0dcc3,
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e096773fd2ae0cf46bbb0705691ba2de, type: 3}
---- !u!1 &844607577578783093 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7252793310745472661, guid: e096773fd2ae0cf46bbb0705691ba2de,
-    type: 3}
-  m_PrefabInstance: {fileID: 8007328717401485280}
-  m_PrefabAsset: {fileID: 0}

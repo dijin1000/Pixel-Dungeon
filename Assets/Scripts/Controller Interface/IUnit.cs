@@ -49,14 +49,17 @@ public abstract class IUnit : MonoBehaviour
         Destroy(gameObject);
     }
 
-    void OnTriggerEnter2D(Collider2D col)
+    public virtual void OnTriggerEnter2D(Collider2D col)
     {
-        GameObject scriptHolder = col.transform.parent.gameObject;
-        if (scriptHolder.tag == "Weapon")
+        if (col != null && col.transform.parent != null)
         {
-            Weapon t = scriptHolder.GetComponent<Weapon>();
-            if (t != null)
-                GetDamage(t.Get_Dmg);
+            GameObject scriptHolder = col.transform.parent.gameObject;
+            if (scriptHolder != null && scriptHolder.tag == "Weapon")
+            {
+                Weapon t = scriptHolder.GetComponent<Weapon>();
+                if (t != null)
+                    GetDamage(t.Get_Dmg);
+            }
         }
     }
 }

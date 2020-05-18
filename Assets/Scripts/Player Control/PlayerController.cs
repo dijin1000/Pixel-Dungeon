@@ -94,7 +94,7 @@ public class PlayerController : IUnit
     {
         //Send Statistics
 
-        //SceneTransitionManager.Transit();
+        SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.ExitGame);
 
         base.Death();
     }
@@ -103,6 +103,7 @@ public class PlayerController : IUnit
 
     protected override void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         base.Awake();
         p_Input = GetComponent<PlayerInput>();
         anim = GetComponent<Animator>();
@@ -120,7 +121,7 @@ public class PlayerController : IUnit
                 anim.SetInteger("Movement",(int)testing);
 
                 int equal = Mathf.Sign(graphics.rotation.y) == Mathf.Sign(testing) ? 0 : 1;
-                graphics.Rotate(new Vector3(0,equal *180,0)); 
+                graphics.transform.rotation = Quaternion.Euler(0,Mathf.Sign(testing) * 90 - 90,0); 
 
             }
             , ControlType.Movement);
@@ -160,12 +161,13 @@ public class PlayerController : IUnit
         }
     }
 
-    public void OnTriggerEnter2D(Collider2D col )
+    public override void OnTriggerEnter2D(Collider2D col )
     { 
         if (col.gameObject.tag == "Item")
         {
             PickUpItem(col.gameObject.GetComponent<Item>());
         }
+        base.OnTriggerEnter2D(col);
     }
 }
 
@@ -199,7 +201,7 @@ public struct PlayerData
     private Action<float> OnDmgChange;
     private Action<float> OnSpeedChange;
     private float health;
-    private float maxHealth;
+    public float maxHealth;
     private float dmg;
     private float speed;
 
@@ -235,12 +237,12 @@ public struct PlayerData
     {
         get
         {
-            return health/maxHealth;
+            return health;
         }
         set
         {
             health = Mathf.Min(value,maxHealth);
-            OnHealthChange?.Invoke(Health);
+            OnHealthChange?.Invoke((health/maxHealth));
         }
     }
     public bool Death;
