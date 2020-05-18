@@ -37,11 +37,13 @@ public class LevelManager : MonoBehaviour
     public TileBase exit;
     public TileBase finalExit;
     public TileBase spike;
+    public TileBase blocked;
 
     public Tilemap Wallsmap;
     public Tilemap GroundsMap;
     public Tilemap ExitMap;
     public Tilemap SpikeMap;
+    public Tilemap BlockedMap;
 
 
     /// <summary>
@@ -166,7 +168,19 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        if(tempMap[pos.x,pos.y + 1] < 0)
+        if (tempMap[pos.x + 1, pos.y] > 0)
+        {
+            BlockedMap.SetTile(new Vector3Int(pos.x - 1, pos.y, 0), blocked);
+
+        }
+        else if(tempMap[pos.x - 1, pos.y] > 0)
+        { 
+            BlockedMap.SetTile(new Vector3Int(pos.x + 1, pos.y, 0), blocked);
+        }
+
+
+
+        if (tempMap[pos.x,pos.y + 1] < 0)
         {
             PlaceWall(new Vector2Int(pos.x, pos.y));
             if(tempMap[pos.x+1,pos.y] > 0)
@@ -182,14 +196,17 @@ public class LevelManager : MonoBehaviour
 
         if(tempMap[pos.x, pos.y + 1] > 0)
         {
+            BlockedMap.SetTile(new Vector3Int(pos.x, pos.y - 1,0),blocked);
             if (tempMap[pos.x + 1, pos.y] < 0)
             {
+                BlockedMap.SetTile(new Vector3Int(pos.x - 1, pos.y - 1,0), blocked);
                 ExitMap.SetTile(new Vector3Int(pos.x - 1, pos.y, 0), Exit);
                 exitComponent.isLastDoor.Add(new Vector2Int(pos.x - 1, pos.y), isLastDoor);
                 exitComponent.doors.Add(new Vector2Int(pos.x - 1, pos.y), doorNumber);
             }
             else if (tempMap[pos.x - 1, pos.y] < 0)
             {
+                BlockedMap.SetTile(new Vector3Int(pos.x + 1, pos.y - 1,0), blocked);
                 ExitMap.SetTile(new Vector3Int(pos.x + 1, pos.y, 0), Exit);
                 exitComponent.isLastDoor.Add(new Vector2Int(pos.x + 1, pos.y), isLastDoor);
                 exitComponent.doors.Add(new Vector2Int(pos.x + 1, pos.y), doorNumber);
