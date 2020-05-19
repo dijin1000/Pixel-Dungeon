@@ -105,7 +105,7 @@ public class MonsterController : IUnit
         {
             yield return null;
         }
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(.3f);
         weapon.gameObject.SetActive(false);
         isAttacking = false;
     }

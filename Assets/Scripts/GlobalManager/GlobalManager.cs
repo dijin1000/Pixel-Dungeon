@@ -30,7 +30,7 @@ public class GlobalManager : MonoBehaviour
 
     public float WeaponRarity = 0;
 
-
+    public float SpikeDmg = 1f;
     /// <summary>
     /// Signleton Pattern
     /// </summary>
@@ -50,7 +50,6 @@ public class GlobalManager : MonoBehaviour
             globalInstance = value;
         }
     }
-
 
     private void Awake()
     {

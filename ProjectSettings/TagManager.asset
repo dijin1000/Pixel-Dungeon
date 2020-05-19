@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Weapon
   - Item
+  - Spikes
   layers:
   - Default
   - TransparentFX

@@ -47,14 +47,22 @@ public abstract class IUnit : MonoBehaviour
 
     public virtual void OnTriggerEnter2D(Collider2D col)
     {
-        if (col != null && col.transform.parent != null)
-        {
-            GameObject scriptHolder = col.transform.parent.gameObject;
-            if (scriptHolder != null && scriptHolder.tag == "Weapon")
+        if (col != null)
+        { 
+            if (col.gameObject.tag == "spikes")
             {
-                Weapon t = scriptHolder.GetComponent<Weapon>();
-                if (t != null)
-                    GetDamage(t.Get_Dmg);
+                if(col.GetComponent<Spikes>().IsHit)
+                    GetDamage(GlobalManager.GlobalInstance.SpikeDmg);
+            }
+            else if (col.transform.parent != null)
+            {
+                GameObject scriptHolder = col.transform.parent.gameObject;
+                if (scriptHolder != null && scriptHolder.tag == "Weapon")
+                {
+                    Weapon t = scriptHolder.GetComponent<Weapon>();
+                    if (t != null)
+                        GetDamage(t.Get_Dmg);
+                }
             }
         }
     }
