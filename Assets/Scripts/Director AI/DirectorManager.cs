@@ -164,6 +164,13 @@ public class DirectorManager : MonoBehaviour
                 }
             }
 
+            // weapon
+            if (UnityEngine.Random.Range(0, 10) >= 1)
+            {
+                currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Weapon, 1));
+            }
+
+
             // Money
             currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Money, UnityEngine.Random.Range(0, 3)));
 
