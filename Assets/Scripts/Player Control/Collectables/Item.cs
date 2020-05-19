@@ -87,7 +87,7 @@ public class Item : MonoBehaviour
     {
         if (isInit) {
             if (Heal > 0)
-                data.Health = Heal * GlobalManager.GlobalInstance.ItemStrengthPercentage / 100 * GlobalManager.GlobalInstance.PotionHealingPercentage / 100 + (Heal > 0 ? 1 : 0) * (GlobalManager.GlobalInstance.ItemStrengthFlat + GlobalManager.GlobalInstance.PotionHealingFlat);
+                data.Health += Heal * GlobalManager.GlobalInstance.ItemStrengthPercentage / 100 * GlobalManager.GlobalInstance.PotionHealingPercentage / 100 + (Heal > 0 ? 1 : 0) * (GlobalManager.GlobalInstance.ItemStrengthFlat + GlobalManager.GlobalInstance.PotionHealingFlat);
             if (DmgIncrease > 0)
                 data.Dmg = Mathf.Min(data.Dmg + DmgIncrease * GlobalManager.GlobalInstance.ItemStrengthPercentage / 100 * GlobalManager.GlobalInstance.PotionDmgPercentage / 100 + (DmgIncrease > 0 ? 1 : 0) * (GlobalManager.GlobalInstance.ItemStrengthFlat + GlobalManager.GlobalInstance.PotionDmgFlat), 10);
             if (SpeedIncrease > 0)
