@@ -147,7 +147,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e445578714338964facb7366ff4fc94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  test: 1
   minmaxHealth: 80
   maxmaxHealth: 100
   minStrength: 2
@@ -161,7 +160,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7252793310745472661}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 258d61a9433494a8699aaef6c97c2f11, type: 3}
   m_Name: 
