@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 5461614180248179948}
   m_Layer: 0
   m_Name: Money
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -147,10 +147,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ecf3da9a7c74f642b1e41edfc486ad4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DmgIncrease: 0
-  SpeedIncrease: 0
-  Heal: 0
-  Value: 0
+  DmgIncreaseMin: 1
+  DmgIncreaseMax: 4
+  SpeedIncreeseMin: 1
+  SpeecIncreaseMax: 4
+  HealMin: 1
+  HealMax: 4
+  ValueMin: 1
+  ValueMax: 25
   type: 2
 --- !u!61 &5461614180248179948
 BoxCollider2D:

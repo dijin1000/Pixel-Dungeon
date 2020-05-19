@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 9164846817203185018}
   m_Layer: 0
   m_Name: WeaponObject
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -127,10 +127,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93a6c54b0f33155429ebf0b88950e738, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DmgIncrease: 0
-  SpeedIncrease: 0
-  Heal: 0
-  Value: 0
+  DmgIncreaseMin: 1
+  DmgIncreaseMax: 4
+  SpeedIncreeseMin: 1
+  SpeecIncreaseMax: 4
+  HealMin: 1
+  HealMax: 4
+  ValueMin: 1
+  ValueMax: 25
   type: 0
   Weapontype: 0
   weaponAnimations:
