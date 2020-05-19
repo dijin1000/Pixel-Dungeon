@@ -531,6 +531,7 @@ MonoBehaviour:
     deadEnd: 0
     cycles: 0
     lastDoor: 0
+  time: 0
 --- !u!224 &487790863 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 561501995964609331, guid: 6a468cadb7ba3444693c937c55795799,
@@ -597,6 +598,7 @@ MonoBehaviour:
   MoneyIncreaseFlat: 0
   MoneyIncreasePercentage: 100
   WeaponRarity: 0
+  SpikeDmg: 1
 --- !u!1 &570076186
 GameObject:
   m_ObjectHideFlags: 0
@@ -2951,9 +2953,10 @@ GameObject:
   - component: {fileID: 2068447541}
   - component: {fileID: 2068447540}
   - component: {fileID: 2068447539}
+  - component: {fileID: 2068447542}
   m_Layer: 0
   m_Name: Spikes
-  m_TagString: Untagged
+  m_TagString: Spikes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3073,6 +3076,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &2068447542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068447537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9123565f6d02ea04681ffde013852930, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsHit: 0
 --- !u!224 &1333193746428969684
 RectTransform:
   m_ObjectHideFlags: 0

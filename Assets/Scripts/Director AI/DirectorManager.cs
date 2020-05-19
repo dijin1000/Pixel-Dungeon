@@ -37,6 +37,7 @@ public class DirectorManager : MonoBehaviour
     void Awake()
     {
         DirectorInstance = this;
+        buildtype = 2; // UnityEngine.Random.Range(1, 4);
     }
 
     public float time = 0;
@@ -68,7 +69,7 @@ public class DirectorManager : MonoBehaviour
         StatisticsManager.StatisticsInstance.FinishedRoom(currentState.room);
     }
 
-    private int buildtype = 2;
+    private int buildtype;
     public int GetBuildType
     {
         get

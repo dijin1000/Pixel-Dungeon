@@ -49,7 +49,7 @@ public abstract class IUnit : MonoBehaviour
     {
         if (col != null)
         { 
-            if (col.gameObject.tag == "spikes")
+            if (col.gameObject.tag == "Spikes")
             {
                 if(col.GetComponent<Spikes>().IsHit)
                     GetDamage(GlobalManager.GlobalInstance.SpikeDmg);
@@ -63,6 +63,18 @@ public abstract class IUnit : MonoBehaviour
                     if (t != null)
                         GetDamage(t.Get_Dmg);
                 }
+            }
+        }
+    }
+
+    public void OnTriggerStay2D(Collider2D col)
+    {
+        if (col != null)
+        {
+            if (col.gameObject.tag == "Spikes")
+            {
+                if (col.GetComponent<Spikes>().IsHit)
+                    GetDamage(GlobalManager.GlobalInstance.SpikeDmg);
             }
         }
     }
