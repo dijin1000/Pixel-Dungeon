@@ -40,7 +40,7 @@ public class DirectorManager : MonoBehaviour
     }
 
     public float time = 0;
-    private float MaxTime = 300;
+    private float MaxTime = 120;
     private void Update()
     {
         time += Time.deltaTime;
@@ -80,35 +80,21 @@ public class DirectorManager : MonoBehaviour
 
     public IEnumerator NextLevel()
     {
+        int modifier = 0;
+
         switch (buildtype)
         {
             case 1:
-                Easy();
+                modifier = -1;
                 break;
             case 2:
-                Scaled();
+                modifier = 1;
                 break;
             case 3:
-                Hard();
+                modifier = 2;
                 break;
         }
-        if (time > MaxTime)
-            currentState.lastDoor = true;
-        yield return LevelManager.LevelInstance.CreateNewLevel(currentState);
-    }
 
-    private void Easy()
-    {
-        if (FirstLevel)
-        {
-            FirstLevel = false;
-        }
-        else
-        {
-        }
-    }
-    private void Scaled() 
-    {
         if (FirstLevel)
         {
             FirstLevel = false;
@@ -118,20 +104,54 @@ public class DirectorManager : MonoBehaviour
             Measurements m = StatisticsManager.StatisticsInstance.Measurements;
 
             int monstercount = m.monsters;
-            if (m.monsterKilled == 0)
-                monstercount++;
             if (m.lethality > 0.5)
-                monstercount++;
-            if (m.roomTime[currentState.room] < 10)
-                monstercount++;
+                monstercount += modifier;
+            if (m.roomTime[currentState.room] > 2 && m.roomTime[currentState.room] < 5)
+                monstercount += modifier;
             if (m.lethality < 0.5 && m.monsterhit > 0)
-                monstercount--;
+                monstercount += modifier - 2;
+            if(monstercount - m.monsters > modifier)
+            {
+                monstercount = m.monsters + modifier;
+            }
+
+
+            if (m.monsterDmg > 1)
+            {
+                currentState.Items = new List<Tuple<TypeItem, int>>();
+                currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Potion, 1));
+            }
 
             currentState.Monsters = new List<Tuple<int, int>>();
-            currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, monstercount));
 
-            currentState.Items = new List<Tuple<TypeItem, int>>();
-            currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Potion, 1));
+            if (monstercount <= 8)
+            {
+                currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Soft, monstercount));
+            }
+            else if (monstercount <= 15)
+            {
+                currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Soft, monstercount / 4));
+                currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, monstercount / 4));
+            }
+            else if (monstercount <= 20)
+            {
+                currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, monstercount / 4));
+            }
+            else
+            {
+                currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, 6));
+            }
+
+            if (m.trapped == 0)
+            {
+                currentState.spikeRate += 0.05 * modifier;
+            }
+            else
+            {
+                currentState.spikeRate += 0.05 * modifier - 0.1;
+            }
+
+
             /*
             float RSmean = 30 + 10 * monstercount;
             float RSstdDev = 10;
@@ -174,18 +194,18 @@ public class DirectorManager : MonoBehaviour
             GlobalManager.GlobalInstance.MonsterDamagePercentage = 100f;
 
             GlobalManager.GlobalInstance.MonsterSpeedFlat = 0;
-            GlobalManager.GlobalInstance.MonsterSpeedPercentage = 100f;
-        }
-    }
-    private void Hard()
-    {
-        if (FirstLevel)
-        {
-            FirstLevel = false;
-        }
-        else
-        {
+            GlobalManager.GlobalInstance.MonsterSpeedPercentage = 50f;
+
+
 
         }
+
+
+        if (time > MaxTime)
+            currentState.lastDoor = true;
+        yield return LevelManager.LevelInstance.CreateNewLevel(currentState);
     }
+
+    
+   
 }
