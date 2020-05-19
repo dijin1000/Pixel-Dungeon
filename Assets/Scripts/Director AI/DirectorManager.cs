@@ -105,22 +105,25 @@ public class DirectorManager : MonoBehaviour
             Measurements m = StatisticsManager.StatisticsInstance.Measurements;
 
             int monstercount = m.monsters;
-            if (m.lethality > 0.5)
-                monstercount += modifier;
-            if (m.roomTime[currentState.room] > 2 && m.roomTime[currentState.room] < 5)
-                monstercount += modifier;
-            if (m.lethality < 0.5 && m.monsterhit > 0)
-                monstercount += modifier - 2;
-            if(monstercount - m.monsters > modifier)
+            //if (m.lethality > 0.5)
+            //    monstercount += modifier;
+            if (m.monsterhit > 0)
+                monstercount += (modifier - 2);
+
+            if (monstercount == 0)
             {
-                monstercount = m.monsters + modifier;
+                monstercount = UnityEngine.Random.Range(0, 3);
             }
 
 
             if (m.monsterDmg > 1)
             {
-                currentState.Items = new List<Tuple<TypeItem, int>>();
-                currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Potion, 1));
+                float potion_chance = 2.0f - modifier;
+                if (UnityEngine.Random.Range(0, 2) * potion_chance >= 1)
+                {
+                    currentState.Items = new List<Tuple<TypeItem, int>>();
+                    currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Potion, 1));
+                }
             }
 
             currentState.Monsters = new List<Tuple<int, int>>();
@@ -159,19 +162,6 @@ public class DirectorManager : MonoBehaviour
             NormalDistribution normalDist = new NormalDistribution(RSmean, RSstdDev);
             currentState.roomSize = normalDist.Sample();
 
-            float spikeChange = 0;
-            if (m.trapped == 0)
-                spikeChange += 0.05f;
-            else
-                spikeChange -= m.trapped / 100;
-            if (spikeChange < -0.10f)
-                spikeChange = -0.10f;
-
-            float Smean = 0.15f;
-            float SstdDev = 0.05f;
-            NormalDistribution normalDist = new NormalDistribution(Smean, SstdDev);
-            currentState.spikeRate = normalDist.Sample();
-
             if(m.monsterhit == 0)
                 currentState.narrowRoom = true;
             if (m.monsterhit > 1)
@@ -189,10 +179,10 @@ public class DirectorManager : MonoBehaviour
             }
             */
             GlobalManager.GlobalInstance.MonsterHealthFlat = 0;
-            GlobalManager.GlobalInstance.MonsterHealhtPercentage = 100f;
+            GlobalManager.GlobalInstance.MonsterHealhtPercentage = 50f;
 
             GlobalManager.GlobalInstance.MonsterDamageFlat = 0;
-            GlobalManager.GlobalInstance.MonsterDamagePercentage = 100f;
+            GlobalManager.GlobalInstance.MonsterDamagePercentage = 50f;
 
             GlobalManager.GlobalInstance.MonsterSpeedFlat = 0;
             GlobalManager.GlobalInstance.MonsterSpeedPercentage = 50f;
