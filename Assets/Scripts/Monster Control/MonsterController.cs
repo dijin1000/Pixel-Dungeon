@@ -40,9 +40,9 @@ public class MonsterController : IUnit
         maxHealth = UnityEngine.Random.Range(minmaxHealth,maxmaxHealth) * GlobalManager.GlobalInstance.MonsterHealhtPercentage / 100 + GlobalManager.GlobalInstance.MonsterHealthFlat;
         strength = UnityEngine.Random.Range(minStrength, maxStrength) * GlobalManager.GlobalInstance.MonsterDamagePercentage / 100 + GlobalManager.GlobalInstance.MonsterDamageFlat;
         weapon.Subscribe(
-            (float dmg) =>
+            (ref float dmg) =>
             {
-                return strength;
+                return dmg + strength;
             }
             );
         movement = GetComponent<MonsterMovement>();
@@ -68,12 +68,12 @@ public class MonsterController : IUnit
             //Check how far is player
             if ((player.position - transform.position).sqrMagnitude < 10f  )
             {
-                if ((player.position - transform.position).sqrMagnitude < 0.1f)
+                if ((player.position - transform.position).sqrMagnitude < 1.1f)
                 {
                     StartCoroutine(Attack());
                     //Attack
                 }
-                else
+                else if((player.position - transform.position).sqrMagnitude > 1.5f)
                 {
                     target = player.position;
                 }

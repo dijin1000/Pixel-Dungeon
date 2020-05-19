@@ -130,7 +130,7 @@ public class PlayerController : IUnit
             }
             , ControlType.Movement);
 
-        data.SubscribeDmgChange((float addedDmg) => { this.w.Subscribe((float input) => { return input + addedDmg; }); });
+        data.SubscribeDmgChange((float addedDmg) => { this.w.Subscribe((ref float input) => { return input + addedDmg; }); });
         data.SubscribeSpeedChange((float addedSpeed) => { this.p_Input.moveSpeed += addedSpeed; });
         data.SubscribeControllerChange((AnimatorOverrideController controller) => { anim.runtimeAnimatorController = controller; });
         data.SubscribeWeaponChange((GameObject weapon) =>
@@ -152,7 +152,7 @@ public class PlayerController : IUnit
         switch(item.TypeItem)
         {
             case TypeItem.Weapon:
-                data.SubscribeDmgChange((float addedDmg) => { this.w.Subscribe((float input) => { return input + addedDmg; }); });
+                data.SubscribeDmgChange((float addedDmg) => { this.w.Subscribe((ref float input) => { return input + addedDmg; }); });
                 goto case TypeItem.Potion;
             case TypeItem.Potion:
                 item.Consume(ref data);      

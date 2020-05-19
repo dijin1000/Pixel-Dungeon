@@ -17,6 +17,21 @@ PrefabInstance:
       propertyPath: maxmaxHealth
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: 902702344625089604, guid: e096773fd2ae0cf46bbb0705691ba2de,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 902702344625089604, guid: e096773fd2ae0cf46bbb0705691ba2de,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3266333921010841902, guid: e096773fd2ae0cf46bbb0705691ba2de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7252793310745472657, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
       propertyPath: m_LocalPosition.x

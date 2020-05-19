@@ -27,6 +27,16 @@ PrefabInstance:
       propertyPath: maxStrength
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 3266333921010841902, guid: e096773fd2ae0cf46bbb0705691ba2de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3455450488442636346, guid: e096773fd2ae0cf46bbb0705691ba2de,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 1.2
+      objectReference: {fileID: 0}
     - target: {fileID: 7252793310745472657, guid: e096773fd2ae0cf46bbb0705691ba2de,
         type: 3}
       propertyPath: m_LocalPosition.x

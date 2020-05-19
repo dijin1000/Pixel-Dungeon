@@ -151,7 +151,7 @@ MonoBehaviour:
   maxmaxHealth: 100
   minStrength: 2
   maxStrength: 4
-  weapon: {fileID: 4243747373183510426}
+  weapon: {fileID: 7220482433847302112}
   animator: {fileID: 3527926323796527240}
 --- !u!114 &4381142736534900591
 MonoBehaviour:
@@ -308,7 +308,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 4
   m_TargetDisplay: 0
 --- !u!114 &3323449923840813913
 MonoBehaviour:
@@ -504,17 +504,17 @@ PrefabInstance:
     - target: {fileID: 6143097605599859977, guid: 02ff9a9c8fc988449b3d3eb13ba7ddbc,
         type: 3}
       propertyPath: m_Size.x
-      value: 0.2
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 6143097605599859977, guid: 02ff9a9c8fc988449b3d3eb13ba7ddbc,
         type: 3}
       propertyPath: m_Offset.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6143097605599859977, guid: 02ff9a9c8fc988449b3d3eb13ba7ddbc,
         type: 3}
       propertyPath: m_Size.y
-      value: 0.8
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6143097605599859977, guid: 02ff9a9c8fc988449b3d3eb13ba7ddbc,
         type: 3}
@@ -594,9 +594,9 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8841853943945878835}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4243747373183510426 stripped
+--- !u!114 &7220482433847302112 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4634277205958884009, guid: 02ff9a9c8fc988449b3d3eb13ba7ddbc,
+  m_CorrespondingSourceObject: {fileID: 2198000522046032595, guid: 02ff9a9c8fc988449b3d3eb13ba7ddbc,
     type: 3}
   m_PrefabInstance: {fileID: 8841853943945878835}
   m_PrefabAsset: {fileID: 0}

@@ -67,7 +67,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9003208281936041177}
   - component: {fileID: 140368046281856246}
-  - component: {fileID: 4634277205958884009}
+  - component: {fileID: 2198000522046032595}
   m_Layer: 0
   m_Name: Base_Weapon
   m_TagString: Weapon
@@ -140,7 +140,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4634277205958884009
+--- !u!114 &2198000522046032595
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

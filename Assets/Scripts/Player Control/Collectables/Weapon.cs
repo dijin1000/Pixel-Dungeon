@@ -5,19 +5,22 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    private float base_dmg = 15f;
-    private Func<float,float> modifiers; 
+    public delegate float test(ref float param);
+
+    public float base_dmg = 1f;
+    private test modifiers; 
 
     private void Start()
     {
-        modifiers += (float base_dmg) => { return base_dmg; };
+        modifiers += (ref float base_dmg) => { return base_dmg; };
     }
 
     public float Get_Dmg
     {
         get
         {
-            return modifiers(base_dmg);
+            float x = base_dmg;
+            return modifiers(ref x);
         }
         set
         {
@@ -25,7 +28,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public void Subscribe(Func<float,float> registeredAction)
+    public void Subscribe(test registeredAction)
     {
         modifiers += registeredAction;
     }
