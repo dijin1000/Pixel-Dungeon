@@ -20,6 +20,7 @@ public class Measurements
     public float monsterDmg;                //9.    hoeveelheid damage gekregen
     public int deaths;                      //10.   totaal aantal keer dood gegaan
     public int trapped;                     //11.   aantal keer in een valstrik gevallen
+    public int trappedRoom;
     public float steps;                     //12.   aantal stappen dat iemand neemt
     public int attacks;                     //13.   aantal aanvallen gebruikt
     public Dictionary<int, int> runRoom;    //15.   hoeveelste keer wordt de kamer gespeeld
@@ -193,6 +194,7 @@ public class StatisticsManager : MonoBehaviour
         measurements.monsters += monsterInRoom;
         measurements.newMonsters = monsterInRoom;
         measurements.VisitRoom(newRoom);
+        measurements.trappedRoom = 0;
     }
     public void GetItem(float value = 0)
     {
@@ -247,6 +249,12 @@ public class StatisticsManager : MonoBehaviour
             else
                 measurements.noMove += Time.deltaTime;
         }
+    }
+
+    internal void Trapped()
+    {
+        measurements.trapped++;
+        measurements.trappedRoom++;
     }
 }
 public enum messageType

@@ -146,7 +146,7 @@ public class DirectorManager : MonoBehaviour
                 currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, 6));
             }
 
-            if (m.trapped == 0)
+            if (m.trappedRoom == 0)
             {
                 currentState.spikeRate += 0.05 * modifier;
             }

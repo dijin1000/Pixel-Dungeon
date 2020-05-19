@@ -51,8 +51,11 @@ public abstract class IUnit : MonoBehaviour
         { 
             if (col.gameObject.tag == "Spikes")
             {
-                if(col.GetComponent<Spikes>().IsHit)
+                if (col.GetComponent<Spikes>().IsHit)
+                {
                     GetDamage(GlobalManager.GlobalInstance.SpikeDmg);
+                    StatisticsManager.StatisticsInstance.Trapped();
+                }
             }
             else if (col.transform.parent != null)
             {
@@ -74,7 +77,10 @@ public abstract class IUnit : MonoBehaviour
             if (col.gameObject.tag == "Spikes")
             {
                 if (col.GetComponent<Spikes>().IsHit)
+                {
                     GetDamage(GlobalManager.GlobalInstance.SpikeDmg);
+                    StatisticsManager.StatisticsInstance.Trapped();
+                }
             }
         }
     }
