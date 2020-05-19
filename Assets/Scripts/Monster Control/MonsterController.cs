@@ -68,11 +68,14 @@ public class MonsterController : IUnit
             //Check how far is player
             if ((player.position - transform.position).sqrMagnitude < 10f  )
             {
-                target = player.position;
                 if ((player.position - transform.position).sqrMagnitude < 0.1f)
                 {
-                    //StartCoroutine(Attack());
+                    StartCoroutine(Attack());
                     //Attack
+                }
+                else
+                {
+                    target = player.position;
                 }
             }
             else if ((target - transform.position).sqrMagnitude < 0.1f || transform.position == lastPosition)
@@ -97,11 +100,13 @@ public class MonsterController : IUnit
     private IEnumerator Attack()
     {
         isAttacking = true;
+        weapon.gameObject.SetActive(true);
         while (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
         {
             yield return null;
         }
         yield return new WaitForSeconds(2f);
+        weapon.gameObject.SetActive(false);
         isAttacking = false;
     }
 

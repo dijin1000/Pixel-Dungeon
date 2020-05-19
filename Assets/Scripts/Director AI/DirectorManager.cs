@@ -129,6 +129,9 @@ public class DirectorManager : MonoBehaviour
 
             currentState.Monsters = new List<Tuple<int, int>>();
             currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, monstercount));
+
+            currentState.Items = new List<Tuple<TypeItem, int>>();
+            currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Potion, 1));
             /*
             float RSmean = 30 + 10 * monstercount;
             float RSstdDev = 10;
