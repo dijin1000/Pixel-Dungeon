@@ -64,31 +64,34 @@ public class MonsterController : IUnit
     }
     public void Update()
     {
-        if (isAttacking == false) {
-            //Check how far is player
-            if ((player.position - transform.position).sqrMagnitude < 10f  )
-            {
-                if ((player.position - transform.position).sqrMagnitude < 1.1f)
-                {
-                    StartCoroutine(Attack());
-                    //Attack
-                }
-                else if((player.position - transform.position).sqrMagnitude > 1.5f)
-                {
-                    target = player.position;
-                }
-            }
-            else if ((target - transform.position).sqrMagnitude < 0.1f || transform.position == lastPosition)
-            {
-                target = transform.position + new Vector3(UnityEngine.Random.Range(-10f, 10f), UnityEngine.Random.Range(-10f, 10f), 0);
-            }
-        }
-        if(target != lastTarget)
+        if (player != null)
         {
-            movement.targetTransform = target;
-            lastTarget = target;
-        }
-        
+            if (isAttacking == false)
+            {
+                //Check how far is player
+                if ((player.position - transform.position).sqrMagnitude < 10f)
+                {
+                    if ((player.position - transform.position).sqrMagnitude < 1.1f)
+                    {
+                        StartCoroutine(Attack());
+                        //Attack
+                    }
+                    else if ((player.position - transform.position).sqrMagnitude > 1.5f)
+                    {
+                        target = player.position;
+                    }
+                }
+                else if ((target - transform.position).sqrMagnitude < 0.1f || transform.position == lastPosition)
+                {
+                    target = transform.position + new Vector3(UnityEngine.Random.Range(-10f, 10f), UnityEngine.Random.Range(-10f, 10f), 0);
+                }
+            }
+            if (target != lastTarget)
+            {
+                movement.targetTransform = target;
+                lastTarget = target;
+            }
+        } 
     }
 
 

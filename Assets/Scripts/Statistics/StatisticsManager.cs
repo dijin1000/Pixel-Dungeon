@@ -209,7 +209,7 @@ public class StatisticsManager : MonoBehaviour
     /// </summary>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public bool SendEvent(messageType encoding)
+    public bool SendEvent(messageType encoding, string[] argument)
     {
         AnalyticsResult result = AnalyticsResult.InvalidData;
         switch(encoding)
@@ -218,6 +218,7 @@ public class StatisticsManager : MonoBehaviour
                 result = Analytics.CustomEvent("Level Completed", new Dictionary<string, object>
                 {
                     {"build_id", DirectorManager.DirectorInstance.GetBuildType },
+                    {"email", argument },
                     {"monster_ratio", measurements.lethality },
                     {"power_ups_ratio", measurements.itemsPicked},
                     {"treasure_ratio", measurements.score},

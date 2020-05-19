@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
 public class LevelExit : MonoBehaviour
@@ -37,9 +35,6 @@ public class LevelExit : MonoBehaviour
                 TileBase hasTile = map.GetTile(collisionPoint);
                 if (hasTile != null)
                 {
-                    if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.levelComplete))
-                        Debug.LogError("Message didnt send");
-
                     if (!isLastDoor[(Vector2Int)collisionPoint])
                     {
                         int door = doors[(Vector2Int)collisionPoint];

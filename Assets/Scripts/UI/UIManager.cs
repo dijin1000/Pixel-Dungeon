@@ -65,6 +65,9 @@ public class UIManager : MonoBehaviour
         scoreboard = panels[1].GetComponentInChildren<TextMeshProUGUI>();
         playerGFX = transform.GetComponentsInChildren<Image>(true).FirstOrDefault(predicate => predicate.name == "Player_GFX");
 
+
+        StatisticsManager.StatisticsInstance.SubscribeScoreChange((float newScore) => { panels[3].transform.GetChild(0).GetChild(1).GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = Mathf.Ceil(newScore).ToString(); });
+
         ChangeStateTo(UIState.InMainMenu);
 
     }
@@ -110,7 +113,14 @@ public class UIManager : MonoBehaviour
                     ActivateScoreboard();
                     break;
             }
+            currentState = newState;
         }
+    }
+
+    public void SendScore()
+    {
+        if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.gameover, new string[] { panels[3].GetComponentInChildren<TMP_InputField>().text }))
+            Debug.LogError("Message didnt send");
     }
 
     #region Activate Panels

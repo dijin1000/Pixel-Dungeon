@@ -94,9 +94,10 @@ public class PlayerController : IUnit
     {
         //Send Statistics
 
-        SceneTransistionManager.SceneInstance.TransitionToScene(typeOfScene.ExitGame);
+        UIManager.UiInstance.ChangeStateTo(UIState.InScoreboard);
 
         base.Death();
+
     }
 
 
