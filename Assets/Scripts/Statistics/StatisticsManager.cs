@@ -25,6 +25,7 @@ public class Measurements
     public Dictionary<int, int> runRoom;    //15.   hoeveelste keer wordt de kamer gespeeld
     public float noMove;                    //16.   tijd stilgestaan(geen move actie gedaan)
 
+    public int newMonsters;
     public int monsters;        //
     public int itemsTotal;
     public float moneyTotal;
@@ -190,6 +191,7 @@ public class StatisticsManager : MonoBehaviour
     public void NewRoom(int newRoom, int monsterInRoom)
     {
         measurements.monsters += monsterInRoom;
+        measurements.newMonsters = monsterInRoom;
         measurements.VisitRoom(newRoom);
     }
     public void GetItem(float value = 0)

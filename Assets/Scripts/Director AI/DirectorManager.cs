@@ -104,7 +104,7 @@ public class DirectorManager : MonoBehaviour
         {
             Measurements m = StatisticsManager.StatisticsInstance.Measurements;
 
-            int monstercount = m.monsters;
+            int monstercount = m.newMonsters;
             //if (m.lethality > 0.5)
             //    monstercount += modifier;
             if (m.monsterhit > 0)
