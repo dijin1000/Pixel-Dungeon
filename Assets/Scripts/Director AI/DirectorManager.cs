@@ -117,18 +117,13 @@ public class DirectorManager : MonoBehaviour
                 }
             }
 
-<<<<<<< HEAD
-            currentState.Items = new List<Tuple<TypeItem, int>>();
-            currentState.Items.Add(new Tuple<TypeItem,int>(TypeItem.Weapon, 1));
-=======
             if (modifier == 1 && m.lethality > 0.4)
                 monstercount += modifier;
-            else if (modifier == 2 && m.lethality > 0.25)
->>>>>>> 56d8e8e511f658877066a3b2bb3e5c55937788b0
+
 
             if (m.monsterhit > 0)
                 monstercount += (modifier - 2);
-            if (m.lethality < 0.5 && m.monsterhit > 0)
+            else if (modifier == 2 && m.lethality > 0.25)
                 monstercount += modifier - 2;
             if (monstercount <= 0)
             {

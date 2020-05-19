@@ -19,13 +19,13 @@ public class Item : MonoBehaviour
     [SerializeField]
     private float SpeedIncreeseMin = 1f;
     [SerializeField]
-    private float SpeecIncreaseMax = 4f;
+    private float SpeecIncreaseMax = 3f;
 
     private float Heal = 0;
     [SerializeField]
-    private float HealMin = 1f;
+    private float HealMin = 2f;
     [SerializeField]
-    private float HealMax = 4f;
+    private float HealMax = 6f;
 
     private float Value = 0;
     [SerializeField]
