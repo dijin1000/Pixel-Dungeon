@@ -19,6 +19,10 @@ public class Weapon : MonoBehaviour
         {
             return modifiers(base_dmg);
         }
+        set
+        {
+            base_dmg = value;
+        }
     }
 
     public void Subscribe(Func<float,float> registeredAction)

@@ -42,7 +42,7 @@ public class MonsterController : IUnit
         weapon.Subscribe(
             (float dmg) =>
             {
-                return dmg + strength;
+                return strength;
             }
             );
         movement = GetComponent<MonsterMovement>();
