@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    private float base_dmg = 5f;
+    private float base_dmg = 15f;
     private Func<float,float> modifiers; 
 
     private void Start()

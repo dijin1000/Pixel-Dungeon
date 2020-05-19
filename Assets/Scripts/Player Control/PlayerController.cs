@@ -118,15 +118,17 @@ public class PlayerController : IUnit
             (InputAction.CallbackContext action) => 
             { 
                 float testing = Mathf.Ceil(action.ReadValue<Vector2>().x);
-                anim.SetInteger("Movement",(int)testing);
+                float yAxis = Mathf.Ceil(action.ReadValue<Vector2>().magnitude);
+                anim.SetInteger("Movement",(int)yAxis);
 
-                int equal = Mathf.Sign(graphics.rotation.y) == Mathf.Sign(testing) ? 0 : 1;
-                graphics.transform.rotation = Quaternion.Euler(0,Mathf.Sign(testing) * 90 - 90,0); 
+                if (testing != 0)
+                {
+                    int equal = Mathf.Sign(graphics.rotation.y) == Mathf.Sign(testing) ? 0 : 1;
+                    graphics.transform.rotation = Quaternion.Euler(0, Mathf.Sign(testing) * 90 - 90, 0);
+                }
 
             }
             , ControlType.Movement);
-
-        //DontDestroyOnLoad(gameObject);
 
         data.SubscribeDmgChange((float addedDmg) => { this.w.Subscribe((float input) => { return input + addedDmg; }); });
         data.SubscribeSpeedChange((float addedSpeed) => { this.p_Input.moveSpeed += addedSpeed; });
@@ -174,7 +176,7 @@ public class PlayerController : IUnit
 [Serializable]
 public struct PlayerData
 {
-    public PlayerData(Action<float> onHealthChange = null, Action<float> onDmgChange = null, Action<float> onSpeedChange = null, Action<GameObject> onWeaponChange = null, Action<AnimatorOverrideController> onControllerChange = null, float _health = 100f, bool death = false, float _dmg = 1f, float _speed = 5f, GameObject _weapon = null, AnimatorOverrideController _controller = null)
+    public PlayerData(Action<float> onHealthChange = null, Action<float> onDmgChange = null, Action<float> onSpeedChange = null, Action<GameObject> onWeaponChange = null, Action<AnimatorOverrideController> onControllerChange = null, float _health = 100f, bool death = false, float _dmg = 10f, float _speed = 5f, GameObject _weapon = null, AnimatorOverrideController _controller = null)
     {
         Death = death;
         maxHealth = _health;

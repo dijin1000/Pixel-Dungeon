@@ -77,7 +77,7 @@ public class MonsterController : IUnit
             }
             else if ((target - transform.position).sqrMagnitude < 0.1f || transform.position == lastPosition)
             {
-                target = transform.position + new Vector3(UnityEngine.Random.Range(-4f, 4f), UnityEngine.Random.Range(-4f, 4f), 0);
+                target = transform.position + new Vector3(UnityEngine.Random.Range(-10f, 10f), UnityEngine.Random.Range(-10f, 10f), 0);
             }
         }
         if(target != lastTarget)

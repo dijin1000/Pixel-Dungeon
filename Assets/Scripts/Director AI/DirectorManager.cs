@@ -39,7 +39,7 @@ public class DirectorManager : MonoBehaviour
         DirectorInstance = this;
     }
 
-    private float time = 0;
+    public float time = 0;
     private float MaxTime = 300;
     private void Update()
     {

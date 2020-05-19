@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Analytics;
 
@@ -8,6 +9,8 @@ public class Measurements
 {
     public int hitted;                      //1.    aantal hits raak
     public float score;                     //2.    aantal punten die iemand pakt
+    public float money;
+
     public int items;                       //3.    aantal items dat iemand pakt
     public int monsterKilled;               //4.    aantal monsters vermoord
     public float damage;                    //5.    hoeveelheid damage gedaan
@@ -23,6 +26,8 @@ public class Measurements
     public float noMove;                    //16.   tijd stilgestaan(geen move actie gedaan)
 
     public int monsters;        //
+    public int itemsTotal;
+    public float moneyTotal;
 
     public float accuracy       //accuracy = aantal hits raak/ totaal aantal hits
     {
@@ -45,6 +50,21 @@ public class Measurements
             return (float)monsters / (float)rooms;
         }
     }
+    public float itemsPicked
+    {
+        get
+        {
+            return items / itemsTotal; 
+        }
+    }
+    public float ratio_gold
+    {
+        get
+        {
+            return money / moneyTotal;
+        }
+    }
+
     public Measurements(int _hitted = 0, float _score = 0, int _items = 0, int _monsterKilled = 0, float _damage = 0, int _rooms = 0, int _monsterhit = 0, float _monsterDmg = 0, int _deaths = 0, int _trapped = 0, float _steps = 0, int _attacks = 0, float _noMove = 0, int _monsters = 0)
     {
         hitted = _hitted;
@@ -176,6 +196,7 @@ public class StatisticsManager : MonoBehaviour
     {
         measurements.items++;
         Score += value;
+        measurements.money+=value;
     }
  
 
@@ -192,10 +213,18 @@ public class StatisticsManager : MonoBehaviour
             case messageType.gameover:
                 result = Analytics.CustomEvent("Level Completed", new Dictionary<string, object>
                 {
-                    { "build_id", DirectorManager.DirectorInstance.GetBuildType },
+                    {"build_id", DirectorManager.DirectorInstance.GetBuildType },
+                    {"monster_ratio", measurements.lethality },
+                    {"power_ups_ratio", measurements.itemsPicked},
+                    {"treasure_ratio", measurements.score},
+                    {"time", measurements.roomTime.Values.Average() },
+                    {"interactable_ratio",measurements.trapped + measurements.items },
+                    {"win_ration", DirectorManager.DirectorInstance.time/300f }
+                    
                 });
                 break;
             default:
+                result = AnalyticsResult.Ok;
                 break;
         }
         return result == AnalyticsResult.Ok;

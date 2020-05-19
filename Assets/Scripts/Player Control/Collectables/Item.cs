@@ -33,6 +33,15 @@ public class Item : MonoBehaviour
     [SerializeField]
     private float ValueMax = 25f;
 
+    public float GetValue
+    {
+        get
+        {
+            return Value;
+        }
+    }
+
+
     [SerializeField]
     private TypeItem type;
     private bool isInit = false;

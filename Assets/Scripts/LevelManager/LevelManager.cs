@@ -246,6 +246,7 @@ public class LevelManager : MonoBehaviour
         {
             case TypeItem.Money:
                 item = Instantiate(MoneyPrefab, new Vector3(point.x, point.y, 0), Quaternion.identity);
+                StatisticsManager.StatisticsInstance.Measurements.moneyTotal++;
                 break;
             case TypeItem.Potion:
                 item = Instantiate(PotionPrefabList[UnityEngine.Random.Range(0, PotionPrefabList.Count)], new Vector3(point.x, point.y, 0), Quaternion.identity);
@@ -255,6 +256,9 @@ public class LevelManager : MonoBehaviour
                 break;
         }
         item.GetComponent<Item>().Init(type);
+        if(type == TypeItem.Money)
+            StatisticsManager.StatisticsInstance.Measurements.moneyTotal += item.GetComponent<Item>().GetValue;
+        StatisticsManager.StatisticsInstance.Measurements.itemsTotal++;
 
     }
     #endregion
