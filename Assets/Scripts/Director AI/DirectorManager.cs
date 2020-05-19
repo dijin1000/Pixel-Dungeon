@@ -115,6 +115,8 @@ public class DirectorManager : MonoBehaviour
                 monstercount = UnityEngine.Random.Range(0, 3);
             }
 
+            currentState.Items = new List<Tuple<TypeItem, int>>();
+            currentState.Items.Add(new Tuple<TypeItem,int>(TypeItem.Weapon, 1));
 
             if (m.monsterDmg > 1)
             {

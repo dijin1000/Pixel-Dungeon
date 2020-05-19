@@ -136,12 +136,34 @@ MonoBehaviour:
   ValueMin: 1
   ValueMax: 25
   type: 0
-  Weapontype: 0
   weaponAnimations:
   - {fileID: 22100000, guid: 99aba93e8bc95bf469a0100b6acad667, type: 2}
   - {fileID: 22100000, guid: 69aec0f51092c414b8b06458ef3b9db3, type: 2}
-  weapon: {fileID: 1207383929021512394, guid: 10137651e757c2c498f1f69b18d6abd2, type: 3}
-  anim: {fileID: 22100000, guid: 99aba93e8bc95bf469a0100b6acad667, type: 2}
+  objectList:
+  - type: 1
+    weaponObject: {fileID: 2208556921217377911, guid: d96efe8090bf0954a81ecb80e1a10385,
+      type: 3}
+  - type: 0
+    weaponObject: {fileID: 1207383929021512394, guid: 10137651e757c2c498f1f69b18d6abd2,
+      type: 3}
+  - type: 0
+    weaponObject: {fileID: 8877663864748270220, guid: a1482e38f16f1b143ac5092cedf92fe7,
+      type: 3}
+  - type: 1
+    weaponObject: {fileID: 56469218553930680, guid: da22e86d41da7504ab59072cf8616286,
+      type: 3}
+  - type: 0
+    weaponObject: {fileID: 2027754547082120900, guid: d0139fa5285af2040b554e5812c2e028,
+      type: 3}
+  - type: 1
+    weaponObject: {fileID: 1685563665683486133, guid: c86334c2c3497f84190681b8c11ccbbc,
+      type: 3}
+  - type: 1
+    weaponObject: {fileID: 7687808421071246393, guid: 2a696d80018724445903a38cd14429a8,
+      type: 3}
+  - type: 1
+    weaponObject: {fileID: 4514234720769418708, guid: 966356ad9a0f43040a1c748a42eee2ef,
+      type: 3}
 --- !u!61 &9164846817203185018
 BoxCollider2D:
   m_ObjectHideFlags: 0
