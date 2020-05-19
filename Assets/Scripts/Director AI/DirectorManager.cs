@@ -104,29 +104,37 @@ public class DirectorManager : MonoBehaviour
         {
             Measurements m = StatisticsManager.StatisticsInstance.Measurements;
 
+
+            // Monsters
             int monstercount = m.newMonsters;
-            //if (m.lethality > 0.5)
-            //    monstercount += modifier;
-            if (m.monsterhit > 0)
-                monstercount += (modifier - 2);
 
-            if (monstercount == 0)
+            // random increase of monsters
+            if (modifier > 0)
             {
-                monstercount = UnityEngine.Random.Range(0, 3);
-            }
-
-            currentState.Items = new List<Tuple<TypeItem, int>>();
-            currentState.Items.Add(new Tuple<TypeItem,int>(TypeItem.Weapon, 1));
-
-            if (m.monsterDmg > 1)
-            {
-                float potion_chance = 2.0f - modifier;
-                if (UnityEngine.Random.Range(0, 2) * potion_chance >= 1)
+                if (UnityEngine.Random.Range(0, modifier + 1) > 0)
                 {
-                    currentState.Items = new List<Tuple<TypeItem, int>>();
-                    currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Potion, 1));
+                    monstercount += modifier;
                 }
             }
+
+<<<<<<< HEAD
+            currentState.Items = new List<Tuple<TypeItem, int>>();
+            currentState.Items.Add(new Tuple<TypeItem,int>(TypeItem.Weapon, 1));
+=======
+            if (modifier == 1 && m.lethality > 0.4)
+                monstercount += modifier;
+            else if (modifier == 2 && m.lethality > 0.25)
+>>>>>>> 56d8e8e511f658877066a3b2bb3e5c55937788b0
+
+            if (m.monsterhit > 0)
+                monstercount += (modifier - 2);
+            if (m.lethality < 0.5 && m.monsterhit > 0)
+                monstercount += modifier - 2;
+            if (monstercount <= 0)
+            {
+                monstercount = UnityEngine.Random.Range(0, 3) + modifier;
+            }
+
 
             currentState.Monsters = new List<Tuple<int, int>>();
 
@@ -148,6 +156,30 @@ public class DirectorManager : MonoBehaviour
                 currentState.Monsters.Add(new Tuple<int, int>((int)MonsterTypes.Medium, 6));
             }
 
+
+            currentState.Items = new List<Tuple<TypeItem, int>>();
+
+            // Potions
+            if (m.monsterDmg > 1 || m.trappedRoom > 0)
+            {
+                float potion_chance = 2.0f - modifier;
+                if (UnityEngine.Random.Range(0, 2) * potion_chance >= 1)
+                {
+                    currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Potion, 1));
+                }
+            }
+
+            // weapon
+            if (UnityEngine.Random.Range(0, 10) >= 1)
+            {
+                currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Weapon, 1));
+            }
+
+
+            // Money
+            currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Money, UnityEngine.Random.Range(0, 3)));
+
+            //Spikes
             if (m.trappedRoom == 0)
             {
                 currentState.spikeRate += 0.05 * modifier;
@@ -158,28 +190,6 @@ public class DirectorManager : MonoBehaviour
             }
 
 
-            /*
-            float RSmean = 30 + 10 * monstercount;
-            float RSstdDev = 10;
-            NormalDistribution normalDist = new NormalDistribution(RSmean, RSstdDev);
-            currentState.roomSize = normalDist.Sample();
-
-            if(m.monsterhit == 0)
-                currentState.narrowRoom = true;
-            if (m.monsterhit > 1)
-                currentState.narrowRoom = false;
-
-            if (m.monsterhit > 1)
-            {
-                currentState.cycles = true;
-                currentState.deadEnd = false;
-            }
-            else
-            {
-                currentState.cycles = false;
-                currentState.deadEnd = true;
-            }
-            */
             GlobalManager.GlobalInstance.MonsterHealthFlat = 0;
             GlobalManager.GlobalInstance.MonsterHealhtPercentage = 50f;
 
@@ -189,7 +199,7 @@ public class DirectorManager : MonoBehaviour
             GlobalManager.GlobalInstance.MonsterSpeedFlat = 0;
             GlobalManager.GlobalInstance.MonsterSpeedPercentage = 50f;
 
-
+            //GlobalManager.GlobalInstance.ItemStrengthPercentage = 100f;
 
         }
 
