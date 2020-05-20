@@ -117,12 +117,13 @@ public class DirectorManager : MonoBehaviour
                 }
             }
 
-            if (modifier == 1 && m.lethality > 0.4)
-                monstercount += modifier;
-
 
             if (m.monsterhit > 0)
+            {
                 monstercount += (modifier - 2);
+            }
+            if (modifier == 1 && m.lethality > 0.4)
+                monstercount += modifier;
             else if (modifier == 2 && m.lethality > 0.25)
                 monstercount += modifier - 2;
             if (monstercount <= 0)
