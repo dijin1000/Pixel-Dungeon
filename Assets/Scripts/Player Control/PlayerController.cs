@@ -94,7 +94,7 @@ public class PlayerController : IUnit
     {
         //Send Statistics
 
-        UIManager.UiInstance.ChangeStateTo(UIState.InScoreboard);
+        UIManager.UiInstance.ChangeStateTo(UIState.InDeathScene);
 
         base.Death();
 

@@ -125,6 +125,7 @@ public class MonsterController : IUnit
     protected override void Set_Death(bool dead)
     {
         death = dead;
+        StatisticsManager.StatisticsInstance.SetDeath(Unit.Monster);
     }
     protected override void Set_Health(float newHealth)
     {

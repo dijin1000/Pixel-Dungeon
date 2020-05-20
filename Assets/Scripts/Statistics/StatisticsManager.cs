@@ -178,6 +178,7 @@ public class StatisticsManager : MonoBehaviour
         if (unit == IUnit.Unit.Monster)
         {
             measurements.monsterKilled++;
+            Score += 20f;
         }
         else if (unit == IUnit.Unit.Player)
         {
@@ -209,7 +210,7 @@ public class StatisticsManager : MonoBehaviour
     /// </summary>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public bool SendEvent(messageType encoding, string[] argument)
+    public bool SendEvent(messageType encoding)
     {
         AnalyticsResult result = AnalyticsResult.InvalidData;
         switch(encoding)
@@ -218,15 +219,21 @@ public class StatisticsManager : MonoBehaviour
                 result = Analytics.CustomEvent("Level Completed", new Dictionary<string, object>
                 {
                     {"build_id", DirectorManager.DirectorInstance.GetBuildType },
-                    {"email", argument },
-                    {"monster_ratio", measurements.lethality },
-                    {"power_ups_ratio", measurements.itemsPicked},
-                    {"treasure_ratio", measurements.score},
-                    {"time", measurements.roomTime.Values.Average() },
-                    {"interactable_ratio",measurements.trapped + measurements.items },
-                    {"win_ration", DirectorManager.DirectorInstance.time/300f }
-                    
-                });
+                    {"unique_id", SystemInfo.deviceUniqueIdentifier },
+                    {"win_ration", DirectorManager.DirectorInstance.time/DirectorManager.DirectorInstance.MaxTime },
+                    {"accurarcy", measurements.accuracy },
+                    {"score", measurements.score },
+                    {"money_gained", measurements.money },
+                    {"items_picked", measurements.items },
+                    {"items_ratio", measurements.itemsPicked},
+                    {"monsters_killed", measurements.monsterKilled },
+                    {"number_rooms", measurements.rooms },
+                    {"avg_time", measurements.roomTime.Values.Average() },
+                    {"dmg taken", measurements.monsterDmg },
+                    {"in_trapped", measurements.trapped },
+                    {"steps_taken", measurements.steps },
+                    {"lethality", measurements.lethality }
+                    });
                 break;
             default:
                 result = AnalyticsResult.Ok;

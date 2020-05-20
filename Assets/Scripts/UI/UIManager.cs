@@ -11,6 +11,7 @@ public enum UIState
     InGame,
     InGameMenu,
     InScoreboard,
+    InDeathScene,
     PopUp,
     Unloaded
 }
@@ -66,7 +67,7 @@ public class UIManager : MonoBehaviour
         playerGFX = transform.GetComponentsInChildren<Image>(true).FirstOrDefault(predicate => predicate.name == "Player_GFX");
 
 
-        StatisticsManager.StatisticsInstance.SubscribeScoreChange((float newScore) => { panels[3].transform.GetChild(0).GetChild(1).GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = Mathf.Ceil(newScore).ToString(); });
+        StatisticsManager.StatisticsInstance.SubscribeScoreChange((float newScore) => { panels[3].transform.GetChild(0).GetChild(1).GetChild(0).GetChild(1).GetComponentInChildren<TextMeshProUGUI>().text = Mathf.Ceil(newScore).ToString(); });
 
         ChangeStateTo(UIState.InMainMenu);
 
@@ -110,7 +111,12 @@ public class UIManager : MonoBehaviour
                 case UIState.InScoreboard:
                     if (currentState != UIState.InGame)
                         throw new Exception("Unexpected behavior.");
-                    ActivateScoreboard();
+                    ActivateScoreboard(false);
+                    break;
+                case UIState.InDeathScene:
+                    if (currentState != UIState.InGame)
+                        throw new Exception("Unexpected behavior.");
+                    ActivateScoreboard(true);
                     break;
             }
             currentState = newState;
@@ -119,17 +125,23 @@ public class UIManager : MonoBehaviour
 
     public void SendScore()
     {
-        if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.gameover, new string[] { panels[3].GetComponentInChildren<TMP_InputField>().text }))
+        string url = SystemInfo.deviceUniqueIdentifier.ToString();
+        Application.OpenURL("https://docs.google.com/forms/d/e/1FAIpQLSe1OxKiGPz0V-6sW6jgPUQeP1C7HmjIjvAki0VVTyjtgHvyqw/viewform?usp=pp_url&entry.801917472=" + url);
+        if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.gameover))
             Debug.LogError("Message didnt send");
+        Application.Quit();
     }
 
     #region Activate Panels
-    private void ActivateScoreboard()
+    private void ActivateScoreboard(bool isDead)
     {
         //Disable all inputs
         //Freeze Game
         panels[3].SetActive(true);
+
+        panels[3].transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = !isDead ? "Victory" : "Defeat";
     }
+
     private void ActivateGameMenu()
     {
         //Disable all inputs
@@ -161,6 +173,8 @@ public class UIManager : MonoBehaviour
                 scoreboard.text = ((int)newScore).ToString();
             }
         );
+
+        transform.parent.GetComponent<AudioSource>().enabled = true;
 
         healthBar.value = PlayerController.PlayerInstance.Get_Health();
         scoreboard.text = ((int)StatisticsManager.StatisticsInstance.Score).ToString();
