@@ -37,7 +37,7 @@ public class DirectorManager : MonoBehaviour
     void Awake()
     {
         DirectorInstance = this;
-        buildtype = 1; // UnityEngine.Random.Range(1, 4);
+        buildtype = UnityEngine.Random.Range(1, 4);
     }
 
     public float time = 0;
