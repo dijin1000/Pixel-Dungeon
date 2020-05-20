@@ -41,7 +41,7 @@ public class DirectorManager : MonoBehaviour
     }
 
     public float time = 0;
-    private float MaxTime = 120;
+    public float MaxTime = 120;
     private void Update()
     {
         time += Time.deltaTime;
