@@ -91,7 +91,7 @@ public class Item : MonoBehaviour
             if (DmgIncrease > 0)
                 data.Dmg = Mathf.Min(data.Dmg + DmgIncrease * GlobalManager.GlobalInstance.ItemStrengthPercentage / 100 * GlobalManager.GlobalInstance.PotionDmgPercentage / 100 + (DmgIncrease > 0 ? 1 : 0) * (GlobalManager.GlobalInstance.ItemStrengthFlat + GlobalManager.GlobalInstance.PotionDmgFlat), 10);
             if (SpeedIncrease > 0)
-                data.Speed = Mathf.Min(data.Speed + SpeedIncrease * GlobalManager.GlobalInstance.ItemStrengthPercentage / 100 * GlobalManager.GlobalInstance.PotionSpeedPercentage / 100 + (SpeedIncrease > 0 ? 1 : 0) * (GlobalManager.GlobalInstance.ItemStrengthFlat + GlobalManager.GlobalInstance.PotionSpeedFlat), 40f);
+                data.Speed = Mathf.Max(Mathf.Min(data.Speed + SpeedIncrease * GlobalManager.GlobalInstance.ItemStrengthPercentage / 100 * GlobalManager.GlobalInstance.PotionSpeedPercentage / 100 + (SpeedIncrease > 0 ? 1 : 0) * (GlobalManager.GlobalInstance.ItemStrengthFlat + GlobalManager.GlobalInstance.PotionSpeedFlat), 40f),1f);
 
             Consume();
         }
