@@ -37,11 +37,11 @@ public class DirectorManager : MonoBehaviour
     void Awake()
     {
         DirectorInstance = this;
-        buildtype = UnityEngine.Random.Range(1, 4);
+        buildtype = 1; // UnityEngine.Random.Range(1, 4);
     }
 
     public float time = 0;
-    public float MaxTime = 120;
+    private float MaxTime = 120;
     private void Update()
     {
         time += Time.deltaTime;
@@ -166,7 +166,7 @@ public class DirectorManager : MonoBehaviour
             }
 
             // weapon
-            if (UnityEngine.Random.Range(0, 10) >= 1)
+            if (UnityEngine.Random.Range(0, 10) >= 9)
             {
                 currentState.Items.Add(new Tuple<TypeItem, int>(TypeItem.Weapon, 1));
             }
