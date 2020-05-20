@@ -38,7 +38,7 @@ public class DirectorManager : MonoBehaviour
     {
         DirectorInstance = this;
         buildtype = UnityEngine.Random.Range(1, 4);
-        UniqueIdentifier = (int)UnityEngine.Random.Range(0, Mathf.Infinity);
+        UniqueIdentifier = UnityEngine.Random.Range(0, int.MaxValue);
     }
     public int UniqueIdentifier;
     public float time = 0;
