@@ -147,7 +147,7 @@ class MapGenerator
 
     public MapGenerator()
     {
-        int seed = 0;//rand.Next();
+        int seed = rand.Next();
         rand = new System.Random(seed);
         
         roomCounter = 0;

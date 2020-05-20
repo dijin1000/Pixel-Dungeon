@@ -38,10 +38,11 @@ public class DirectorManager : MonoBehaviour
     {
         DirectorInstance = this;
         buildtype = UnityEngine.Random.Range(1, 4);
+        UniqueIdentifier = (int)UnityEngine.Random.Range(0, Mathf.Infinity);
     }
-
+    public int UniqueIdentifier;
     public float time = 0;
-    public float MaxTime = 120;
+    public float MaxTime = 180;
     private void Update()
     {
         time += Time.deltaTime;
