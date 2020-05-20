@@ -219,7 +219,7 @@ public class StatisticsManager : MonoBehaviour
                 result = Analytics.CustomEvent("PlayerStatisticss", new Dictionary<string, object>
                 {
                     {"build_id", DirectorManager.DirectorInstance.GetBuildType },
-                    {"unique_id", SystemInfo.deviceUniqueIdentifier },
+                    {"unique_id", DirectorManager.DirectorInstance.UniqueIdentifier },
                     {"win_ration", DirectorManager.DirectorInstance.time/DirectorManager.DirectorInstance.MaxTime },
                     {"accurarcy", measurements.accuracy },
                     {"score", measurements.score },

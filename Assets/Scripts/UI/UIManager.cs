@@ -125,7 +125,7 @@ public class UIManager : MonoBehaviour
 
     public void SendScore()
     {
-        string url = SystemInfo.deviceUniqueIdentifier.ToString();
+        string url = DirectorManager.DirectorInstance.UniqueIdentifier.ToString();
         Application.OpenURL("https://docs.google.com/forms/d/e/1FAIpQLSe1OxKiGPz0V-6sW6jgPUQeP1C7HmjIjvAki0VVTyjtgHvyqw/viewform?usp=pp_url&entry.801917472=" + url);
         if (!StatisticsManager.StatisticsInstance.SendEvent(messageType.gameover))
             Debug.LogError("Message didnt send");
