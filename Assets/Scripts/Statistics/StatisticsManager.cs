@@ -216,7 +216,7 @@ public class StatisticsManager : MonoBehaviour
         switch(encoding)
         {
             case messageType.gameover:
-                result = Analytics.CustomEvent("Level Completed", new Dictionary<string, object>
+                result = Analytics.CustomEvent("PlayerStatisticss", new Dictionary<string, object>
                 {
                     {"build_id", DirectorManager.DirectorInstance.GetBuildType },
                     {"unique_id", SystemInfo.deviceUniqueIdentifier },
